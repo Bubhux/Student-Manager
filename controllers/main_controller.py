@@ -1,4 +1,4 @@
-from views.views import StudentView, MainMenuView
+from views.main_menu_views import StudentView, MainMenuView
 from controllers.database_controller import DatabaseController
 
 
@@ -11,6 +11,8 @@ class StudentController:
     def run_program(self):
         print("run_program")
 
+        # Vérifie d'abord la connexion à la base de données
+        self.database_controller.connect_to_database()
         self.main_menu.display_main_menu()
         print("run_program_end")
 
