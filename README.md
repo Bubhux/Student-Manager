@@ -1,3 +1,3 @@
 
 # StudentManager
-# En cours de 
+# En cours de développement
