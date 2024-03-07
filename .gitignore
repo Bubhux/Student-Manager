@@ -1,0 +1,9 @@
+# Exclure les fichiers et dossiers générés par Python lors de la compilation
+__pycache__/**
+*.pyc
+
+# Exclure le dossier .vscode
+.vscode/
+
+# Exclure le dossier venv (environnement virtuel Python)
+env/
