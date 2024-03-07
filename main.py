@@ -1,8 +1,8 @@
-from controllers.main_controller import StudentController
+from controllers.main_controller import MainController
 
 
 def main_program():
-    controller = StudentController()
+    controller = MainController()
     controller.run_program()
 
 if __name__ == "__main__":
