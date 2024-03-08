@@ -57,7 +57,12 @@ class StudentDatabaseController:
         if student:
             try:
                 updated_student = StudentModel(student['first_name'], student['last_name'], student['grades'])
-                updated_student.update_student_info(first_name=new_student_data['first_name'], last_name=new_student_data['last_name'], grades=new_student_data['grades'])
+                updated_student.update_student_info(
+                    first_name=new_student_data['first_name'],
+                    last_name=new_student_data['last_name'],
+                    grades=new_student_data['grades']
+                )
+
                 self.student_collection.update_one({'_id': student['_id']}, {'$set': {
                     'first_name': updated_student.first_name,
                     'last_name': updated_student.last_name,

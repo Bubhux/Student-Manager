@@ -34,35 +34,42 @@ class ClassroomDatabaseController:
 
     def update_classroom_info_database_controller(self, classroom_name, new_classroom_data):
         # Recherche de la classe par son nom
-        classroom = self.classroom_collection.find_one({'classroom_name': classroom_name})
+        classroom = self.classroom_collection.find_one({'$or': [{'classroom_name': classroom_name}]})
 
         if classroom:
             try:
                 # Création d'une instance de ClassroomModel avec les nouvelles données
-                updated_classroom = ClassroomModel(classroom_name=new_classroom_data['classroom_name'],
-                                                   number_of_places_available=new_classroom_data['number_of_places_available']
+                updated_classroom = ClassroomModel(
+                    new_classroom_data.get('classroom_name', classroom['classroom_name']),
+                    new_classroom_data.get('new_number_of_places_available', classroom['number_of_places_available']),
+                    new_classroom_data.get('new_number_of_students', classroom['number_of_students'])
                 )
 
                 # Mise à jour des données de la classe dans la base de données
-                self.classroom_collection.update_one({'classroom_name': classroom_name}, {'$set': new_classroom_data})
+                self.classroom_collection.update_one({'_id': classroom['_id']}, {'$set': {
+                    'classroom_name': updated_classroom.classroom_name,
+                    'number_of_places_available': updated_classroom.number_of_places_available,
+                    'number_of_students': updated_classroom.number_of_students
+                }})
+
                 print(f"Les informations de la classe {classroom_name} ont été mises à jour avec succès!")
             except Exception as e:
                 print(f"Une erreur s'est produite lors de la mise à jour des informations de la classe : {str(e)}")
         else:
             print(f"Aucune classe trouvée avec le nom {classroom_name}. Vérifiez le nom de la classe.")
 
+    def delete_classroom_database_controller(self, classroom_name):
+        classroom = self.classroom_collection.find_one({'classroom_name': classroom_name})
+        if classroom:
+            try:
+                self.classroom_collection.delete_one({'classroom_name': classroom_name})
+                print(f"La classe {classroom_name} a été supprimé avec succès!")
+            except Exception as e:
+                print(f"Une erreur s'est produite lors de la suppression de la classe : {str(e)}")
+        else:
+            print(f"Aucune classe trouvé avec le nom {classroom_name}.")
 
-"""
-    def calculate_student_average_database_controller(self, student_name):
-        student = self.student_collection.find_one({'first_name': student_name})
-
-        if student:
-            grades = student.get('grades', [])
-            if grades:
-                return sum(grades) / len(grades)
-        return None
-
-    def calculate_class_average_database_controller(self, classroom_name):
+    def calculate_classroom_average_database_controller(self, classroom_name):
         # Récupére les données de la classe spécifiée par classroom_name
         classroom_data = self.classroom_collection.find_one({'classroom_name': classroom_name})
 
@@ -78,5 +85,15 @@ class ClassroomDatabaseController:
                 return sum(all_grades) / len(all_grades)
         
         # Retourner None si aucune donnée n'est trouvée ou si aucune note n'est disponible
+        return None
+
+"""
+    def calculate_student_average_database_controller(self, student_name):
+        student = self.student_collection.find_one({'first_name': student_name})
+
+        if student:
+            grades = student.get('grades', [])
+            if grades:
+                return sum(grades) / len(grades)
         return None
 """

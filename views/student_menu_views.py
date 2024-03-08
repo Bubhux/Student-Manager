@@ -18,7 +18,7 @@ class StudentView:
             print("5. Calculer la moyenne d'un étudiant")
             print("6. Calculer la moyenne de la classe")
             print("7. Supprimer un étudiant")
-            print("R. Retour au menu précedent\n")
+            print("r. Retour au menu précedent\n")
 
             choice_menu = input("Choisissez le numéro de votre choix.\n> ")
 
@@ -184,6 +184,10 @@ class StudentView:
         # Mettre à jour les informations de l'étudiant
         self.database_controller.update_student_info_database_controller(student_name, new_student_data)
 
+    def delete_student(self):
+        student_name = input("Nom de l'étudiant à supprimer (Prénom et Nom ou Prénom seul) : ")
+        self.database_controller.delete_student_database_controller(student_name)
+
     def calculate_student_average(self):
         student_name = input("Nom de l'étudiant à calculer la moyenne (Prénom et Nom ou Prénom seul) : ")
         average = self.database_controller.calculate_student_average_database_controller(student_name)
@@ -196,6 +200,3 @@ class StudentView:
         average = self.database_controller.calculate_class_average_database_controller()
         print(f"Moyenne de la classe : {average:.2f}")
 
-    def delete_student(self):
-        student_name = input("Nom de l'étudiant à supprimer (Prénom et Nom ou Prénom seul) : ")
-        self.database_controller.delete_student_database_controller(student_name)
