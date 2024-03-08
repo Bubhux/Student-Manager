@@ -10,7 +10,7 @@ class ClassroomView:
     def display_main_menu(self):
 
         while True:
-            print("\nMenu gestion des étudiants")
+            print("\nMenu gestion des classes")
             print("1. Afficher les classes")
             print("2. Ajouter une classe")
             print("3. Modifier les informations d'une classe")
@@ -33,7 +33,7 @@ class ClassroomView:
                 self.update_student_info()
 
             elif choice_menu == "5":
-                self.calculate_student_average()
+                self.delete_classroom()
 
             elif choice_menu == "r":
                 print("Menu principal !")
@@ -49,20 +49,40 @@ class ClassroomView:
             print("Liste des classes :")
             for classroom in classrooms:
                 # Affiche le nom de la classe et le nombre d'étudiants dans cette classe
-                print(f"- {classroom['classroom_name']}, Nombre de places disponibles : {classroom['number_of_places_available']}")
+                print(f"- {classroom['classroom_name']}, "
+                      f"Nombre de places disponibles : {classroom['number_of_places_available']}, "
+                      f"Nombre d'étudiants : {classroom['number_of_students']}")
 
     def add_classroom(self):
         classroom_name = input("Nom de la classe : ")
-        number_of_places_available = input("Nombre de places disponibles (appuyez sur Entrée pour laisser vide) : ")
+        number_of_places_available_input = input("Nombre de places disponibles (appuyez sur Entrée pour laisser vide) : ")
+        number_of_students_input = input("Nombre d'étudiants (appuyez sur Entrée pour laisser vide) : ")
+
+        # Vérifie si rien n'est saisi pour le nombre de places disponibles, puis définit 0 comme valeur par défaut
+        if number_of_places_available_input:
+            number_of_places_available = int(number_of_places_available_input)
+        else:
+            number_of_places_available = 0
+
+        # Vérifie si rien n'est saisi pour le nombre d'étudiants, puis définit 0 comme valeur par défaut
+        if number_of_students_input:
+            number_of_students = int(number_of_students_input)
+        else:
+            number_of_students = 0
 
         # Créer une instance de ClassroomModel avec les données d'entrée
-        new_classroom = ClassroomModel(classroom_name, int(number_of_places_available) if number_of_places_available else 0)
+        new_classroom = ClassroomModel(
+            classroom_name,
+            number_of_places_available,
+            number_of_students
+        )
 
         # Valider les données d'entrée
         if new_classroom.validate_input_data_classroom():
             classroom_data = {
                 'classroom_name': classroom_name,
-                'number_of_places_available': number_of_places_available
+                'number_of_places_available': number_of_places_available,
+                'number_of_students': number_of_students
             }
             self.database_controller.add_classroom_database_controller(classroom_data)
             print("La classe a été ajoutée avec succès!")
@@ -81,16 +101,31 @@ class ClassroomView:
         # Demande les nouvelles informations
         new_classroom_name = input("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) : ").strip()
         new_number_of_places_available = input("Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) : ").strip()
+        new_number_of_students = input("Nouveau nombre d'étudiants (appuyez sur Entrée pour laisser vide) : ").strip()
 
         # Vérifie si les nouvelles informations sont fournies, sinon conserve les informations actuelles
         new_classroom_name = new_classroom_name if new_classroom_name else classroom['classroom_name']
         new_number_of_places_available = new_number_of_places_available if new_number_of_places_available else classroom['number_of_places_available']
+        new_number_of_students = new_number_of_students if new_number_of_students else classroom['number_of_students']
 
         # Crée un dictionnaire avec les nouvelles informations de la classe
         new_classroom_data = {
             'classroom_name': new_classroom_name,
             'new_number_of_places_available': new_number_of_places_available,
+            'new_number_of_students' : new_number_of_students
         }
 
         # Mettre à jour les informations de la classe
         self.database_controller.update_classroom_info_database_controller(classroom_name, new_classroom_data)
+
+    def delete_classroom(self):
+        classroom_name = input("Nom de la classe à supprimer. : ")
+        self.database_controller.delete_classroom_database_controller(classroom_name)
+
+    def calculate_classroom_average(self):
+        classroom_name = input("Nom de la classe à calculer la moyenne. : ")
+        average = self.database_controller.calculate_classroom_average_database_controller(classroom_name)
+        if average is not None:
+            print(f"Moyenne de {classroom_name} : {average:.2f}")
+        else:
+            print(f"Aucune classe trouvé avec le nom {classroom_name}. Vérifiez le nom de la classe.")

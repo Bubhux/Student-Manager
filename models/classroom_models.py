@@ -2,7 +2,7 @@
 
 class ClassroomModel:
 
-    def __init__(self, classroom_name, number_of_places_available=0, number_of_students=None):
+    def __init__(self, classroom_name, number_of_places_available=0, number_of_students=0):
         """
             Initialise une instance de ClassroomModel.
 
@@ -36,7 +36,7 @@ class ClassroomModel:
         if number_of_places_available:
             self.number_of_places_available = number_of_places_available
         if students:
-            self.students = students
+            self.number_of_students = number_of_students
 
     def remove_student_classroom(self, student):
         """
