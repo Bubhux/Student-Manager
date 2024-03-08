@@ -56,17 +56,28 @@ class StudentDatabaseController:
 
         if student:
             try:
-                updated_student = StudentModel(student['first_name'], student['last_name'], student['grades'])
-                updated_student.update_student_info(
-                    first_name=new_student_data['first_name'],
-                    last_name=new_student_data['last_name'],
-                    grades=new_student_data['grades']
+                updated_student = StudentModel(
+                    student['first_name'],
+                    student['last_name'],
+                    student['grades'],
+                    student.get('classroom_name')
                 )
+
+                # Mettre à jour uniquement les données fournies
+                if 'first_name' in new_student_data:
+                    updated_student.update_student_info(first_name=new_student_data['first_name'])
+                if 'last_name' in new_student_data:
+                    updated_student.update_student_info(last_name=new_student_data['last_name'])
+                if 'grades' in new_student_data:
+                    updated_student.update_student_info(grades=new_student_data['grades'])
+                if 'classroom_name' in new_student_data:
+                    updated_student.update_student_info(classroom_name=new_student_data['classroom_name'])
 
                 self.student_collection.update_one({'_id': student['_id']}, {'$set': {
                     'first_name': updated_student.first_name,
                     'last_name': updated_student.last_name,
-                    'grades': updated_student.grades
+                    'grades': updated_student.grades,
+                    'classroom_name': updated_student.classroom_name
                 }})
                 print(f"Les informations de l'étudiant {student_name} ont été mises à jour avec succès!")
             except Exception as e:

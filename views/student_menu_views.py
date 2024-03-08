@@ -54,24 +54,60 @@ class StudentView:
         if not students:
             print("Il n'y a pas d'étudiants à afficher.")
         else:
-            print("Liste des étudiants :")
+            # Trie les étudiants par ordre alphabétique des noms et prénoms
+            sorted_students = sorted(students, key=lambda x: (x['first_name']))
+
+            print("Liste des étudiants triés par ordre alphabétique :")
+            for index, student in enumerate(sorted_students, start=1):
+                # Afficher le nom et prénom de l'étudiant
+                student_name = f"{student['first_name']} {student['last_name']}"
+
+                # Affiche le nom de la classe s'il est disponible
+                classroom_name = student.get('classroom_name', 'N/A')
+
+                # Si la classe est une liste, convertir en chaîne de caractères sans crochets
+                if isinstance(classroom_name, list):
+                    classroom_name = ', '.join(classroom_name)
+
+                print(f"{index}. {student_name}, Classe : {classroom_name}")
+
+        # Demande à l'utilisateur de saisir un étudiant par son nom, prénom ou ID
+        self.display_student_informations(sorted_students)
+
+    def display_student_informations(self, students):
+        student_input = input("\nEntrez le nom, prénom ou le numéro de l'étudiant pour voir ses informations (ou 'r' pour revenir au menu précédent) :\n> ")
+
+        if student_input == 'r':
+            return
+
+        # Vérifie si l'entrée correspond à un nom, prénom ou numéro d'étudiant
+        selected_student = None
+        if student_input.isdigit():
+            # Si l'entrée est un nombre, recherche l'étudiant par sa position dans la liste triée
+            student_index = int(student_input) - 1  # Convertit en index de liste (commençant à 0)
+            if 0 <= student_index < len(students):
+                selected_student = students[student_index]
+        else:
+            # Recherche l'étudiant par son nom ou prénom
             for student in students:
-                # Associe les matières aux notes, liste des matières pour lesquelles les notes sont enregistrées
-                subjects = ['français ', 'mathématiques ', 'géographie ', 'histoire ']
+                if student_input.lower() in student['first_name'].lower() or student_input.lower() in student['last_name'].lower():
+                    selected_student = student
+                    break
 
-                # Crée une liste de chaînes de caractères pour chaque matière et sa note associée
-                # Explication de la compréhension de liste :
-                #   - `zip(subjects, student['grades'])` combine les matières et les notes correspondantes en paires.
-                #   - `for subject, grade in ...` parcourt chaque paire, où `subject` est la matière et `grade` est la note.
-                #   - `f"{subject}: {grade}"` crée une chaîne de caractères au format "matière: note" pour chaque paire.
-                grades_with_subjects = [f"{subject}: {grade}" for subject, grade in zip(subjects, student['grades'])]
+        # Affiche les informations de l'étudiant si trouvé, sinon afficher un message d'erreur
+        if selected_student:
+            print(f"Informations sur l'étudiant :")
+            print(f"Nom : {selected_student['first_name']} {selected_student['last_name']}")
+            print(f"Notes : {', '.join(map(str, selected_student['grades']))}")
 
-                # Convertis la liste des notes et des matières en une seule chaîne de caractères séparée par des virgules
-                # Explication de `join()` :
-                #   - `join()` est une méthode de chaîne de caractères qui concatène les éléments d'une liste en une seule chaîne.
-                #   - Ici, elle est utilisée pour fusionner les chaînes de caractères de chaque matière et sa note en une seule chaîne.
-                grades_str = ', '.join(grades_with_subjects)
-                print(f"- {student['first_name']} {student['last_name']}, Notes : {grades_str}")
+            # Affiche la classe de l'étudiant sans les crochets si elle est une liste
+            classroom_name = selected_student.get('classroom_name', 'N/A')
+            if isinstance(classroom_name, list):
+                classroom_name = ', '.join(classroom_name)
+            
+            print(f"Classe : {classroom_name}")
+        else:
+            print("Aucun étudiant trouvé avec cette entrée.")
 
     def add_student(self):
         first_name = input("Prénom de l'étudiant : ")
@@ -108,7 +144,7 @@ class StudentView:
 
     def update_student_grades(self):
         student_name = input("Nom de l'étudiant à modifier (Prénom et Nom ou Prénom seul) : ")
-        
+
         # Vérifie si l'étudiant existe
         student = self.database_controller.get_student_database_controller(student_name)
         if not student:
@@ -169,16 +205,19 @@ class StudentView:
         # Demande les nouvelles informations
         new_first_name = input("Nouveau prénom (appuyez sur Entrée pour conserver le prénom actuel) : ").strip()
         new_last_name = input("Nouveau nom (appuyez sur Entrée pour conserver le nom actuel) : ").strip()
+        new_classroom = input("Nouvelle classe (appuyez sur Entrée pour conserver la classe actuelle) : ").strip()
 
         # Vérifie si les nouvelles informations sont fournies, sinon conserve les informations actuelles
         new_first_name = new_first_name if new_first_name else student['first_name']
         new_last_name = new_last_name if new_last_name else student['last_name']
+        new_classroom = new_classroom if new_classroom else student.get('classroom_name')
 
         # Crée un dictionnaire avec les nouvelles informations de l'étudiant
         new_student_data = {
             'first_name': new_first_name,
             'last_name': new_last_name,
-            'grades': student['grades']  # Conserve les anciennes notes
+            'grades': student['grades'],  # Conserve les anciennes notes
+            'classroom_name': new_classroom
         }
 
         # Mettre à jour les informations de l'étudiant
@@ -199,4 +238,3 @@ class StudentView:
     def calculate_class_average(self):
         average = self.database_controller.calculate_class_average_database_controller()
         print(f"Moyenne de la classe : {average:.2f}")
-
