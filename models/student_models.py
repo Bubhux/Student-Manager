@@ -22,12 +22,6 @@ class StudentModel:
             self.classroom_name = classroom_name
 
     def validate_input_data_student(self):
-        """
-            Méthode pour valider les données d'entrée associées à un étudiant.
-
-            Returns:
-                bool: True si les données sont valides, False sinon.
-        """
         # Itération à travers chaque note dans la liste des notes de l'étudiant
         for grade in self.grades:
             # Vérifie si la note est une chaîne de caractères vide ou nulle
@@ -44,19 +38,12 @@ class StudentModel:
             except ValueError:
                 # Si la note ne peut pas être convertie en nombre, elle est invalide
                 return False
-            
+
         # Si toutes les notes sont valides ou aucune note n'a été fournie, retourne True
         return True
 
     def get_value_classroom(self):
-        """
-            Retourne la valeur actuelle de l'attribut classroom_name.
-        """
         return self.classroom_name
 
     def set_student_classroom(self, classroom):
-        """
-            Définit la valeur de l'attribut classroom_name.
-            :param classroom_name: La nouvelle valeur à définir pour l'attribut classroom_name.
-        """
         self.classroom_name = classroom_name

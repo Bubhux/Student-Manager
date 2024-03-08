@@ -11,6 +11,7 @@ class ClassroomDatabaseController:
         self.db_name = 'StudentCG'  # Nom de la base de données
         self.db = self.client[self.db_name]  # Sélection de la base de données
         self.classroom_collection = self.db['classrooms'] # Sélection de la collection
+        self.student_collection = self.db['students']  # Sélection de la collection
 
     def add_classroom_database_controller(self, classroom_data):
         existing_classroom = self.classroom_collection.find_one({'classroom_name': classroom_data['classroom_name']})
@@ -58,6 +59,38 @@ class ClassroomDatabaseController:
         else:
             print(f"Aucune classe trouvée avec le nom {classroom_name}. Vérifiez le nom de la classe.")
 
+    def add_students_to_classroom_database_controller(self, classroom_name, students):
+        classroom = self.get_classroom_database_controller(classroom_name)
+        if classroom:
+            try:
+                # Assurez-vous que number_of_students est une liste
+                number_of_students = classroom['number_of_students'] if isinstance(classroom['number_of_students'], list) else []
+
+                # Étendre la liste des étudiants avec les nouveaux étudiants
+                number_of_students.extend(students)
+
+                # Mettre à jour le champ number_of_students dans la base de données
+                self.classroom_collection.update_one({'classroom_name': classroom_name}, {'$set': {'number_of_students': number_of_students}})
+                student_names = ', '.join([f"{student['first_name']} {student['last_name']}" for student in students])
+                print(f"Étudiant(e) {student_names} ajouté(e) à la classe {classroom_name} avec succès !")
+
+                # Mettre à jour la classe de chaque étudiant ajouté
+                for student in students:
+                    student_classroom = student.get('classroom_name', [])
+                    if isinstance(student_classroom, list):
+                        # Si la classe est une liste, ajoute la nouvelle classe
+                        student_classroom.append(classroom_name)
+                    else:
+                        # Sinon, crée une nouvelle liste avec la nouvelle classe
+                        student_classroom = [student_classroom, classroom_name]
+
+                    # Met à jour la classe de l'étudiant dans la base de données
+                    self.student_collection.update_one({'_id': student['_id']}, {'$set': {'classroom_name': student_classroom}})
+            except Exception as e:
+                print(f"Une erreur s'est produite lors de l'ajout de l'étudiants à la classe {classroom_name} : {str(e)}")
+        else:
+            print(f"Aucune classe trouvée avec le nom {classroom_name}.")
+
     def delete_classroom_database_controller(self, classroom_name):
         classroom = self.classroom_collection.find_one({'classroom_name': classroom_name})
         if classroom:
@@ -83,7 +116,7 @@ class ClassroomDatabaseController:
             # Calculer la moyenne des notes de tous les étudiants
             if all_grades:
                 return sum(all_grades) / len(all_grades)
-        
+
         # Retourner None si aucune donnée n'est trouvée ou si aucune note n'est disponible
         return None
 
