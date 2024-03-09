@@ -25,6 +25,8 @@ class ClassroomDatabaseController:
                 print(f"Une erreur s'est produite lors de l'ajout de la classe : {str(e)}")
 
     def get_classroom_database_controller(self, classroom_name):
+        if isinstance(classroom_name, list):
+            classroom_name = classroom_name[0]  # Obtient le premier élément de la liste
         return self.classroom_collection.find_one({'classroom_name': classroom_name})
 
     def get_all_classrooms_database_controller(self):
@@ -53,7 +55,7 @@ class ClassroomDatabaseController:
                     'number_of_students': updated_classroom.number_of_students
                 }})
 
-                print(f"Les informations de la classe {classroom_name} ont été mises à jour avec succès!")
+                print(f"Les informations de la classe {classroom_name} ont été mises à jour avec succès ! ClassroomControlleur update_classroom_info_database_controller")
             except Exception as e:
                 print(f"Une erreur s'est produite lors de la mise à jour des informations de la classe : {str(e)}")
         else:
@@ -63,7 +65,7 @@ class ClassroomDatabaseController:
         classroom = self.get_classroom_database_controller(classroom_name)
         if classroom:
             try:
-                # Assurez-vous que number_of_students est une liste
+                # Assure que number_of_students est une liste
                 number_of_students = classroom['number_of_students'] if isinstance(classroom['number_of_students'], list) else []
 
                 # Étendre la liste des étudiants avec les nouveaux étudiants
@@ -88,6 +90,34 @@ class ClassroomDatabaseController:
                     self.student_collection.update_one({'_id': student['_id']}, {'$set': {'classroom_name': student_classroom}})
             except Exception as e:
                 print(f"Une erreur s'est produite lors de l'ajout de l'étudiants à la classe {classroom_name} : {str(e)}")
+        else:
+            print(f"Aucune classe trouvée avec le nom {classroom_name}.")
+
+    def remove_student_from_classroom_database_controller(self, classroom_name, student_info):
+        classroom = self.get_classroom_database_controller(classroom_name)
+        if classroom:
+            try:
+                # Assure que number_of_students est une liste
+                number_of_students = classroom['number_of_students'] if isinstance(classroom['number_of_students'], list) else []
+
+                # Recherche de l'étudiant par son ID
+                for student in number_of_students:
+                    if student['_id'] == student_info['_id']:
+                        # Récupération du nom de l'étudiant
+                        student_name = f"{student['first_name']} {student['last_name']}"
+                        
+                        # Suppression de l'étudiant de la liste
+                        number_of_students.remove(student)
+
+                        # Mettre à jour le champ number_of_students dans la base de données
+                        self.classroom_collection.update_one({'classroom_name': classroom_name}, {'$set': {'number_of_students': number_of_students}})
+
+                        print(f"L'étudiant {student_name} a été supprimé de la classe {classroom_name} avec succès ClassroomControlleur remove_student_from_classroom_database_controller !")
+                        return
+
+                print(f"Aucun étudiant trouvé avec l'ID {student_info['_id']} dans la classe {classroom_name}.")
+            except Exception as e:
+                print(f"Une erreur s'est produite lors de la suppression de l'étudiant de la classe {classroom_name} : {str(e)}")
         else:
             print(f"Aucune classe trouvée avec le nom {classroom_name}.")
 

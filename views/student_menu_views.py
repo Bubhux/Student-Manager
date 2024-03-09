@@ -5,7 +5,7 @@ from models.student_models import StudentModel
 class StudentView:
 
     def __init__(self):
-        self.database_controller = StudentDatabaseController()
+        self.classroom_controller = StudentDatabaseController()
 
     def display_main_menu(self):
 
@@ -50,7 +50,7 @@ class StudentView:
                 print("Choix invalide, saisissez un nombre entre 1 et 7 ou r.")
 
     def display_students(self):
-        students = self.database_controller.get_all_students_database_controller()
+        students = self.classroom_controller.get_all_students_database_controller()
         if not students:
             print("Il n'y a pas d'étudiants à afficher.")
         else:
@@ -138,7 +138,7 @@ class StudentView:
                 'last_name': last_name,
                 'grades': [french, math, geography, history]
             }
-            self.database_controller.add_student_database_controller(student_data)
+            self.classroom_controller.add_student_database_controller(student_data)
         else:
             print("Les données d'entrée sont invalides. Assurez-vous que toutes les notes sont comprises entre 0 et 20.")
 
@@ -146,7 +146,7 @@ class StudentView:
         student_name = input("Nom de l'étudiant à modifier (Prénom et Nom ou Prénom seul) : ")
 
         # Vérifie si l'étudiant existe
-        student = self.database_controller.get_student_database_controller(student_name)
+        student = self.classroom_controller.get_student_database_controller(student_name)
         if not student:
             print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
             return
@@ -189,7 +189,7 @@ class StudentView:
                     print(f"- Nouvelle note d'histoire : {history}")
 
                 # Mettre à jour les notes de l'étudiant
-                self.database_controller.update_student_grades_database_controller(student_name, new_grades)
+                self.classroom_controller.update_student_grades_database_controller(student_name, new_grades)
         else:
             print("Les nouvelles notes sont invalides. Assurez-vous que toutes les notes sont comprises entre 0 et 20.")
 
@@ -197,7 +197,7 @@ class StudentView:
         student_name = input("Nom de l'étudiant à mettre à jour (Prénom et Nom ou Prénom seul) : ")
 
         # Vérifie si l'étudiant existe
-        student = self.database_controller.get_student_database_controller(student_name)
+        student = self.classroom_controller.get_student_database_controller(student_name)
         if not student:
             print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
             return
@@ -221,20 +221,20 @@ class StudentView:
         }
 
         # Mettre à jour les informations de l'étudiant
-        self.database_controller.update_student_info_database_controller(student_name, new_student_data)
+        self.classroom_controller.update_student_info_database_controller(student_name, new_student_data)
 
     def delete_student(self):
         student_name = input("Nom de l'étudiant à supprimer (Prénom et Nom ou Prénom seul) : ")
-        self.database_controller.delete_student_database_controller(student_name)
+        self.classroom_controller.delete_student_database_controller(student_name)
 
     def calculate_student_average(self):
         student_name = input("Nom de l'étudiant à calculer la moyenne (Prénom et Nom ou Prénom seul) : ")
-        average = self.database_controller.calculate_student_average_database_controller(student_name)
+        average = self.classroom_controller.calculate_student_average_database_controller(student_name)
         if average is not None:
             print(f"Moyenne de {student_name} : {average:.2f}")
         else:
             print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
 
     def calculate_class_average(self):
-        average = self.database_controller.calculate_class_average_database_controller()
+        average = self.classroom_controller.calculate_class_average_database_controller()
         print(f"Moyenne de la classe : {average:.2f}")
