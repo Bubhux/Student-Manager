@@ -17,8 +17,9 @@ class ClassroomView:
             print("2. Ajouter une classe")
             print("3. Modifier les informations d'une classe")
             print("4. Ajouter des étudiants à une classe")
-            print("5. Calculer la moyenne d'une classe")
-            print("6. Supprimer une classe")
+            print("5. Supprimer des étudiants d'une classe")
+            print("6. Calculer la moyenne d'une classe")
+            print("7. Supprimer une classe")
             print("r. Retour au menu précédent")
 
             choice_menu = input("Choisissez le numéro de votre choix.\n> ")
@@ -32,8 +33,10 @@ class ClassroomView:
             elif choice_menu == "4":
                 self.add_students_to_classroom()
             elif choice_menu == "5":
-                self.update_student_info()
+                self.delete_students_from_classroom()
             elif choice_menu == "6":
+                self.update_student_info()
+            elif choice_menu == "7":
                 self.delete_classroom()
             elif choice_menu == "r":
                 print("Menu principal !")
@@ -46,8 +49,11 @@ class ClassroomView:
         if not classrooms:
             print("Il n'y a pas de classes à afficher.")
         else:
-            print("Liste des classes :")
-            for classroom in classrooms:
+            # Triez les classes par ordre alphabétique en fonction de leur nom
+            sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
+
+            print("Liste des classes triés par ordre alphabétique :")
+            for classroom in sorted_classrooms:
                 # Vérifie le type de la valeur associée à 'number_of_students'
                 if isinstance(classroom['number_of_students'], list):
                     num_students = len(classroom['number_of_students'])
@@ -83,8 +89,11 @@ class ClassroomView:
             if not classrooms:
                 print("Il n'y a pas de classes disponibles.")
             else:
-                print("Classes disponibles :")
-                for index, classroom in enumerate(classrooms, start=1):
+                # Triez les classes par ordre alphabétique en fonction de leur nom
+                sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
+
+                print("Classes disponibles triés par ordre alphabétique :")
+                for index, classroom in enumerate(sorted_classrooms, start=1):
                     print(f"{index}. {classroom['classroom_name']}")
 
                 class_choice = input("Choisissez la classe à laquelle vous souhaitez ajouter des étudiants (ou 'r' pour revenir) :\n> ")
@@ -92,8 +101,8 @@ class ClassroomView:
                     return
                 elif class_choice.isdigit():
                     class_choice = int(class_choice)
-                    if 1 <= class_choice <= len(classrooms):
-                        selected_class = classrooms[class_choice - 1]
+                    if 1 <= class_choice <= len(sorted_classrooms):
+                        selected_class = sorted_classrooms[class_choice - 1]
                         self.add_students_to_selected_class(selected_class['classroom_name'])
                         break
                     else:
@@ -151,6 +160,103 @@ class ClassroomView:
 
         # Ajout des étudiants sélectionnés à la classe
         self.classroom_controller.add_students_to_classroom_database_controller(classroom_name, selected_students)
+
+    def delete_students_from_classroom(self):
+
+        while True:
+            print("\nMenu gestion de suppression d'étudiants")
+            print("1. Afficher les classes disponibles")
+            print("r. Retour au menu précédent")
+
+            choice = input("Choisissez le numéro de votre choix.\n> ")
+
+            if choice == "1":
+                self.display_available_classes_for_deletion()
+                break
+            elif choice == "r":
+                return
+            else:
+                print("Choix invalide, saisissez 1 ou r.")
+
+    def display_available_classes_for_deletion(self):
+
+        while True:
+            classrooms = self.classroom_controller.get_all_classrooms_database_controller()
+            if not classrooms:
+                print("Il n'y a pas de classes disponibles.")
+            else:
+                # Triez les classes par ordre alphabétique en fonction de leur nom
+                sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
+
+                print("Classes disponibles triés par ordre alphabétique :")
+                for index, classroom in enumerate(sorted_classrooms, start=1):
+                    print(f"{index}. {classroom['classroom_name']}")
+
+                class_choice = input("Choisissez la classe dont vous souhaitez supprimer des étudiants (ou 'r' pour revenir) :\n> ")
+                if class_choice == "r":
+                    return
+                elif class_choice.isdigit():
+                    class_choice = int(class_choice)
+                    if 1 <= class_choice <= len(sorted_classrooms):
+                        selected_class = sorted_classrooms[class_choice - 1]
+                        self.remove_students_from_selected_class(selected_class['classroom_name'])
+                        break
+                    else:
+                        print("Choix invalide.")
+                else:
+                    print("Choix invalide, choisissez une classe disponible.")
+
+    def remove_students_from_selected_class(self, classroom_name):
+        classroom = self.classroom_controller.get_classroom_database_controller(classroom_name)
+
+        if not classroom:
+            print(f"Aucune classe trouvée avec le nom {classroom_name}.")
+            return
+
+        students = classroom.get('number_of_students', [])
+        if not students:
+            print("Il n'y a pas d'étudiants dans cette classe à supprimer.")
+            return
+
+        # Triez les étudiants par ordre alphabétique en fonction de leur nom complet
+        sorted_students = sorted(students, key=lambda x: (x['last_name'], x['first_name']))
+
+        # Affiche la liste des étudiants dans la classe triée par ordre alphabétique
+        print("Liste des étudiants dans la classe triés par ordre alphabétique :")
+        for index, student in enumerate(sorted_students, start=1):
+            print(f"{index}. {student['first_name']} {student['last_name']}")
+
+        while True:
+            num_students_to_remove = input("Entrez le nombre d'étudiants à supprimer.\n> ")
+            if num_students_to_remove.isdigit():
+                num_students_to_remove = int(num_students_to_remove)
+                if num_students_to_remove != 0:
+                    break
+                else:
+                    print("Le nombre d'étudiants à supprimer ne peut pas être 0.")
+            else:
+                print("Veuillez entrer un nombre valide.")
+
+        for i in range(num_students_to_remove):
+            while True:
+                student_choice = input(f"Saisissez le numéro de l'étudiant {i+1} à supprimer :\n> ")
+                if student_choice.isdigit():
+                    student_index = int(student_choice) - 1
+                    if 0 <= student_index < len(sorted_students):
+                        student_to_remove = sorted_students.pop(student_index)
+                        # Retire l'étudiant de sa classe actuelle
+                        self.classroom_controller.remove_student_from_classroom_database_controller(classroom_name, student_to_remove)
+                        # Met à jour le champ classroom_name dans le profil de l'étudiant
+                        self.student_controller.remove_student_from_classroom(student_to_remove['_id'], classroom_name)
+                        #print(f"{student_to_remove['first_name']} {student_to_remove['last_name']} supprimé de la classe {classroom_name}.")
+                        break
+                    else:
+                        print("Numéro invalide.")
+                else:
+                    print("Veuillez entrer un numéro valide.")
+
+        # Mise à jour du nombre d'étudiants dans la classe
+        self.classroom_controller.update_classroom_info_database_controller(classroom_name, {'new_number_of_students': sorted_students})
 
     def add_classroom(self):
         classroom_name = input("Nom de la classe : ")

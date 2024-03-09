@@ -19,9 +19,9 @@ class ClassroomModel:
     def update_classroom_info(self, classroom_name=None, number_of_places_available=None, number_of_students=None):
         if classroom_name:
             self.classroom_name = classroom_name
-        if number_of_places_available:
+        if number_of_places_available is not None:
             self.number_of_places_available = number_of_places_available
-        if students:
+        if number_of_students is not None:
             self.number_of_students = number_of_students
 
     def get_students_classroom(self):
@@ -29,7 +29,7 @@ class ClassroomModel:
 
     def remove_student_classroom(self, student):
         if student in self.number_of_students:
-            self.students.remove(student)
+            self.number_of_students.remove(student)
 
     def validate_input_data_classroom(self):
 
