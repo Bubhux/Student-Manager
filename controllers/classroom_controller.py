@@ -35,6 +35,23 @@ class ClassroomDatabaseController:
             return []
         return classrooms
 
+    def get_students_in_classroom_database_controller(self, classroom_name):
+        # Récupére les informations de la classe depuis la base de données
+        classroom_info = self.classroom_collection.find_one({'classroom_name': classroom_name})
+
+        if classroom_info:
+            # Créer une instance de ClassroomModel à partir des informations récupérées
+            classroom = ClassroomModel(classroom_info['classroom_name'],
+                                        classroom_info['number_of_places_available'],
+                                        classroom_info['number_of_students'])
+
+            # Utilise la méthode get_students_classroom() pour récupérer les étudiants dans la classe
+            students_in_class = classroom.get_students_classroom()
+            return students_in_class if students_in_class else []
+        else:
+            print(f"Aucune classe trouvée avec le nom {classroom_name}.")
+            return []
+
     def update_classroom_info_database_controller(self, classroom_name, new_classroom_data):
         # Recherche de la classe par son nom
         classroom = self.classroom_collection.find_one({'$or': [{'classroom_name': classroom_name}]})

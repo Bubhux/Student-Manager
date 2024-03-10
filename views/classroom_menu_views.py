@@ -123,6 +123,9 @@ class ClassroomView:
             else:
                 print("Veuillez entrer un nombre valide.")
 
+        # Récupére les étudiants déjà présents dans la classe sélectionnée
+        current_students = self.classroom_controller.get_students_in_classroom_database_controller(classroom_name)
+
         # Affiche la liste des étudiants triés par ordre alphabétique
         students_from_database = self.student_controller.get_all_students_database_controller()
         if not students_from_database:
@@ -143,16 +146,26 @@ class ClassroomView:
                 if student_choice.isdigit():
                     student_index = int(student_choice) - 1
                     if 0 <= student_index < len(sorted_students):
-                        selected_students.append(sorted_students[student_index])
-                        break
+                        selected_student = sorted_students[student_index]
+                        # Vérifie si l'étudiant est déjà dans la classe sélectionnée
+                        if selected_student['_id'] not in [student['_id'] for student in current_students]:
+                            selected_students.append(selected_student)
+                            break
+                        else:
+                            print("Cet étudiant est déjà dans la classe.")
                     else:
                         print("ID invalide.")
                 else:
                     try:
                         student_index = int(student_choice) - 1
                         if 0 <= student_index < len(sorted_students):
-                            selected_students.append(sorted_students[student_index])
-                            break
+                            selected_student = sorted_students[student_index]
+                            # Vérifie si l'étudiant est déjà dans la classe sélectionnée
+                            if selected_student['_id'] not in [student['_id'] for student in current_students]:
+                                selected_students.append(selected_student)
+                                break
+                            else:
+                                print("Cet étudiant est déjà dans la classe.")
                         else:
                             print("ID invalide.")
                     except ValueError:
