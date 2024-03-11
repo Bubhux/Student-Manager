@@ -60,7 +60,7 @@ class StudentView:
 
             print("Liste des étudiants triés par ordre alphabétique :")
             for index, student in enumerate(sorted_students, start=1):
-                # Afficher le nom et prénom de l'étudiant
+                # Affiche le nom et prénom de l'étudiant
                 student_name = f"{student['first_name']} {student['last_name']}"
 
                 # Affiche le nom de la classe s'il est disponible
@@ -129,7 +129,7 @@ class StudentView:
         if history:
             history = float(history)
 
-        # Créer une instance de StudentModel avec les données d'entrée
+        # Crée une instance de StudentModel avec les données d'entrée
         student = StudentModel(first_name, last_name, [french, math, geography, history])
 
         # Valide les données d'entrée en appelant validate_input_data_student
@@ -164,7 +164,7 @@ class StudentView:
         geography = float(geography) if geography else student['grades'][2]
         history = float(history) if history else student['grades'][3]
 
-        # Créer une instance de StudentModel avec les nouvelles notes
+        # Crée une instance de StudentModel avec les nouvelles notes
         updated_student = StudentModel(student['first_name'], student['last_name'], [french, math, geography, history])
 
         # Valide les nouvelles notes en appelant validate_input_data_student

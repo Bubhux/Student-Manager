@@ -40,7 +40,7 @@ class ClassroomDatabaseController:
         classroom_info = self.classroom_collection.find_one({'classroom_name': classroom_name})
 
         if classroom_info:
-            # Créer une instance de ClassroomModel à partir des informations récupérées
+            # Crée une instance de ClassroomModel à partir des informations récupérées
             classroom = ClassroomModel(classroom_info['classroom_name'],
                                         classroom_info['number_of_places_available'],
                                         classroom_info['number_of_students'])
@@ -157,14 +157,14 @@ class ClassroomDatabaseController:
             # Extraire la liste des étudiants de la classe
             students = classroom_data.get('students', [])
 
-            # Récupérer les notes de tous les étudiants dans une liste
+            # Récupére les notes de tous les étudiants dans une liste
             all_grades = [grade for student in students for grade in student.get('grades', [])]
 
-            # Calculer la moyenne des notes de tous les étudiants
+            # Calcule la moyenne des notes de tous les étudiants
             if all_grades:
                 return sum(all_grades) / len(all_grades)
 
-        # Retourner None si aucune donnée n'est trouvée ou si aucune note n'est disponible
+        # Retourne None si aucune donnée n'est trouvée ou si aucune note n'est disponible
         return None
 
 """
