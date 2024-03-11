@@ -288,14 +288,14 @@ class ClassroomView:
         else:
             number_of_students = 0
 
-        # Créer une instance de ClassroomModel avec les données d'entrée
+        # Crée une instance de ClassroomModel avec les données d'entrée
         new_classroom = ClassroomModel(
             classroom_name,
             number_of_places_available,
             number_of_students
         )
 
-        # Valider les données d'entrée
+        # Valide les données d'entrée
         if new_classroom.validate_input_data_classroom():
             classroom_data = {
                 'classroom_name': classroom_name,
