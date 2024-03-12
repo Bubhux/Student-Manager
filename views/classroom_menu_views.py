@@ -49,7 +49,7 @@ class ClassroomView:
         if not classrooms:
             print("Il n'y a pas de classes à afficher.")
         else:
-            # Triez les classes par ordre alphabétique en fonction de leur nom
+            # Trie les classes par ordre alphabétique en fonction de leur nom
             sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
             print("Liste des classes triés par ordre alphabétique :")
@@ -89,7 +89,7 @@ class ClassroomView:
             if not classrooms:
                 print("Il n'y a pas de classes disponibles.")
             else:
-                # Triez les classes par ordre alphabétique en fonction de leur nom
+                # Trie les classes par ordre alphabétique en fonction de leur nom
                 sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
                 print("Classes disponibles triés par ordre alphabétique :")
@@ -111,7 +111,6 @@ class ClassroomView:
                     print("Choix invalide, choisissez une classe disponible.")
 
     def add_students_to_selected_class(self, classroom_name):
-
         while True:
             num_students_to_add = input("Entrez le nombre d'étudiants à ajouter.\n> ")
             if num_students_to_add.isdigit():
@@ -147,12 +146,12 @@ class ClassroomView:
                     student_index = int(student_choice) - 1
                     if 0 <= student_index < len(sorted_students):
                         selected_student = sorted_students[student_index]
-                        # Vérifie si l'étudiant est déjà dans la classe sélectionnée
-                        if selected_student['_id'] not in [student['_id'] for student in current_students]:
+                        # Vérifie si l'étudiant est déjà dans une classe
+                        if selected_student['_id'] in [student['_id'] for student in current_students]:
+                            print(f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans une classe.")
+                        else:
                             selected_students.append(selected_student)
                             break
-                        else:
-                            print("Cet étudiant est déjà dans la classe.")
                     else:
                         print("ID invalide.")
                 else:
@@ -160,18 +159,18 @@ class ClassroomView:
                         student_index = int(student_choice) - 1
                         if 0 <= student_index < len(sorted_students):
                             selected_student = sorted_students[student_index]
-                            # Vérifie si l'étudiant est déjà dans la classe sélectionnée
-                            if selected_student['_id'] not in [student['_id'] for student in current_students]:
+                            # Vérifie si l'étudiant est déjà dans une classe
+                            if selected_student['_id'] in [student['_id'] for student in current_students]:
+                                print(f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans une classe.")
+                            else:
                                 selected_students.append(selected_student)
                                 break
-                            else:
-                                print("Cet étudiant est déjà dans la classe.")
                         else:
                             print("ID invalide.")
                     except ValueError:
                         print("Nom/prénom invalide.")
 
-        # Ajout des étudiants sélectionnés à la classe
+        # Ajoute les étudiants sélectionnés à la classe
         self.classroom_controller.add_students_to_classroom_database_controller(classroom_name, selected_students)
 
     def delete_students_from_classroom(self):
@@ -198,7 +197,7 @@ class ClassroomView:
             if not classrooms:
                 print("Il n'y a pas de classes disponibles.")
             else:
-                # Triez les classes par ordre alphabétique en fonction de leur nom
+                # Trie les classes par ordre alphabétique en fonction de leur nom
                 sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
                 print("Classes disponibles triés par ordre alphabétique :")
@@ -231,7 +230,7 @@ class ClassroomView:
             print("Il n'y a pas d'étudiants dans cette classe à supprimer.")
             return
 
-        # Triez les étudiants par ordre alphabétique en fonction de leur nom complet
+        # Trie les étudiants par ordre alphabétique en fonction de leur nom complet
         sorted_students = sorted(students, key=lambda x: (x['last_name'], x['first_name']))
 
         # Affiche la liste des étudiants dans la classe triée par ordre alphabétique
@@ -262,6 +261,12 @@ class ClassroomView:
                         # Met à jour le champ classroom_name dans le profil de l'étudiant
                         self.student_controller.remove_student_from_classroom(student_to_remove['_id'], classroom_name)
                         #print(f"{student_to_remove['first_name']} {student_to_remove['last_name']} supprimé de la classe {classroom_name}.")
+
+                        # Affiche la liste des étudiants dans la classe triée par ordre alphabétique
+                        print("Liste des étudiants dans la classe triés par ordre alphabétique :")
+                        for index, student in enumerate(sorted_students, start=1):
+                            print(f"{index}. {student['first_name']} {student['last_name']}")
+
                         break
                     else:
                         print("Numéro invalide.")
