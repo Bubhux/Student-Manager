@@ -73,7 +73,7 @@ class StudentView:
                 print(f"{index}. {student_name}, Classe : {classroom_name}")
 
         # Demande à l'utilisateur de saisir un étudiant par son nom, prénom ou ID
-        self.display_student_informations(sorted_students)
+        self.display_student_informations(sorted_students) if students else None
 
     def display_student_informations(self, students):
         student_input = input("\nEntrez le nom, prénom ou le numéro de l'étudiant pour voir ses informations (ou 'r' pour revenir au menu précédent) :\n> ")
@@ -99,7 +99,9 @@ class StudentView:
         if selected_student:
             print(f"Informations sur l'étudiant :")
             print(f"Nom : {selected_student['first_name']} {selected_student['last_name']}")
-            print(f"Notes : {', '.join(map(str, selected_student['grades']))}")
+            print("Matières et notes :")
+            for lesson in selected_student['lessons']:
+                print(f"- {lesson['name']} : {lesson['grade']}")
 
             # Affiche la classe de l'étudiant sans les crochets si elle est une liste
             classroom_name = selected_student.get('classroom_name', 'N/A')
@@ -113,31 +115,47 @@ class StudentView:
     def add_student(self):
         first_name = input("Prénom de l'étudiant : ")
         last_name = input("Nom de l'étudiant (appuyez sur Entrée pour laisser vide) : ")
-        french = input("Note de français (appuyez sur Entrée pour ignorer) : ")
-        if french:
-            french = float(french)
 
-        math = input("Note de mathématiques (appuyez sur Entrée pour ignorer) : ")
-        if math:
-            math = float(math)
+        # Demande le nombre de matières que cet étudiant suit
+        while True:
+            num_subjects_input = input("Combien de matières cet étudiant suit-il ? ")
+            if num_subjects_input.isdigit() and int(num_subjects_input) > 0:
+                num_subjects = int(num_subjects_input)
+                break
+            else:
+                print("Veuillez saisir un nombre entier supérieur à 0.")
 
-        geography = input("Note de géographie (appuyez sur Entrée pour ignorer) : ")
-        if geography:
-            geography = float(geography)
-
-        history = input("Note d'histoire (appuyez sur Entrée pour ignorer) : ")
-        if history:
-            history = float(history)
+        subjects = []
+        # Boucle pour saisir le nom et la note de chaque matière
+        for i in range(num_subjects):
+            subject_name = input(f"Nom de la matière {i+1}: ")
+            while True:
+                subject_grade_input = input(f"Note pour la matière {subject_name} (appuyez sur Entrée pour laisser la note à 0) : ")
+                if subject_grade_input.strip():
+                    try:
+                        subject_grade = float(subject_grade_input)
+                    except ValueError:
+                        print("Veuillez saisir un nombre valide pour la note.")
+                        continue
+                    if 0 <= subject_grade <= 20:
+                        break
+                    else:
+                        print("La note doit être comprise entre 0 et 20.")
+                else:
+                    subject_grade = 0.0
+                    break
+            subjects.append({'name': subject_name, 'grade': subject_grade})
 
         # Crée une instance de StudentModel avec les données d'entrée
-        student = StudentModel(first_name, last_name, [french, math, geography, history])
+        student = StudentModel(first_name, last_name, lessons=subjects)
 
         # Valide les données d'entrée en appelant validate_input_data_student
         if student.validate_input_data_student():
             student_data = {
                 'first_name': first_name,
                 'last_name': last_name,
-                'grades': [french, math, geography, history]
+                'lessons': subjects,
+                'grades': [subject['grade'] for subject in subjects]
             }
             self.classroom_controller.add_student_database_controller(student_data)
         else:
@@ -153,46 +171,47 @@ class StudentView:
             return
 
         # Demande les nouvelles notes
-        french = input("Nouvelle note de français (appuyez sur Entrée pour conserver la note actuelle) : ").strip()
-        math = input("Nouvelle note de mathématiques (appuyez sur Entrée pour conserver la note actuelle) : ").strip()
-        geography = input("Nouvelle note de géographie (appuyez sur Entrée pour conserver la note actuelle) : ").strip()
-        history = input("Nouvelle note d'histoire (appuyez sur Entrée pour conserver la note actuelle) : ").strip()
-
-        # Convertis les notes en float s'ils sont fournis, sinon conserver les notes actuelles
-        french = float(french) if french else student['grades'][0]
-        math = float(math) if math else student['grades'][1]
-        geography = float(geography) if geography else student['grades'][2]
-        history = float(history) if history else student['grades'][3]
-
-        # Crée une instance de StudentModel avec les nouvelles notes
-        updated_student = StudentModel(student['first_name'], student['last_name'], [french, math, geography, history])
-
-        # Valide les nouvelles notes en appelant validate_input_data_student
-        if updated_student.validate_input_data_student():
-            # Vérifie si les notes ont été modifiées
-            new_grades = [french, math, geography, history]
-            if new_grades == student['grades']:
-                print("Aucune nouvelle note n'a été saisie. Les notes de l'étudiant restent inchangées :")
-                print(f"- Note de français : {student['grades'][0]}")
-                print(f"- Note de mathématiques : {student['grades'][1]}")
-                print(f"- Note de géographie : {student['grades'][2]}")
-                print(f"- Note d'histoire : {student['grades'][3]}")
+        new_grades = []
+        for subject in student['lessons']:
+            new_grade_input = input(f"Nouvelle note pour {subject['name']} (appuyez sur Entrée pour conserver la note actuelle) : ").strip()
+            if new_grade_input:
+                try:
+                    new_grade = float(new_grade_input)
+                except ValueError:
+                    print("Veuillez saisir un nombre valide pour la note.")
+                    return
+                if not 0 <= new_grade <= 20:
+                    print("La note doit être comprise entre 0 et 20.")
+                    return
+                new_grades.append({'name': subject['name'], 'grade': new_grade})
             else:
-                # Affiche les notes modifiées
-                print("Notes modifiées :")
-                if french != student['grades'][0]:
-                    print(f"- Nouvelle note de français : {french}")
-                if math != student['grades'][1]:
-                    print(f"- Nouvelle note de mathématiques : {math}")
-                if geography != student['grades'][2]:
-                    print(f"- Nouvelle note de géographie : {geography}")
-                if history != student['grades'][3]:
-                    print(f"- Nouvelle note d'histoire : {history}")
+                new_grades.append({'name': subject['name'], 'grade': subject['grade']})
 
-                # Mettre à jour les notes de l'étudiant
-                self.classroom_controller.update_student_grades_database_controller(student_name, new_grades)
-        else:
+        # Valide les nouvelles notes
+        updated_student = StudentModel(student['first_name'], student['last_name'], lessons=new_grades)
+        if not updated_student.validate_input_data_student():
             print("Les nouvelles notes sont invalides. Assurez-vous que toutes les notes sont comprises entre 0 et 20.")
+            return
+
+        # Vérifie si les notes ont été modifiées
+        unchanged = True
+        for old_grade, new_grade in zip(student['lessons'], new_grades):
+            if old_grade['grade'] != new_grade['grade']:
+                unchanged = False
+                break
+
+        # Affiche les notes modifiées ou un message si elles n'ont pas été modifiées
+        if unchanged:
+            print("Aucune nouvelle note n'a été saisie. Les notes de l'étudiant restent inchangées :")
+            for subject in student['lessons']:
+                print(f"- Note de {subject['name']} : {subject['grade']}")
+        else:
+            print("Notes modifiées :")
+            for new_grade in new_grades:
+                print(f"- Nouvelle note de {new_grade['name']} : {new_grade['grade']}")
+
+            # Mettre à jour les notes de l'étudiant
+            self.classroom_controller.update_student_grades_database_controller(student_name, new_grades)
 
     def update_student_info(self):
         student_name = input("Nom de l'étudiant à mettre à jour (Prénom et Nom ou Prénom seul) : ")
@@ -213,12 +232,31 @@ class StudentView:
         new_last_name = new_last_name if new_last_name else student['last_name']
         new_classroom = new_classroom if new_classroom else student.get('classroom_name')
 
+        # Liste pour stocker les nouvelles matières et notes de l'étudiant
+        new_lessons = []
+
+        # Boucle pour saisir les nouvelles matières et notes
+        for lesson in student.get('lessons', []):
+            lesson_name = input(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver) : ").strip()
+            if not lesson_name:
+                lesson_name = lesson['name']
+
+            lesson_grade_input = input(f"Nouvelle note pour la matière {lesson['name']} (appuyez sur Entrée pour conserver) : ").strip()
+            if not lesson_grade_input:
+                lesson_grade = lesson['grade']
+            else:
+                lesson_grade = float(lesson_grade_input)
+
+            # Ajoute la matière et la note à la liste des nouvelles matières
+            new_lessons.append({'name': lesson_name, 'grade': lesson_grade})
+
         # Crée un dictionnaire avec les nouvelles informations de l'étudiant
         new_student_data = {
             'first_name': new_first_name,
             'last_name': new_last_name,
             'grades': student['grades'],  # Conserve les anciennes notes
-            'classroom_name': new_classroom
+            'classroom_name': new_classroom,
+            'lessons': new_lessons
         }
 
         # Mettre à jour les informations de l'étudiant

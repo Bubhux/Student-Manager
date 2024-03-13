@@ -2,16 +2,17 @@
 
 class StudentModel:
 
-    def __init__(self, first_name, last_name=None, grades=None, classroom_name=None):
+    def __init__(self, first_name, last_name=None, grades=None, classroom_name=None, lessons=None):
         self.first_name = first_name
         self.last_name = last_name
         self.grades = grades if grades is not None else []
         self.classroom_name = classroom_name
+        self.lessons = lessons if lessons is not None else []
 
     def __str__(self):
         return f"Étudiant {self.first_name} {self.last_name}"
 
-    def update_student_info(self, first_name=None, last_name=None, grades=None, classroom_name=None):
+    def update_student_info(self, first_name=None, last_name=None, grades=None, classroom_name=None, lessons=None):
         if first_name:
             self.first_name = first_name
         if last_name:
@@ -20,6 +21,8 @@ class StudentModel:
             self.grades = grades
         if classroom_name:
             self.classroom_name = classroom_name
+        if lessons:
+            self.lessons = lessons
 
     def validate_input_data_student(self):
         # Itération à travers chaque note dans la liste des notes de l'étudiant

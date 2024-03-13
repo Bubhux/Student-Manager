@@ -30,7 +30,18 @@ class StudentDatabaseController:
             print(f"Une erreur s'est produite lors de l'ajout de l'étudiant : {str(e)}")
 
     def get_student_database_controller(self, student_name):
-        return self.student_collection.find_one({'first_name': student_name})
+        # Divise le nom de l'étudiant en prénom et nom
+        names = student_name.split(' ')
+        first_name = names[0]
+        last_name = names[-1] if len(names) > 1 else None
+        
+        # Construit la requête de recherche en utilisant à la fois le prénom et le nom
+        query = {'first_name': first_name}
+        if last_name:
+            query['last_name'] = last_name
+
+        # Recherche l'étudiant dans la base de données
+        return self.student_collection.find_one(query)
 
     def get_all_students_database_controller(self):
         students = list(self.student_collection.find())
@@ -52,38 +63,42 @@ class StudentDatabaseController:
             print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
 
     def update_student_info_database_controller(self, student_name, new_student_data):
-        # Recherche de l'étudiant par son nom complet ou son prénom uniquement
-        student = self.student_collection.find_one({'$or': [{'first_name': student_name}, {'last_name': student_name}]})
+        # Sépare le prénom et le nom de famille de l'entrée de l'utilisateur
+        names = student_name.split(' ')
+        first_name = names[0]
+        last_name = names[1] if len(names) > 1 else None
+
+        # Construit la requête de recherche pour inclure à la fois le prénom et le nom de famille
+        query = {'first_name': first_name}
+        if last_name:
+            query['last_name'] = last_name
+
+        student = self.student_collection.find_one(query)
 
         if student:
             try:
-                updated_student = StudentModel(
-                    student['first_name'],
-                    student['last_name'],
-                    student['grades'],
-                    student.get('classroom_name')
-                )
-
-                # Mettre à jour uniquement les données fournies
+                # Mettre à jour les données fournies
                 if 'first_name' in new_student_data:
-                    updated_student.update_student_info(first_name=new_student_data['first_name'])
+                    student['first_name'] = new_student_data['first_name']
                 if 'last_name' in new_student_data:
-                    updated_student.update_student_info(last_name=new_student_data['last_name'])
+                    student['last_name'] = new_student_data['last_name']
                 if 'grades' in new_student_data:
-                    updated_student.update_student_info(grades=new_student_data['grades'])
+                    student['grades'] = new_student_data['grades']
                 if 'classroom_name' in new_student_data:
-                    # Si la mise à jour inclut la suppression de la classe, retire-la de la liste
-                    if new_student_data['classroom_name'] is None:
-                        updated_student.update_student_info(classroom_name=[])
-                    else:
-                        updated_student.update_student_info(classroom_name=new_student_data['classroom_name'])
+                    student['classroom_name'] = new_student_data['classroom_name']
+                if 'lessons' in new_student_data:
+                    student['lessons'] = new_student_data['lessons']
 
-                # Mettre à jour les informations de l'étudiant dans la collection
+                # Mettre à jour les notes globales de l'étudiant dans la liste 'grades'
+                if 'lessons' in new_student_data:
+                    student['grades'] = [lesson['grade'] for lesson in new_student_data['lessons']]
+
                 self.student_collection.update_one({'_id': student['_id']}, {'$set': {
-                    'first_name': updated_student.first_name,
-                    'last_name': updated_student.last_name,
-                    'grades': updated_student.grades,
-                    'classroom_name': updated_student.classroom_name
+                    'first_name': student['first_name'],
+                    'last_name': student['last_name'],
+                    'grades': student['grades'],
+                    'classroom_name': student['classroom_name'],
+                    'lessons': student['lessons']
                 }})
 
                 print(f"Les informations de l'étudiant {student_name} ont été mises à jour avec succès!")
