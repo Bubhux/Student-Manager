@@ -14,10 +14,10 @@ class StudentView:
             print("\nMenu gestion des étudiants")
             print("1. Afficher les étudiants")
             print("2. Ajouter un étudiant")
-            print("3. Modifier les notes d'un étudiant")
-            print("4. Modifier les informations d'un étudiant")
-            print("5. Calculer la moyenne d'un étudiant")
-            print("6. Calculer la moyenne de la classe")
+            print("3. Ajouter une matière à un étudiant")
+            print("4. Modifier les notes d'un étudiant")
+            print("5. Modifier les informations d'un étudiant")
+            print("6. Calculer la moyenne d'un étudiant")
             print("7. Supprimer un étudiant")
             print("r. Retour au menu précedent\n")
 
@@ -30,16 +30,16 @@ class StudentView:
                 self.add_student()
 
             elif choice_menu == "3":
-                self.update_student_grades()
+                self.add_subject_to_student()
 
             elif choice_menu == "4":
-                self.update_student_info()
+                self.update_student_grades()
 
             elif choice_menu == "5":
-                self.calculate_student_average()
+                self.update_student_info()
 
             elif choice_menu == "6":
-                self.calculate_class_average()
+                self.calculate_student_average()
 
             elif choice_menu == "7":
                 self.delete_student()
@@ -161,6 +161,41 @@ class StudentView:
         else:
             print("Les données d'entrée sont invalides. Assurez-vous que toutes les notes sont comprises entre 0 et 20.")
 
+    def add_subject_to_student(self):
+        student_name = input("Nom de l'étudiant auquel vous souhaitez ajouter une matière (Prénom et Nom ou Prénom seul) : ")
+
+        # Vérifie si l'étudiant existe
+        student = self.classroom_controller.get_student_database_controller(student_name)
+        if not student:
+            print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
+            return
+
+        # Demande le nom de la nouvelle matière et la note
+        subject_name = input("Nom de la nouvelle matière : ")
+        while True:
+            subject_grade_input = input("Note pour cette matière (appuyez sur Entrée pour laisser la note à 0) : ")
+            if subject_grade_input.strip():
+                try:
+                    subject_grade = float(subject_grade_input)
+                except ValueError:
+                    print("Veuillez saisir un nombre valide pour la note.")
+                    continue
+                if 0 <= subject_grade <= 20:
+                    break
+                else:
+                    print("La note doit être comprise entre 0 et 20.")
+            else:
+                subject_grade = 0.0
+                break
+
+        # Ajoute la nouvelle matière et note à la liste des matières de l'étudiant
+        new_lesson = {'name': subject_name, 'grade': subject_grade}
+        student['lessons'].append(new_lesson)
+
+        # Met à jour les informations de l'étudiant dans la base de données
+        self.classroom_controller.update_student_info_database_controller(student_name, student)
+        print(f"Matière {subject_name} ajoutée à l'étudiant {student_name} avec la note {subject_grade}.")
+
     def update_student_grades(self):
         student_name = input("Nom de l'étudiant à modifier (Prénom et Nom ou Prénom seul) : ")
 
@@ -210,8 +245,9 @@ class StudentView:
             for new_grade in new_grades:
                 print(f"- Nouvelle note de {new_grade['name']} : {new_grade['grade']}")
 
-            # Mettre à jour les notes de l'étudiant
-            self.classroom_controller.update_student_grades_database_controller(student_name, new_grades)
+            # Mettre à jour les notes de l'étudiant en utilisant le nom de l'étudiant récupéré de la base de données
+            self.classroom_controller.update_student_grades_database_controller(student['first_name'], new_grades)
+
 
     def update_student_info(self):
         student_name = input("Nom de l'étudiant à mettre à jour (Prénom et Nom ou Prénom seul) : ")
