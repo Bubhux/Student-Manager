@@ -16,14 +16,16 @@
 
 ### Projet Student Manager
 
-- Développez une interface utilisateur pour une application de management en **Python** associé à une base de données **MongoDB**.   
+- Développez une interface utilisateur pour une application de management.  
+- Utilisation de **Python** associé à une base de données **MongoDB**.   
+      &nbsp;   
 
-    - Création d'étudiants
-    - Création de classes
-    - Création de cours
-    - Gestion des notes
-    - Calcul de la moyenne d'un étudiant
-    - Calcul de la moyenne d'une classe
+    - ``Création d'étudiants``
+    - ``Création de classes``
+    - ``Création de cours``
+    - ``Gestion des notes``
+    - ``Calcul de la moyenne d'un étudiant``
+    - ``Calcul de la moyenne d'une classe``
 
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -32,14 +34,16 @@
 
 ### Liste pré-requis   
 
-- Interpréteur **Python**, version 3.12 ou supérieure   
+- Interpréteur **Python**, version 3.12.0 ou supérieure.   
 
-Application conçue avec les technologies suivantes :   
-- **Python** v3.12.0 choisissez la version adaptée à votre ordinateur et système.   
-- **Python** est disponible à l'adresse suivante ➔ https://www.python.org/downloads/   
-- **MongoDB** 7.0.5 est disponible à l'adresse suivante ➔ https://www.mongodb.com/
-- **Windows 10** Professionnel   
+- Application conçue avec les technologies suivantes :   
   &nbsp;   
+
+  - **Python** v3.12.0 choisissez la version adaptée à votre ordinateur et système.   
+  - **Python** est disponible à l'adresse suivante ➔ https://www.python.org/downloads/   
+  - **MongoDB** 7.0.5 est disponible à l'adresse suivante ➔ https://www.mongodb.com/
+  - **Windows 10** Professionnel   
+    &nbsp;   
 
 - Les scripts **Python** s'exécutent depuis un terminal.   
   - Pour ouvrir un terminal sur **Windows**, pressez la touche ``windows + r`` et entrez ``cmd``.   
@@ -58,7 +62,7 @@ Application conçue avec les technologies suivantes :
 Taper dans votre terminal la commande:   
 
 ```bash
-python main.py
+$ python main.py
 ```   
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -76,6 +80,7 @@ python main.py
     | 2. Gestion des classes    |
     | 3. Quitter le programme   |
 
+  &nbsp;   
 
     |      Menu gestion des étudiants            |
     |--------------------------------------------|
@@ -88,6 +93,7 @@ python main.py
     | 7. Supprimer un étudiant                   |
     | r. Retour au menu précedent                |
 
+  &nbsp;   
 
     |       Menu gestion des classes             |
     |--------------------------------------------|
