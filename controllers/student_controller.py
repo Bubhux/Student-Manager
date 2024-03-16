@@ -55,7 +55,7 @@ class StudentDatabaseController:
 
         if student:
             try:
-                self.student_collection.update_one({'_id': student['_id']}, {'$set': {'grades': new_grades}})
+                self.student_collection.update_one({'_id': student['_id']}, {'$set': {'lessons': new_grades}})
                 print(f"Les notes de l'étudiant {student_name} ont été mises à jour avec succès!")
             except Exception as e:
                 print(f"Une erreur s'est produite lors de la mise à jour des notes de l'étudiant : {str(e)}")
@@ -134,12 +134,27 @@ class StudentDatabaseController:
             print(f"Aucun étudiant trouvé avec le nom {student_name}.")
 
     def calculate_student_average_database_controller(self, student_name):
-        student = self.student_collection.find_one({'first_name': student_name})
+        # Divise le nom de l'étudiant en prénom et nom de famille
+        names = student_name.split(' ')
+        first_name = names[0]
+        last_name = names[-1] if len(names) > 1 else None
+        
+        # Construit la requête pour rechercher par prénom et nom de famille
+        query = {'first_name': first_name}
+        if last_name:
+            query['last_name'] = last_name
+
+        # Recherche l'étudiant dans la base de données
+        student = self.student_collection.find_one(query)
 
         if student:
+            # Récupère les notes de l'étudiant de la base de données
             grades = student.get('grades', [])
             if grades:
-                return sum(grades) / len(grades)
+                # Extrait les notes numériques de la liste des dictionnaires
+                notes_numeriques = [lesson['grade'] for lesson in grades]
+                # Calcule la moyenne des notes numériques
+                return sum(notes_numeriques) / len(notes_numeriques)
         return None
 
     def calculate_class_average_database_controller(self):
