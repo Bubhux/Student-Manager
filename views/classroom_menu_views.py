@@ -35,7 +35,7 @@ class ClassroomView:
             elif choice_menu == "5":
                 self.delete_students_from_classroom()
             elif choice_menu == "6":
-                self.update_student_info()
+                self.calculate_classroom_average()
             elif choice_menu == "7":
                 self.delete_classroom()
             elif choice_menu == "r":
