@@ -346,9 +346,32 @@ class ClassroomView:
         self.classroom_controller.delete_classroom_database_controller(classroom_name)
 
     def calculate_classroom_average(self):
-        classroom_name = input("Nom de la classe à calculer la moyenne. : ")
-        average = self.classroom_controller.calculate_classroom_average_database_controller(classroom_name)
-        if average is not None:
-            print(f"Moyenne de {classroom_name} : {average:.2f}")
-        else:
-            print(f"Aucune classe trouvé avec le nom {classroom_name}. Vérifiez le nom de la classe.")
+        classrooms = self.classroom_controller.get_all_classrooms_database_controller()
+
+        if not classrooms:
+            print("Il n'y a pas de classes disponibles.")
+            return
+
+        print("Classes disponibles :")
+        for index, classroom in enumerate(classrooms, start=1):
+            print(f"{index}. Nom : {classroom['classroom_name']}")
+
+        while True:
+            choice = input("Choisissez le numéro de la classe pour calculer la moyenne (ou 'r' pour revenir) :\n> ")
+
+            if choice == "r":
+                return
+            elif choice.isdigit():
+                choice = int(choice)
+                if 1 <= choice <= len(classrooms):
+                    selected_class = classrooms[choice - 1]
+                    average = self.classroom_controller.calculate_classroom_average_database_controller(selected_class['classroom_name'])
+                    if average is not None:
+                        print(f"Moyenne de {selected_class['classroom_name']} : {average:.2f}")
+                    else:
+                        print(f"Aucune donnée trouvée pour la classe {selected_class['classroom_name']}. Vérifiez le nom de la classe.")
+                    break
+                else:
+                    print("Choix invalide. Veuillez saisir un numéro valide.")
+            else:
+                print("Choix invalide, veuillez saisir un nombre ou 'r' pour revenir.")
