@@ -20,12 +20,14 @@
 - Utilisation de **Python** associé à une base de données **MongoDB**.   
       &nbsp;   
 
-    - ``Création d'étudiants``
-    - ``Création de classes``
-    - ``Création de cours``
-    - ``Gestion des notes``
-    - ``Calcul de la moyenne d'un étudiant``
-    - ``Calcul de la moyenne d'une classe``
+- Fonctinnalitées de l'application.   
+
+    - ``Création`` : d'étudiants
+    - ``Création`` : de classes
+    - ``Création`` : de cours
+    - ``Gestion`` : des notes
+    - ``Calcul`` : de la moyenne d'un étudiant
+    - ``Calcul`` : de la moyenne d'une classe
 
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -86,10 +88,10 @@ $ python main.py
     |--------------------------------------------|
     | 1. Afficher les étudiants                  |
     | 2. Ajouter un étudiant                     |
-    | 3. Modifier les notes d'un étudiant        |
-    | 4. Modifier les informations d'un étudiant |
-    | 5. Calculer la moyenne d'un étudiant       |
-    | 6. Calculer la moyenne de la classe        |
+    | 3. Ajouter une matière à un étudian        |
+    | 4. Modifier les notes d'un étudiant        |
+    | 5. Modifier les informations d'un étudiant |
+    | 6. Calculer la moyenne d'un étudiant       |
     | 7. Supprimer un étudiant                   |
     | r. Retour au menu précedent                |
 
