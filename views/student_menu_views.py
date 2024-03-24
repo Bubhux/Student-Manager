@@ -248,7 +248,6 @@ class StudentView:
             # Mettre à jour les notes de l'étudiant en utilisant le nom de l'étudiant récupéré de la base de données
             self.classroom_controller.update_student_grades_database_controller(student['first_name'], new_grades)
 
-
     def update_student_info(self):
         student_name = input("Nom de l'étudiant à mettre à jour (Prénom et Nom ou Prénom seul) : ")
 

@@ -88,7 +88,7 @@ $ python main.py
     |--------------------------------------------|
     | 1. Afficher les étudiants                  |
     | 2. Ajouter un étudiant                     |
-    | 3. Ajouter une matière à un étudian        |
+    | 3. Ajouter une matière à un étudiant       |
     | 4. Modifier les notes d'un étudiant        |
     | 5. Modifier les informations d'un étudiant |
     | 6. Calculer la moyenne d'un étudiant       |
