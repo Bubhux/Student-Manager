@@ -351,6 +351,9 @@ class ClassroomView:
         if not classrooms:
             print("Il n'y a pas de classes disponibles.")
             return
+        else:
+            # Trie les classes par ordre alphabétique en fonction de leur nom
+            sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
         print("Classes disponibles :")
         for index, classroom in enumerate(classrooms, start=1):
