@@ -356,7 +356,7 @@ class ClassroomView:
             sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
         print("Classes disponibles :")
-        for index, classroom in enumerate(classrooms, start=1):
+        for index, classroom in enumerate(sorted_classrooms, start=1):
             print(f"{index}. Nom : {classroom['classroom_name']}")
 
         while True:
@@ -366,8 +366,8 @@ class ClassroomView:
                 return
             elif choice.isdigit():
                 choice = int(choice)
-                if 1 <= choice <= len(classrooms):
-                    selected_class = classrooms[choice - 1]
+                if 1 <= choice <= len(sorted_classrooms):
+                    selected_class = sorted_classrooms[choice - 1]
                     average = self.classroom_controller.calculate_classroom_average_database_controller(selected_class['classroom_name'])
                     if average is not None:
                         print(f"Moyenne de {selected_class['classroom_name']} : {average:.2f}")
