@@ -11,9 +11,6 @@
 4. **[Interface de l'application](#interface-application)**   
 5. **[Auteurs et contact](#auteur-contact)**   
 
-<div id="informations-générale"></div>
-<a href="#top" style="float: right;">Retour en haut 🡅</a>
-
 ### Projet Student Manager
 
 - Développez une interface utilisateur pour une application de management.  
