@@ -150,13 +150,10 @@ class ClassroomDatabaseController:
             print(f"Aucune classe trouvé avec le nom {classroom_name}.")
 
     def calculate_classroom_average_database_controller(self, classroom_name):
-        # Récupére les données de la classe spécifiée par classroom_name
-        classroom_data = self.classroom_collection.find_one({'classroom_name': classroom_name})
+        # Récupére les étudiants dans la classe spécifiée
+        students = self.get_students_in_classroom_database_controller(classroom_name)
 
-        if classroom_data:
-            # Extraire la liste des étudiants de la classe
-            students = classroom_data.get('students', [])
-
+        if students:
             # Récupére les notes de tous les étudiants dans une liste
             all_grades = [grade for student in students for grade in student.get('grades', [])]
 
@@ -166,6 +163,7 @@ class ClassroomDatabaseController:
 
         # Retourne None si aucune donnée n'est trouvée ou si aucune note n'est disponible
         return None
+
 
 """
     def calculate_student_average_database_controller(self, student_name):
