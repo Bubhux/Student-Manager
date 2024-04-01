@@ -1,0 +1,3 @@
+[flake8]
+exclude = env, .git, .gitignore
+max-line-length = 120
