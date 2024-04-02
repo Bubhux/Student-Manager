@@ -150,26 +150,16 @@ class ClassroomDatabaseController:
             print(f"Aucune classe trouvé avec le nom {classroom_name}.")
 
     def calculate_classroom_average_database_controller(self, classroom_name):
-        # Récupérer les étudiants dans la classe spécifiée
+        # Récupére les étudiants dans la classe spécifiée
         students = self.get_students_in_classroom_database_controller(classroom_name)
 
         if students:
-            # Initialise une liste pour stocker toutes les notes des étudiants
-            all_grades = []
+            # Récupére les notes de tous les étudiants dans une liste
+            all_grades = [grade for student in students for grade in student.get('grades', [])]
 
-            # Parcour tous les étudiants pour obtenir leurs notes
-            for student in students:
-                # Récupére les notes de l'étudiant
-                grades = student.get('grades', [])
-
-                # Ajoute les notes de l'étudiant à la liste des notes globales
-                all_grades.extend(grades)
-
-            # Vérifie s'il y a des notes
+            # Calcule la moyenne des notes de tous les étudiants
             if all_grades:
-                # Calcule la moyenne des notes de tous les étudiants
-                average_grade = sum(all_grades) / len(all_grades)
-                return average_grade
+                return sum(all_grades) / len(all_grades)
 
         # Retourne None si aucune donnée n'est trouvée ou si aucune note n'est disponible
         return None
