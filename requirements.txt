@@ -1,2 +1,8 @@
+click==8.1.7
+colorama==0.4.6
 dnspython==2.6.1
+markdown-it-py==3.0.0
+mdurl==0.1.2
+Pygments==2.17.2
 pymongo==4.6.1
+rich==13.7.1
