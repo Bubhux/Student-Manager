@@ -34,7 +34,7 @@ class MainMenuView:
 
             console.print(table)
 
-            choice_menu = click.prompt("Choisissez le numéro de votre choix.", type=int)
+            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix.", fg="green"), type=int)
 
             if choice_menu == 1:
                 self.student_view.display_main_menu()
