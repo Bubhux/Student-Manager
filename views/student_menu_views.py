@@ -1,27 +1,40 @@
+import click
+from rich.console import Console
+from rich.table import Table
+
 from controllers.student_controller import StudentDatabaseController
 
-from models.student_models import StudentModel
 
+console = Console()
 
 class StudentView:
 
     def __init__(self):
-        self.classroom_controller = StudentDatabaseController()
+        self.student_controller = StudentDatabaseController()
+        self.console = Console()
 
     def display_main_menu(self):
 
         while True:
-            print("\nMenu gestion des étudiants")
-            print("1. Afficher les étudiants")
-            print("2. Ajouter un étudiant")
-            print("3. Ajouter une matière à un étudiant")
-            print("4. Modifier les notes d'un étudiant")
-            print("5. Modifier les informations d'un étudiant")
-            print("6. Calculer la moyenne d'un étudiant")
-            print("7. Supprimer un étudiant")
-            print("r. Retour au menu précedent\n")
+            table = Table(show_header=True, header_style="bold magenta")
+            table.add_column("Choix", style="cyan")
+            table.add_column("Action", style="cyan")
+            table.add_row("1", "Afficher les étudiants")
+            table.add_row("2", "Ajouter un étudiant")
+            table.add_row("3", "Ajouter une matière à un étudiant")
+            table.add_row("4", "Modifier les notes d'un étudiant")
+            table.add_row("5", "Modifier les informations d'un étudiant")
+            table.add_row("6", "Calculer la moyenne d'un étudiant")
+            table.add_row("7", "Supprimer un étudiant")
+            table.add_row("r", "Retour au menu précedent")
 
-            choice_menu = input("Choisissez le numéro de votre choix.\n> ")
+            # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
+            console.print()
+            console.print("Menu gestion des étudiants", style="bold magenta")
+
+            self.console.print(table)
+
+            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix.", fg="green"), type=str)
 
             if choice_menu == "1":
                 self.display_students()
@@ -45,10 +58,10 @@ class StudentView:
                 self.delete_student()
 
             elif choice_menu == "r":
-                print("Menu principal !")
+                self.console.print("Menu principal !")
                 break
             else:
-                print("Choix invalide, saisissez un nombre entre 1 et 7 ou r.")
+                self.console.print("Choix invalide, saisissez un nombre entre 1 et 7 ou r.", style="bold red")
 
     def display_students(self):
         students = self.classroom_controller.get_all_students_database_controller()
