@@ -30,7 +30,7 @@ class MainMenuView:
 
             # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
             console.print()
-            console.print(" Menu principal", style="bold magenta")
+            console.print("Menu principal", style="bold magenta")
 
             console.print(table)
 
