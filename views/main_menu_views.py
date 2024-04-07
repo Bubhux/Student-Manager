@@ -10,6 +10,7 @@ from views.classroom_menu_views import ClassroomView
 
 console = Console()
 
+
 class MainMenuView:
 
     def __init__(self):
@@ -22,11 +23,11 @@ class MainMenuView:
 
         while True:
             table = Table(show_header=True, header_style="bold magenta")
-            table.add_column("Choix")
-            table.add_column("Action")
-            table.add_row("1", "Gestion des étudiants", style="cyan")
-            table.add_row("2", "Gestion des classes", style="cyan")
-            table.add_row("3", "Quitter le programme", style="cyan")
+            table.add_column("Choix", style="cyan")
+            table.add_column("Action", style="cyan")
+            table.add_row("1", "Gestion des étudiants")
+            table.add_row("2", "Gestion des classes")
+            table.add_row("3", "Quitter le programme")
 
             # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
             console.print()
@@ -34,7 +35,7 @@ class MainMenuView:
 
             console.print(table)
 
-            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix.", fg="green"), type=int)
+            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix.", fg="blue"), type=int)
 
             if choice_menu == 1:
                 self.student_view.display_main_menu()
