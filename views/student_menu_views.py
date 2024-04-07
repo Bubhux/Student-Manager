@@ -3,9 +3,11 @@ from rich.console import Console
 from rich.table import Table
 
 from controllers.student_controller import StudentDatabaseController
+from models.student_models import StudentModel
 
 
 console = Console()
+
 
 class StudentView:
 
@@ -34,7 +36,7 @@ class StudentView:
 
             self.console.print(table)
 
-            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix.", fg="green"), type=str)
+            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix.", fg="blue"), type=str)
 
             if choice_menu == "1":
                 self.display_students()
@@ -110,7 +112,7 @@ class StudentView:
 
         # Affiche les informations de l'étudiant si trouvé, sinon afficher un message d'erreur
         if selected_student:
-            print(f"Informations sur l'étudiant :")
+            print("Informations sur l'étudiant :")
             print(f"Nom : {selected_student['first_name']} {selected_student['last_name']}")
             print("Matières et notes :")
             for lesson in selected_student['lessons']:
@@ -120,7 +122,7 @@ class StudentView:
             classroom_name = selected_student.get('classroom_name', 'N/A')
             if isinstance(classroom_name, list):
                 classroom_name = ', '.join(classroom_name)
-            
+
             print(f"Classe : {classroom_name}")
         else:
             print("Aucun étudiant trouvé avec cette entrée.")
