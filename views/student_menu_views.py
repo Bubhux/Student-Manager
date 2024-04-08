@@ -12,7 +12,7 @@ console = Console()
 class StudentView:
 
     def __init__(self):
-        self.student_controller = StudentDatabaseController()
+        self.classroom_controller = StudentDatabaseController()
         self.console = Console()
 
     def display_main_menu(self):
