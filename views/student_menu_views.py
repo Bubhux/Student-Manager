@@ -6,13 +6,10 @@ from controllers.student_controller import StudentDatabaseController
 from models.student_models import StudentModel
 
 
-console = Console()
-
-
 class StudentView:
 
     def __init__(self):
-        self.classroom_controller = StudentDatabaseController()
+        self.student_controller = StudentDatabaseController()
         self.console = Console()
 
     def display_main_menu(self):
@@ -31,12 +28,12 @@ class StudentView:
             table.add_row("r", "Retour au menu précedent")
 
             # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
-            console.print()
-            console.print("Menu gestion des étudiants", style="bold magenta")
+            self.console.print()
+            self.console.print("Menu gestion des étudiants", style="bold magenta")
 
             self.console.print(table)
 
-            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix.", fg="blue"), type=str)
+            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix ", fg="white"), type=str)
 
             if choice_menu == "1":
                 self.display_students()
@@ -66,7 +63,7 @@ class StudentView:
                 self.console.print("Choix invalide, saisissez un nombre entre 1 et 7 ou r.", style="bold red")
 
     def display_students(self):
-        students = self.classroom_controller.get_all_students_database_controller()
+        students = self.student_controller.get_all_students_database_controller()
         if not students:
             print("Il n'y a pas d'étudiants à afficher.")
         else:
@@ -172,7 +169,7 @@ class StudentView:
                 'lessons': subjects,
                 'grades': [subject['grade'] for subject in subjects]
             }
-            self.classroom_controller.add_student_database_controller(student_data)
+            self.student_controller.add_student_database_controller(student_data)
         else:
             print("Les données d'entrée sont invalides. Assurez-vous que toutes les notes sont comprises entre 0 et 20.")
 
@@ -180,7 +177,7 @@ class StudentView:
         student_name = input("Nom de l'étudiant auquel vous souhaitez ajouter une matière (Prénom et Nom ou Prénom seul) : ")
 
         # Vérifie si l'étudiant existe
-        student = self.classroom_controller.get_student_database_controller(student_name)
+        student = self.student_controller.get_student_database_controller(student_name)
         if not student:
             print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
             return
@@ -208,14 +205,14 @@ class StudentView:
         student['lessons'].append(new_lesson)
 
         # Met à jour les informations de l'étudiant dans la base de données
-        self.classroom_controller.update_student_info_database_controller(student_name, student)
+        self.student_controller.update_student_info_database_controller(student_name, student)
         print(f"Matière {subject_name} ajoutée à l'étudiant {student_name} avec la note {subject_grade}.")
 
     def update_student_grades(self):
         student_name = input("Nom de l'étudiant à modifier (Prénom et Nom ou Prénom seul) : ")
 
         # Vérifie si l'étudiant existe
-        student = self.classroom_controller.get_student_database_controller(student_name)
+        student = self.student_controller.get_student_database_controller(student_name)
         if not student:
             print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
             return
@@ -261,13 +258,13 @@ class StudentView:
                 print(f"- Nouvelle note de {new_grade['name']} : {new_grade['grade']}")
 
             # Mettre à jour les notes de l'étudiant en utilisant le nom de l'étudiant récupéré de la base de données
-            self.classroom_controller.update_student_grades_database_controller(student['first_name'], new_grades)
+            self.student_controller.update_student_grades_database_controller(student['first_name'], new_grades)
 
     def update_student_info(self):
         student_name = input("Nom de l'étudiant à mettre à jour (Prénom et Nom ou Prénom seul) : ")
 
         # Vérifie si l'étudiant existe
-        student = self.classroom_controller.get_student_database_controller(student_name)
+        student = self.student_controller.get_student_database_controller(student_name)
         if not student:
             print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
             return
@@ -310,20 +307,20 @@ class StudentView:
         }
 
         # Mettre à jour les informations de l'étudiant
-        self.classroom_controller.update_student_info_database_controller(student_name, new_student_data)
+        self.student_controller.update_student_info_database_controller(student_name, new_student_data)
 
     def delete_student(self):
         student_name = input("Nom de l'étudiant à supprimer (Prénom et Nom ou Prénom seul) : ")
-        self.classroom_controller.delete_student_database_controller(student_name)
+        self.student_controller.delete_student_database_controller(student_name)
 
     def calculate_student_average(self):
         student_name = input("Nom de l'étudiant à calculer la moyenne (Prénom et Nom ou Prénom seul) : ")
-        average = self.classroom_controller.calculate_student_average_database_controller(student_name)
+        average = self.student_controller.calculate_student_average_database_controller(student_name)
         if average is not None:
             print(f"Moyenne de {student_name} : {average:.2f}")
         else:
             print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
 
     def calculate_class_average(self):
-        average = self.classroom_controller.calculate_class_average_database_controller()
+        average = self.student_controller.calculate_class_average_database_controller()
         print(f"Moyenne de la classe : {average:.2f}")
