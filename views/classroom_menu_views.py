@@ -1,5 +1,10 @@
+import click
+from rich.console import Console
+from rich.table import Table
+
 from controllers.classroom_controller import ClassroomDatabaseController
 from controllers.student_controller import StudentDatabaseController
+
 from models.classroom_models import ClassroomModel
 
 
@@ -8,21 +13,29 @@ class ClassroomView:
     def __init__(self):
         self.classroom_controller = ClassroomDatabaseController()
         self.student_controller = StudentDatabaseController()
+        self.console = Console()
 
     def display_main_menu(self):
 
         while True:
-            print("\nMenu gestion des classes")
-            print("1. Afficher les classes")
-            print("2. Ajouter une classe")
-            print("3. Modifier les informations d'une classe")
-            print("4. Ajouter des étudiants à une classe")
-            print("5. Supprimer des étudiants d'une classe")
-            print("6. Calculer la moyenne d'une classe")
-            print("7. Supprimer une classe")
-            print("r. Retour au menu précédent")
+            table = Table(show_header=True, header_style="bold magenta")
+            table.add_column("Choix", style="cyan")
+            table.add_column("Action", style="cyan")
+            table.add_row("1", "Afficher les classes")
+            table.add_row("2", "Ajouter une classe")
+            table.add_row("3", "Modifier les informations d'une classe")
+            table.add_row("4", "Ajouter des étudiants à une classe")
+            table.add_row("5", "Supprimer des étudiants d'une classe")
+            table.add_row("6", "Calculer la moyenne d'une classe")
+            table.add_row("7", "Supprimer une classe")
+            table.add_row("r", "Retour au menu précédent")
 
-            choice_menu = input("Choisissez le numéro de votre choix.\n> ")
+            # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
+            self.console.print()
+            self.console.print("Menu gestion des classes", style="bold magenta")
+            self.console.print(table)
+
+            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix ", fg="white"), type=str)
 
             if choice_menu == "1":
                 self.display_classrooms()
@@ -39,10 +52,10 @@ class ClassroomView:
             elif choice_menu == "7":
                 self.delete_classroom()
             elif choice_menu == "r":
-                print("Menu principal !")
+                self.console.print("Menu principal !")
                 break
             else:
-                print("Choix invalide, saisissez un nombre entre 1 et 6 ou r.")
+                self.console.print("Choix invalide, saisissez un nombre entre 1 et 6 ou r.", style="bold red")
 
     def display_classrooms(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
@@ -62,8 +75,8 @@ class ClassroomView:
 
                 # Affiche le nom de la classe et le nombre d'étudiants dans cette classe
                 print(f"- {classroom['classroom_name']}, "
-                    f"Nombre de places disponibles : {classroom['number_of_places_available']}, "
-                    f"Nombre d'étudiants : {num_students}")
+                      f"Nombre de places disponibles : {classroom['number_of_places_available']}, "
+                      f"Nombre d'étudiants : {num_students}")
 
     def add_students_to_classroom(self):
 
@@ -260,7 +273,7 @@ class ClassroomView:
                         self.classroom_controller.remove_student_from_classroom_database_controller(classroom_name, student_to_remove)
                         # Met à jour le champ classroom_name dans le profil de l'étudiant
                         self.student_controller.remove_student_from_classroom(student_to_remove['_id'], classroom_name)
-                        #print(f"{student_to_remove['first_name']} {student_to_remove['last_name']} supprimé de la classe {classroom_name}.")
+                        # print(f"{student_to_remove['first_name']} {student_to_remove['last_name']} supprimé de la classe {classroom_name}.")
 
                         # Affiche la liste des étudiants dans la classe triée par ordre alphabétique
                         print("Liste des étudiants dans la classe triés par ordre alphabétique :")
@@ -335,7 +348,7 @@ class ClassroomView:
         new_classroom_data = {
             'classroom_name': new_classroom_name,
             'new_number_of_places_available': new_number_of_places_available,
-            'new_number_of_students' : new_number_of_students
+            'new_number_of_students': new_number_of_students
         }
 
         # Mettre à jour les informations de la classe
