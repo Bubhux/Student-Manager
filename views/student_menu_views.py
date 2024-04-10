@@ -65,30 +65,32 @@ class StudentView:
     def display_students(self):
         students = self.student_controller.get_all_students_database_controller()
         if not students:
-            print("Il n'y a pas d'étudiants à afficher.")
+            self.console.print("Il n'y a pas d'étudiants à afficher.", style="bold red")
         else:
             # Trie les étudiants par ordre alphabétique des noms et prénoms
             sorted_students = sorted(students, key=lambda x: (x['first_name']))
 
-            print("Liste des étudiants triés par ordre alphabétique :")
+            table = Table(show_header=True, header_style="bold magenta")
+            table.add_column("Index", style="cyan")
+            table.add_column("Nom et prénom", style="cyan")
+            table.add_column("Classe", style="cyan")
+
+            # Ajouter les étudiants au tableau
             for index, student in enumerate(sorted_students, start=1):
-                # Affiche le nom et prénom de l'étudiant
                 student_name = f"{student['first_name']} {student['last_name']}"
-
-                # Affiche le nom de la classe s'il est disponible
                 classroom_name = student.get('classroom_name', 'N/A')
-
-                # Si la classe est une liste, convertir en chaîne de caractères sans crochets
                 if isinstance(classroom_name, list):
                     classroom_name = ', '.join(classroom_name)
+                table.add_row(str(index), student_name, classroom_name)
 
-                print(f"{index}. {student_name}, Classe : {classroom_name}")
+            self.console.print("Liste des étudiants triés par ordre alphabétique", style="bold magenta")
+            self.console.print(table)
 
         # Demande à l'utilisateur de saisir un étudiant par son nom, prénom ou ID
         self.display_student_informations(sorted_students) if students else None
 
     def display_student_informations(self, students):
-        student_input = input("\nEntrez le nom, prénom ou le numéro de l'étudiant pour voir ses informations (ou 'r' pour revenir au menu précédent) :\n> ")
+        student_input = click.prompt("\nEntrez le nom, prénom ou le numéro de l'étudiant pour voir ses informations (ou 'r' pour revenir au menu précédent) \n>", type=str, prompt_suffix="")
 
         if student_input == 'r':
             return
@@ -109,60 +111,77 @@ class StudentView:
 
         # Affiche les informations de l'étudiant si trouvé, sinon afficher un message d'erreur
         if selected_student:
-            print("Informations sur l'étudiant :")
-            print(f"Nom : {selected_student['first_name']} {selected_student['last_name']}")
-            print("Matières et notes :")
-            for lesson in selected_student['lessons']:
-                print(f"- {lesson['name']} : {lesson['grade']}")
+            table = Table(title="Informations sur l'étudiant", show_header=True, header_style="bold magenta")
+            table.add_column("Attribut", style="cyan")
+            table.add_column("Valeur", style="cyan")
 
-            # Affiche la classe de l'étudiant sans les crochets si elle est une liste
+            table.add_row("Nom", f"{selected_student['first_name']} {selected_student['last_name']}")
+
+            # Construit une chaîne de caractères pour les matières et notes
+            subjects_grades = "\n".join([f"- {lesson['name']} : {lesson['grade']}" for lesson in selected_student['lessons']])
+            table.add_row("Matières et notes", subjects_grades)
+
             classroom_name = selected_student.get('classroom_name', 'N/A')
             if isinstance(classroom_name, list):
                 classroom_name = ', '.join(classroom_name)
+            table.add_row("Classe", classroom_name)
 
-            print(f"Classe : {classroom_name}")
+            self.console.print(table)
         else:
-            print("Aucun étudiant trouvé avec cette entrée.")
+            self.console.print("Aucun étudiant trouvé avec cette entrée.", style="bold red")
 
     def add_student(self):
-        first_name = input("Prénom de l'étudiant : ")
-        last_name = input("Nom de l'étudiant (appuyez sur Entrée pour laisser vide) : ")
+        adding_student = True
 
-        # Demande le nombre de matières que cet étudiant suit
-        while True:
-            num_subjects_input = input("Combien de matières cet étudiant suit-il ? ")
-            if num_subjects_input.isdigit() and int(num_subjects_input) > 0:
-                num_subjects = int(num_subjects_input)
-                break
-            else:
-                print("Veuillez saisir un nombre entier supérieur à 0.")
+        while adding_student:
+            self.console.print("[bold cyan]Ajout d'un nouvel étudiant[/bold cyan]")
+
+            first_name = input("Prénom de l'étudiant : ").strip()
+            if not first_name:
+                self.console.print("Le prénom de l'étudiant ne peut pas être vide.", style="bold red")
+                continue
+
+            last_name = click.prompt("Nom de l'étudiant (appuyez sur Entrée pour laisser vide) ", type=str, default="", show_default=False)
+            
+            num_subjects_valid = False
+            while not num_subjects_valid:
+                num_subjects = input("Combien de matières cet étudiant suit-il ? (Appuyez sur Entrée pour ne choisir aucune matière) ")
+                if num_subjects.strip() == "":
+                    num_subjects = 0
+                    num_subjects_valid = True
+                else:
+                    try:
+                        num_subjects = int(num_subjects)
+                        if num_subjects < 0:
+                            self.console.print("Veuillez saisir un nombre entier supérieur ou égal à 0.", style="bold red")
+                        else:
+                            num_subjects_valid = True
+                    except ValueError:
+                        self.console.print("Veuillez saisir un nombre entier supérieur ou égal à 0.", style="bold red")
+
+            # Si le prénom n'est pas vide et le nombre de matières est valide, sortir de la boucle
+            adding_student = False
 
         subjects = []
-        # Boucle pour saisir le nom et la note de chaque matière
         for i in range(num_subjects):
-            subject_name = input(f"Nom de la matière {i+1}: ")
-            while True:
-                subject_grade_input = input(f"Note pour la matière {subject_name} (appuyez sur Entrée pour laisser la note à 0) : ")
-                if subject_grade_input.strip():
-                    try:
-                        subject_grade = float(subject_grade_input)
-                    except ValueError:
-                        print("Veuillez saisir un nombre valide pour la note.")
-                        continue
-                    if 0 <= subject_grade <= 20:
-                        break
-                    else:
-                        print("La note doit être comprise entre 0 et 20.")
-                else:
-                    subject_grade = 0.0
-                    break
+            subject_name = click.prompt(f"Nom de la matière {i+1}", type=str)
+            subject_grade = click.prompt(f"Note pour la matière {subject_name} (appuyez sur Entrée pour laisser la note à 0)", type=float, show_default=True)
+            if not (0 <= subject_grade <= 20):
+                self.console.print("La note doit être comprise entre 0 et 20.", style="bold red")
+                return
             subjects.append({'name': subject_name, 'grade': subject_grade})
 
-        # Crée une instance de StudentModel avec les données d'entrée
-        student = StudentModel(first_name, last_name, lessons=subjects)
+        self.console.print("[bold cyan]Résumé des informations saisies :[/bold cyan]")
+        table = Table(show_header=True, header_style="bold magenta")
+        table.add_column("Attribut", style="cyan")
+        table.add_column("Valeur", style="cyan")
+        table.add_row("Prénom", first_name)
+        table.add_row("Nom", last_name if last_name else "Non renseigné")
+        for subject in subjects:
+            table.add_row(f"Matière : {subject['name']}", f"Note : {subject['grade']}")
+        self.console.print(table)
 
-        # Valide les données d'entrée en appelant validate_input_data_student
-        if student.validate_input_data_student():
+        if click.confirm("Confirmez-vous l'ajout de cet étudiant ?", default=True, show_default=True):
             student_data = {
                 'first_name': first_name,
                 'last_name': last_name,
@@ -170,8 +189,9 @@ class StudentView:
                 'grades': [subject['grade'] for subject in subjects]
             }
             self.student_controller.add_student_database_controller(student_data)
+            self.console.print("[bold green]L'étudiant a été ajouté avec succès ![/bold green]")
         else:
-            print("Les données d'entrée sont invalides. Assurez-vous que toutes les notes sont comprises entre 0 et 20.")
+            self.console.print("[bold red]L'ajout de l'étudiant a été annulé.[/bold red]")
 
     def add_subject_to_student(self):
         student_name = input("Nom de l'étudiant auquel vous souhaitez ajouter une matière (Prénom et Nom ou Prénom seul) : ")
