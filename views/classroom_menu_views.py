@@ -22,7 +22,7 @@ class ClassroomView:
             table.add_column("Choix", style="cyan")
             table.add_column("Action", style="cyan")
             table.add_row("1", "Afficher les classes")
-            table.add_row("2", "Ajouter une classe")
+            table.add_row("2", "Créer une classe")
             table.add_row("3", "Modifier les informations d'une classe")
             table.add_row("4", "Ajouter des étudiants à une classe")
             table.add_row("5", "Supprimer des étudiants d'une classe")

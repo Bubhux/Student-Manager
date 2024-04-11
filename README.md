@@ -84,7 +84,7 @@ $ python main.py
     |      Menu gestion des étudiants            |
     |--------------------------------------------|
     | 1. Afficher les étudiants                  |
-    | 2. Ajouter un étudiant                     |
+    | 2. Créer un étudiant                       |
     | 3. Ajouter une matière à un étudiant       |
     | 4. Modifier les notes d'un étudiant        |
     | 5. Modifier les informations d'un étudiant |
@@ -97,7 +97,7 @@ $ python main.py
     |       Menu gestion des classes             |
     |--------------------------------------------|
     | 1. Afficher les classes                    |
-    | 2. Ajouter une classe                      |
+    | 2. Créer une classe                        |
     | 3. Modifier les informations d'une classe  |
     | 4. Ajouter des étudiants à une classe      |
     | 5. Supprimer des étudiants d'une classe    |
