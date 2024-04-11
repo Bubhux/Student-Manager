@@ -19,7 +19,7 @@ class StudentView:
             table.add_column("Choix", style="cyan")
             table.add_column("Action", style="cyan")
             table.add_row("1", "Afficher les étudiants")
-            table.add_row("2", "Ajouter un étudiant")
+            table.add_row("2", "Créer un étudiant")
             table.add_row("3", "Ajouter une matière à un étudiant")
             table.add_row("4", "Modifier les notes d'un étudiant")
             table.add_row("5", "Modifier les informations d'un étudiant")
@@ -111,7 +111,7 @@ class StudentView:
 
         # Affiche les informations de l'étudiant si trouvé, sinon afficher un message d'erreur
         if selected_student:
-            table = Table(title="Informations sur l'étudiant", show_header=True, header_style="bold magenta")
+            table = Table(show_header=True, header_style="bold magenta")
             table.add_column("Attribut", style="cyan")
             table.add_column("Valeur", style="cyan")
 
@@ -125,6 +125,10 @@ class StudentView:
             if isinstance(classroom_name, list):
                 classroom_name = ', '.join(classroom_name)
             table.add_row("Classe", classroom_name)
+
+            # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
+            self.console.print()
+            self.console.print("Informations sur l'étudiant", style="bold magenta")
 
             self.console.print(table)
         else:

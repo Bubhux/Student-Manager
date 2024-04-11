@@ -84,20 +84,22 @@ class StudentDatabaseController:
                     student['last_name'] = new_student_data['last_name']
                 if 'grades' in new_student_data:
                     student['grades'] = new_student_data['grades']
-                if 'classroom_name' in new_student_data:
-                    student['classroom_name'] = new_student_data['classroom_name']
                 if 'lessons' in new_student_data:
                     student['lessons'] = new_student_data['lessons']
 
                 # Mettre à jour les notes globales de l'étudiant dans la liste 'grades'
                 if 'lessons' in new_student_data:
                     student['grades'] = [lesson['grade'] for lesson in new_student_data['lessons']]
+                
+                # Vérifie si 'classroom_name' est présent dans les nouvelles données
+                if 'classroom_name' in new_student_data:
+                    student['classroom_name'] = new_student_data['classroom_name']
 
                 self.student_collection.update_one({'_id': student['_id']}, {'$set': {
                     'first_name': student['first_name'],
                     'last_name': student['last_name'],
                     'grades': student['grades'],
-                    'classroom_name': student['classroom_name'],
+                    'classroom_name': student.get('classroom_name', None),  # Utilise la valeur existante ou None
                     'lessons': student['lessons']
                 }})
 
