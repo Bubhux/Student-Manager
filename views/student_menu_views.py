@@ -198,39 +198,53 @@ class StudentView:
             self.console.print("[bold red]L'ajout de l'étudiant a été annulé.[/bold red]")
 
     def add_subject_to_student(self):
-        student_name = input("Nom de l'étudiant auquel vous souhaitez ajouter une matière (Prénom et Nom ou Prénom seul) : ")
+        student_name = click.prompt("Nom de l'étudiant auquel vous souhaitez ajouter une matière (Prénom et Nom ou Prénom seul)", type=str)
 
         # Vérifie si l'étudiant existe
         student = self.student_controller.get_student_database_controller(student_name)
         if not student:
-            print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
+            self.console.print(f"Aucun étudiant trouvé avec le nom [bold]{student_name}[/bold]. Vérifiez le nom de l'étudiant.", style="bold red")
             return
 
         # Demande le nom de la nouvelle matière et la note
-        subject_name = input("Nom de la nouvelle matière : ")
+        subject_name = click.prompt("Nom de la nouvelle matière", type=str)
         while True:
-            subject_grade_input = input("Note pour cette matière (appuyez sur Entrée pour laisser la note à 0) : ")
+            subject_grade_input = click.prompt("Note pour cette matière (appuyez sur Entrée pour laisser la note à 0)", default="", type=str, show_default=False)
             if subject_grade_input.strip():
                 try:
                     subject_grade = float(subject_grade_input)
-                except ValueError:
-                    print("Veuillez saisir un nombre valide pour la note.")
-                    continue
-                if 0 <= subject_grade <= 20:
+                    if not (0 <= subject_grade <= 20):
+                        self.console.print("La note doit être comprise entre 0 et 20.", style="bold red")
+                        continue
                     break
-                else:
-                    print("La note doit être comprise entre 0 et 20.")
+                except ValueError:
+                    self.console.print("Veuillez saisir un nombre valide pour la note.", style="bold red")
             else:
                 subject_grade = 0.0
                 break
 
-        # Ajoute la nouvelle matière et note à la liste des matières de l'étudiant
-        new_lesson = {'name': subject_name, 'grade': subject_grade}
-        student['lessons'].append(new_lesson)
+        # Affiche un résumé des informations saisies
+        self.console.print("[bold cyan]Résumé des informations saisies :[/bold cyan]")
+        table = Table(show_header=True, header_style="bold magenta")
+        table.add_column("Attribut", style="cyan")
+        table.add_column("Valeur", style="cyan")
+        table.add_row("Étudiant", student_name)
+        table.add_row("Matière", subject_name)
+        table.add_row("Note", str(subject_grade))
+        self.console.print(table)
 
-        # Met à jour les informations de l'étudiant dans la base de données
-        self.student_controller.update_student_info_database_controller(student_name, student)
-        print(f"Matière {subject_name} ajoutée à l'étudiant {student_name} avec la note {subject_grade}.")
+        # Demande de confirmation pour l'ajout de la matière
+        confirmation = click.confirm("Confirmez-vous l'ajout de cette matière ?", default=True, show_default=True)
+        if confirmation:
+            # Ajoute la nouvelle matière et note à la liste des matières de l'étudiant
+            new_lesson = {'name': subject_name, 'grade': subject_grade}
+            student['lessons'].append(new_lesson)
+
+            # Met à jour les informations de l'étudiant dans la base de données
+            self.student_controller.update_student_info_database_controller(student_name, student)
+            self.console.print(f"Matière [bold]{subject_name}[/bold] ajoutée à l'étudiant [bold]{student_name}[/bold] avec la note [bold]{subject_grade}[/bold].", style="bold green")
+        else:
+            self.console.print("[bold cyan]L'ajout de la matière a été annulé.[/bold cyan]")
 
     def update_student_grades(self):
         student_name = input("Nom de l'étudiant à modifier (Prénom et Nom ou Prénom seul) : ")
