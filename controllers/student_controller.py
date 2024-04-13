@@ -55,7 +55,14 @@ class StudentDatabaseController:
 
         if student:
             try:
+                # Mettre à jour les notes de l'étudiant
                 self.student_collection.update_one({'_id': student['_id']}, {'$set': {'lessons': new_grades}})
+
+                # Mettre à jour les notes globales de l'étudiant
+                updated_student = self.student_collection.find_one({'_id': student['_id']})
+                updated_grades = [lesson['grade'] for lesson in updated_student['lessons']]
+                self.student_collection.update_one({'_id': student['_id']}, {'$set': {'grades': updated_grades}})
+
                 print(f"Les notes de l'étudiant {student_name} ont été mises à jour avec succès!")
             except Exception as e:
                 print(f"Une erreur s'est produite lors de la mise à jour des notes de l'étudiant : {str(e)}")
