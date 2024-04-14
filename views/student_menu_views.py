@@ -247,26 +247,26 @@ class StudentView:
             self.console.print("[bold cyan]L'ajout de la matière a été annulé.[/bold cyan]")
 
     def update_student_grades(self):
-        student_name = input("Nom de l'étudiant à modifier (Prénom et Nom ou Prénom seul) : ")
+        student_name = click.prompt("Nom de l'étudiant à modifier (Prénom et Nom ou Prénom seul) ", type=str)
 
         # Vérifie si l'étudiant existe
         student = self.student_controller.get_student_database_controller(student_name)
         if not student:
-            print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
+            self.console.print(f"Aucun étudiant trouvé avec le nom [bold]{student_name}[/bold]. Vérifiez le nom de l'étudiant.", style="bold red")
             return
 
         # Demande les nouvelles notes
         new_grades = []
         for subject in student['lessons']:
-            new_grade_input = input(f"Nouvelle note pour {subject['name']} (appuyez sur Entrée pour conserver la note actuelle) : ").strip()
+            new_grade_input = click.prompt(f"Nouvelle note pour {subject['name']} (appuyez sur Entrée pour conserver la note actuelle) [{subject['grade']}] ", type=str).strip()
             if new_grade_input:
                 try:
                     new_grade = float(new_grade_input)
                 except ValueError:
-                    print("Veuillez saisir un nombre valide pour la note.")
+                    self.console.print("Veuillez saisir un nombre valide pour la note.", style="bold red")
                     return
                 if not 0 <= new_grade <= 20:
-                    print("La note doit être comprise entre 0 et 20.")
+                    self.console.print("La note doit être comprise entre 0 et 20.", style="bold red")
                     return
                 new_grades.append({'name': subject['name'], 'grade': new_grade})
             else:
@@ -275,28 +275,28 @@ class StudentView:
         # Valide les nouvelles notes
         updated_student = StudentModel(student['first_name'], student['last_name'], lessons=new_grades)
         if not updated_student.validate_input_data_student():
-            print("Les nouvelles notes sont invalides. Assurez-vous que toutes les notes sont comprises entre 0 et 20.")
+            self.console.print("Les nouvelles notes sont invalides. Assurez-vous que toutes les notes sont comprises entre 0 et 20.", style="bold red")
             return
 
         # Vérifie si les notes ont été modifiées
-        unchanged = True
-        for old_grade, new_grade in zip(student['lessons'], new_grades):
-            if old_grade['grade'] != new_grade['grade']:
-                unchanged = False
-                break
+        unchanged = all(old_grade['grade'] == new_grade['grade'] for old_grade, new_grade in zip(student['lessons'], new_grades))
 
         # Affiche les notes modifiées ou un message si elles n'ont pas été modifiées
         if unchanged:
-            print("Aucune nouvelle note n'a été saisie. Les notes de l'étudiant restent inchangées :")
+            self.console.print("Aucune nouvelle note n'a été saisie. Les notes de l'étudiant restent inchangées :", style="bold blue")
             for subject in student['lessons']:
-                print(f"- Note de {subject['name']} : {subject['grade']}")
+                self.console.print(f"- Note de {subject['name']} : {subject['grade']}")
         else:
-            print("Notes modifiées :")
+            self.console.print("Notes modifiées :", style="bold blue")
             for new_grade in new_grades:
-                print(f"- Nouvelle note de {new_grade['name']} : {new_grade['grade']}")
+                self.console.print(f"- Nouvelle note de {new_grade['name']} : {new_grade['grade']}")
 
             # Mettre à jour les notes de l'étudiant en utilisant le nom de l'étudiant récupéré de la base de données
-            self.student_controller.update_student_grades_database_controller(student['first_name'], new_grades)
+            if click.confirm("Confirmez-vous la mise à jour des notes de cet étudiant ?", default=True):
+                self.student_controller.update_student_grades_database_controller(student['first_name'], new_grades)
+                self.console.print("Les notes de l'étudiant ont été mises à jour avec succès !", style="bold green")
+            else:
+                self.console.print("La mise à jour des notes de l'étudiant a été annulée.", style="bold cyan")
 
     def update_student_info(self):
         student_name = input("Nom de l'étudiant à mettre à jour (Prénom et Nom ou Prénom seul) : ")
