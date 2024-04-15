@@ -109,7 +109,7 @@ class StudentView:
                     selected_student = student
                     break
 
-        # Affiche les informations de l'étudiant si trouvé, sinon afficher un message d'erreur
+        # Affiche les informations de l'étudiant si trouvé, sinon affiche un message d'erreur
         if selected_student:
             table = Table(show_header=True, header_style="bold magenta")
             table.add_column("Attribut", style="cyan")
@@ -299,53 +299,78 @@ class StudentView:
                 self.console.print("La mise à jour des notes de l'étudiant a été annulée.", style="bold cyan")
 
     def update_student_info(self):
-        student_name = input("Nom de l'étudiant à mettre à jour (Prénom et Nom ou Prénom seul) : ")
+        student_name = click.prompt("Nom de l'étudiant à mettre à jour (Prénom et Nom ou Prénom seul) ", type=str)
 
         # Vérifie si l'étudiant existe
         student = self.student_controller.get_student_database_controller(student_name)
         if not student:
-            print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
+            self.console.print(f"Aucun étudiant trouvé avec le nom [bold]{student_name}[/bold]. Vérifiez le nom de l'étudiant.", style="bold red")
             return
 
         # Demande les nouvelles informations
-        new_first_name = input("Nouveau prénom (appuyez sur Entrée pour conserver le prénom actuel) : ").strip()
-        new_last_name = input("Nouveau nom (appuyez sur Entrée pour conserver le nom actuel) : ").strip()
-        new_classroom = input("Nouvelle classe (appuyez sur Entrée pour conserver la classe actuelle) : ").strip()
+        new_first_name = click.prompt(f"Nouveau prénom (appuyez sur Entrée pour conserver le prénom actuel) [{student['first_name']}] : ", default="", type=str, show_default=False, prompt_suffix="")
+        if not new_first_name:
+            new_first_name = student['first_name']
 
-        # Vérifie si les nouvelles informations sont fournies, sinon conserve les informations actuelles
-        new_first_name = new_first_name if new_first_name else student['first_name']
-        new_last_name = new_last_name if new_last_name else student['last_name']
-        new_classroom = new_classroom if new_classroom else student.get('classroom_name')
+        new_last_name = click.prompt(f"Nouveau nom (appuyez sur Entrée pour conserver le nom actuel) [{student['last_name']}] : ", default="", type=str, show_default=False, prompt_suffix="")
+        if not new_last_name:
+            new_last_name = student['last_name']
+
+        new_classroom = click.prompt(f"Nouvelle classe (appuyez sur Entrée pour conserver la classe actuelle) ", type=str, show_default=False, default="").strip()
+
+        # Vérifie si la saisie est vide et attribue None si c'est le cas
+        new_classroom = new_classroom if new_classroom != "" else None
 
         # Liste pour stocker les nouvelles matières et notes de l'étudiant
         new_lessons = []
 
         # Boucle pour saisir les nouvelles matières et notes
         for lesson in student.get('lessons', []):
-            lesson_name = input(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver) : ").strip()
-            if not lesson_name:
-                lesson_name = lesson['name']
+            lesson_name = click.prompt(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver)", type=str, default=lesson['name'])
 
-            lesson_grade_input = input(f"Nouvelle note pour la matière {lesson['name']} (appuyez sur Entrée pour conserver) : ").strip()
-            if not lesson_grade_input:
-                lesson_grade = lesson['grade']
-            else:
+            lesson_grade_input = click.prompt(f"Nouvelle note pour la matière {lesson['name']} (appuyez sur Entrée pour conserver)", type=str, default=str(lesson['grade']))
+            if lesson_grade_input:
                 lesson_grade = float(lesson_grade_input)
+            else:
+                lesson_grade = lesson['grade']
 
             # Ajoute la matière et la note à la liste des nouvelles matières
             new_lessons.append({'name': lesson_name, 'grade': lesson_grade})
 
-        # Crée un dictionnaire avec les nouvelles informations de l'étudiant
-        new_student_data = {
-            'first_name': new_first_name,
-            'last_name': new_last_name,
-            'grades': student['grades'],  # Conserve les anciennes notes
-            'classroom_name': new_classroom,
-            'lessons': new_lessons
-        }
+        # Affiche les nouvelles informations de l'étudiant dans un tableau
+        table = Table(style="bold magenta")
+        table.add_column("Champ")
+        table.add_column("Valeur")
 
-        # Mettre à jour les informations de l'étudiant
-        self.student_controller.update_student_info_database_controller(student_name, new_student_data)
+        table.add_row("Prénom", new_first_name)
+        table.add_row("Nom", new_last_name)
+        table.add_row("Classe", new_classroom)
+
+        for lesson in new_lessons:
+            table.add_row(f"Matière: {lesson['name']}", f"Note: {lesson['grade']}")
+
+        # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
+        self.console.print()
+        self.console.print("Résumé des nouvelles informations de l'étudiant", style="bold magenta")
+
+        self.console.print(table)
+
+        # Confirmation pour la mise à jour des informations
+        if click.confirm("Confirmez-vous la mise à jour des informations de cet étudiant ?", default=True):
+            # Crée un dictionnaire avec les nouvelles informations de l'étudiant
+            new_student_data = {
+                'first_name': new_first_name,
+                'last_name': new_last_name,
+                'grades': student['grades'],  # Conserve les anciennes notes
+                'classroom_name': new_classroom,
+                'lessons': new_lessons
+            }
+
+            # Mettre à jour les informations de l'étudiant
+            self.student_controller.update_student_info_database_controller(student_name, new_student_data)
+            self.console.print("[bold green]Les informations de l'étudiant ont été mises à jour avec succès ![/bold green]")
+        else:
+            self.console.print("[bold cyan]La mise à jour des informations de l'étudiant a été annulée.[/bold cyan]")
 
     def delete_student(self):
         student_name = input("Nom de l'étudiant à supprimer (Prénom et Nom ou Prénom seul) : ")
