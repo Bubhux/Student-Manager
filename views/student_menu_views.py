@@ -326,9 +326,9 @@ class StudentView:
 
         # Boucle pour saisir les nouvelles matières et notes
         for lesson in student.get('lessons', []):
-            lesson_name = click.prompt(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver)", type=str, default=lesson['name'])
+            lesson_name = click.prompt(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['name']}] :", default="", type=str, show_default=False, prompt_suffix="")
 
-            lesson_grade_input = click.prompt(f"Nouvelle note pour la matière {lesson['name']} (appuyez sur Entrée pour conserver)", type=str, default=str(lesson['grade']))
+            lesson_grade_input = input(f"Nouvelle note pour la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['grade']}] : ").strip()
             if lesson_grade_input:
                 lesson_grade = float(lesson_grade_input)
             else:
