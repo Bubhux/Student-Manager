@@ -258,7 +258,7 @@ class StudentView:
         # Demande les nouvelles notes
         new_grades = []
         for subject in student['lessons']:
-            new_grade_input = click.prompt(f"Nouvelle note pour {subject['name']} (appuyez sur Entrée pour conserver la note actuelle) [{subject['grade']}] ", type=str).strip()
+            new_grade_input = click.prompt(f"Nouvelle note pour {subject['name']} (appuyez sur Entrée pour conserver la note actuelle)", default=str(subject['grade']), type=str, prompt_suffix=" : ").strip()
             if new_grade_input:
                 try:
                     new_grade = float(new_grade_input)
@@ -268,9 +268,9 @@ class StudentView:
                 if not 0 <= new_grade <= 20:
                     self.console.print("La note doit être comprise entre 0 et 20.", style="bold red")
                     return
-                new_grades.append({'name': subject['name'], 'grade': new_grade})
             else:
-                new_grades.append({'name': subject['name'], 'grade': subject['grade']})
+                new_grade = subject['grade']
+            new_grades.append({'name': subject['name'], 'grade': new_grade})
 
         # Valide les nouvelles notes
         updated_student = StudentModel(student['first_name'], student['last_name'], lessons=new_grades)
@@ -326,13 +326,22 @@ class StudentView:
 
         # Boucle pour saisir les nouvelles matières et notes
         for lesson in student.get('lessons', []):
-            lesson_name = click.prompt(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['name']}] :", default="", type=str, show_default=False, prompt_suffix="")
-
+            lesson_name = click.prompt(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['name']}] :", default=lesson['name'], type=str, show_default=False, prompt_suffix="")
             lesson_grade_input = input(f"Nouvelle note pour la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['grade']}] : ").strip()
-            if lesson_grade_input:
-                lesson_grade = float(lesson_grade_input)
-            else:
+            
+            # Si aucun nouveau nom n'est saisi, conserve le nom actuel
+            if not lesson_name:
+                lesson_name = lesson['name']
+
+            # Si aucune nouvelle note n'est saisie, conserve la note actuelle
+            if not lesson_grade_input:
                 lesson_grade = lesson['grade']
+            else:
+                try:
+                    lesson_grade = float(lesson_grade_input)
+                except ValueError:
+                    self.console.print("Veuillez saisir un nombre valide pour la note.", style="bold red")
+                    return
 
             # Ajoute la matière et la note à la liste des nouvelles matières
             new_lessons.append({'name': lesson_name, 'grade': lesson_grade})
@@ -370,7 +379,7 @@ class StudentView:
             self.student_controller.update_student_info_database_controller(student_name, new_student_data)
             self.console.print("[bold green]Les informations de l'étudiant ont été mises à jour avec succès ![/bold green]")
         else:
-            self.console.print("[bold cyan]La mise à jour des informations de l'étudiant a été annulée.[/bold cyan]")
+            self.console.print("[bold red]La mise à jour des informations de l'étudiant a été annulée.[/bold red]")
 
     def delete_student(self):
         student_name = input("Nom de l'étudiant à supprimer (Prénom et Nom ou Prénom seul) : ")
