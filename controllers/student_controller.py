@@ -132,10 +132,13 @@ class StudentDatabaseController:
             print(f"Une erreur s'est produite lors de la suppression de l'étudiant de la classe : {str(e)}")
 
     def delete_student_database_controller(self, student_name):
-        student = self.student_collection.find_one({'first_name': student_name})
+        # Recherche de l'étudiant par son prénom seul ou prénom et nom
+        student = self.student_collection.find_one({'$or': [{'first_name': student_name}, {'first_name': student_name.split()[0], 'last_name': student_name.split()[1]}]})
+        
         if student:
             try:
-                self.student_collection.delete_one({'first_name': student_name})
+                # Suppression de l'étudiant
+                self.student_collection.delete_one({'_id': student['_id']})
                 print(f"L'étudiant {student_name} a été supprimé avec succès!")
             except Exception as e:
                 print(f"Une erreur s'est produite lors de la suppression de l'étudiant : {str(e)}")
