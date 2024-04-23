@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import click
 
 from models.student_models import StudentModel
 from models.classroom_models import ClassroomModel
@@ -139,11 +140,11 @@ class StudentDatabaseController:
             try:
                 # Suppression de l'étudiant
                 self.student_collection.delete_one({'_id': student['_id']})
-                print(f"L'étudiant {student_name} a été supprimé avec succès!")
+                click.secho(f"L'étudiant {student_name} a été supprimé avec succès!", fg="green", bold=True)
             except Exception as e:
-                print(f"Une erreur s'est produite lors de la suppression de l'étudiant : {str(e)}")
+                click.secho(f"Une erreur s'est produite lors de la suppression de l'étudiant : {str(e)}", fg="red", bold=True)
         else:
-            print(f"Aucun étudiant trouvé avec le nom {student_name}.")
+            click.secho(f"Aucun étudiant trouvé avec le nom {student_name}.", fg="yellow", bold=True)
 
     def calculate_student_average_database_controller(self, student_name):
         # Divise le nom de l'étudiant en prénom et nom de famille
