@@ -162,10 +162,10 @@ class StudentDatabaseController:
 
         if student:
             # Récupère les notes de l'étudiant de la base de données
-            grades = student.get('grades', [])
-            if grades:
+            lessons = student.get('lessons', [])
+            if lessons:
                 # Extrait les notes numériques de la liste des dictionnaires
-                notes_numeriques = [lesson['grade'] for lesson in grades]
+                notes_numeriques = [lesson['grade'] for lesson in lessons]
                 # Calcule la moyenne des notes numériques
                 return sum(notes_numeriques) / len(notes_numeriques)
         return None
