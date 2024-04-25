@@ -390,7 +390,7 @@ class StudentView:
         student_name = input("Nom de l'étudiant à calculer la moyenne (Prénom et Nom ou Prénom seul) : ")
         average = self.student_controller.calculate_student_average_database_controller(student_name)
         if average is not None:
-            print(f"Moyenne de {student_name} : {average:.2f}")
+            click.secho(f"Moyenne de {student_name} : {average:.2f}", fg="green")
         else:
             print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
 
