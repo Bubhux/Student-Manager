@@ -60,12 +60,17 @@ class ClassroomView:
     def display_classrooms(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
         if not classrooms:
-            print("Il n'y a pas de classes à afficher.")
+            self.console.print("Il n'y a pas de classes à afficher.")
         else:
             # Trie les classes par ordre alphabétique en fonction de leur nom
             sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
-            print("Liste des classes triés par ordre alphabétique :")
+            # Crée un tableau pour afficher les classes
+            table = Table(title="Liste des classes triées par ordre alphabétique")
+            table.add_column("Nom de la classe")
+            table.add_column("Nombre de places disponibles")
+            table.add_column("Nombre d'étudiants")
+
             for classroom in sorted_classrooms:
                 # Vérifie le type de la valeur associée à 'number_of_students'
                 if isinstance(classroom['number_of_students'], list):
@@ -73,10 +78,15 @@ class ClassroomView:
                 else:
                     num_students = classroom['number_of_students']
 
-                # Affiche le nom de la classe et le nombre d'étudiants dans cette classe
-                print(f"- {classroom['classroom_name']}, "
-                      f"Nombre de places disponibles : {classroom['number_of_places_available']}, "
-                      f"Nombre d'étudiants : {num_students}")
+                # Ajoute une ligne au tableau avec les informations de la classe
+                table.add_row(
+                    classroom['classroom_name'],
+                    str(classroom['number_of_places_available']),
+                    str(num_students)
+                )
+
+            # Affiche le tableau
+            self.console.print(table)
 
     def add_students_to_classroom(self):
 
