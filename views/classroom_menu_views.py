@@ -66,7 +66,7 @@ class ClassroomView:
             sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
             # Crée un tableau pour afficher les classes
-            table = Table(title="Liste des classes triées par ordre alphabétique")
+            table = Table(show_header=True, header_style="bold magenta")
             table.add_column("Nom de la classe")
             table.add_column("Nombre de places disponibles")
             table.add_column("Nombre d'étudiants")
@@ -85,7 +85,10 @@ class ClassroomView:
                     str(num_students)
                 )
 
-            # Affiche le tableau
+            # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
+            self.console.print()
+            self.console.print("Liste des classes triées par ordre alphabétique", style="bold magenta")
+
             self.console.print(table)
 
     def add_students_to_classroom(self):
