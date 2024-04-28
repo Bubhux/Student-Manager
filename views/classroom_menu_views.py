@@ -67,9 +67,9 @@ class ClassroomView:
 
             # Crée un tableau pour afficher les classes
             table = Table(show_header=True, header_style="bold magenta")
-            table.add_column("Nom de la classe")
-            table.add_column("Nombre de places disponibles")
-            table.add_column("Nombre d'étudiants")
+            table.add_column("Nom de la classe", style="cyan")
+            table.add_column("Nombre de places disponibles", style="cyan")
+            table.add_column("Nombre d'étudiants", style="cyan")
 
             for classroom in sorted_classrooms:
                 # Vérifie le type de la valeur associée à 'number_of_students'
