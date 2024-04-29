@@ -303,9 +303,9 @@ class ClassroomView:
         self.classroom_controller.update_classroom_info_database_controller(classroom_name, {'new_number_of_students': sorted_students})
 
     def add_classroom(self):
-        classroom_name = input("Nom de la classe : ")
-        number_of_places_available_input = input("Nombre de places disponibles (appuyez sur Entrée pour laisser vide) : ")
-        number_of_students_input = input("Nombre d'étudiants (appuyez sur Entrée pour laisser vide) : ")
+        classroom_name = click.prompt("Nom de la classe : ")
+        number_of_places_available_input = click.prompt("Nombre de places disponibles (appuyez sur Entrée pour laisser vide) : ", default="", type=str)
+        number_of_students_input = click.prompt("Nombre d'étudiants (appuyez sur Entrée pour laisser vide) : ", default="", type=str)
 
         # Vérifie si rien n'est saisi pour le nombre de places disponibles, puis définit 0 comme valeur par défaut
         if number_of_places_available_input:
@@ -333,10 +333,13 @@ class ClassroomView:
                 'number_of_places_available': number_of_places_available,
                 'number_of_students': number_of_students
             }
-            self.classroom_controller.add_classroom_database_controller(classroom_data)
-            print("La classe a été ajoutée avec succès!")
+            if click.confirm("Confirmez-vous la création de cette classe ?", default=True):
+                self.classroom_controller.add_classroom_database_controller(classroom_data)
+                self.console.print("[bold green]La classe a été ajoutée avec succès![/bold green]")
+            else:
+                self.console.print("[bold cyan]La création de la classe a été annulée.[/bold cyan]")
         else:
-            print("Les données d'entrée sont invalides.")
+            self.console.print("[bold red]Les données d'entrée sont invalides.[/bold red]")
 
     def update_classroom_info(self):
         classroom_name = input("Nom de la classe à mettre à jour : ")
