@@ -342,18 +342,18 @@ class ClassroomView:
             self.console.print("[bold red]Les données d'entrée sont invalides.[/bold red]")
 
     def update_classroom_info(self):
-        classroom_name = input("Nom de la classe à mettre à jour : ")
+        classroom_name = click.prompt("Nom de la classe à mettre à jour : ", type=str)
 
         # Vérifie si la classe existe
         classroom = self.classroom_controller.get_classroom_database_controller(classroom_name)
         if not classroom:
-            print(f"Aucune classe trouvée avec le nom {classroom_name}. Vérifiez le nom de la classe.")
+            self.console.print(f"Aucune classe trouvée avec le nom [bold]{classroom_name}[/bold]. Vérifiez le nom de la classe.", style="bold red")
             return
 
         # Demande les nouvelles informations
-        new_classroom_name = input("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) : ").strip()
-        new_number_of_places_available = input("Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) : ").strip()
-        new_number_of_students = input("Nouveau nombre d'étudiants (appuyez sur Entrée pour laisser vide) : ").strip()
+        new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) : ", default=classroom['classroom_name'], type=str).strip()
+        new_number_of_places_available = click.prompt("Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) : ", default=str(classroom['number_of_places_available']), type=int).strip()
+        new_number_of_students = click.prompt("Nouveau nombre d'étudiants (appuyez sur Entrée pour laisser vide) : ", default=str(classroom['number_of_students']), type=int).strip()
 
         # Vérifie si les nouvelles informations sont fournies, sinon conserve les informations actuelles
         new_classroom_name = new_classroom_name if new_classroom_name else classroom['classroom_name']
@@ -363,12 +363,30 @@ class ClassroomView:
         # Crée un dictionnaire avec les nouvelles informations de la classe
         new_classroom_data = {
             'classroom_name': new_classroom_name,
-            'new_number_of_places_available': new_number_of_places_available,
-            'new_number_of_students': new_number_of_students
+            'number_of_places_available': new_number_of_places_available,
+            'number_of_students': new_number_of_students
         }
 
-        # Mettre à jour les informations de la classe
-        self.classroom_controller.update_classroom_info_database_controller(classroom_name, new_classroom_data)
+        # Affiche les nouvelles informations de la classe dans un tableau
+        table = Table(style="bold magenta")
+        table.add_column("Champ")
+        table.add_column("Valeur")
+
+        table.add_row("Nom de la classe", new_classroom_name)
+        table.add_row("Nombre de places disponibles", new_number_of_places_available)
+        table.add_row("Nombre d'étudiants", new_number_of_students)
+
+        # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
+        self.console.print()
+        self.console.print("Résumé des nouvelles informations de la classe", style="bold magenta")
+        self.console.print(table)
+
+        # Confirmation pour la mise à jour des informations
+        if click.confirm("Confirmez-vous la mise à jour des informations de cette classe ?", default=True):
+            self.classroom_controller.update_classroom_info_database_controller(classroom_name, new_classroom_data)
+            self.console.print("[bold green]Les informations de la classe ont été mises à jour avec succès ![/bold green]")
+        else:
+            self.console.print("[bold cyan]La mise à jour des informations de la classe a été annulée.[/bold cyan]")
 
     def delete_classroom(self):
         classroom_name = input("Nom de la classe à supprimer. : ")
