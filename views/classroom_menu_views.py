@@ -342,7 +342,7 @@ class ClassroomView:
             self.console.print("[bold red]Les données d'entrée sont invalides.[/bold red]")
 
     def update_classroom_info(self):
-        classroom_name = click.prompt("Nom de la classe à mettre à jour : ", type=str)
+        classroom_name = click.prompt("Nom de la classe à mettre à jour ", type=str)
 
         # Vérifie si la classe existe
         classroom = self.classroom_controller.get_classroom_database_controller(classroom_name)
@@ -351,9 +351,9 @@ class ClassroomView:
             return
 
         # Demande les nouvelles informations
-        new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) : ", default=classroom['classroom_name'], type=str).strip()
-        new_number_of_places_available = click.prompt("Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) : ", default=str(classroom['number_of_places_available']), type=int).strip()
-        new_number_of_students = click.prompt("Nouveau nombre d'étudiants (appuyez sur Entrée pour laisser vide) : ", default=str(classroom['number_of_students']), type=int).strip()
+        new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) ", default=classroom['classroom_name'], type=str).strip()
+        new_number_of_places_available = click.prompt("Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) ", default=str(classroom['number_of_places_available']), type=int)
+        new_number_of_students = click.prompt("Nouveau nombre d'étudiants (appuyez sur Entrée pour laisser vide) ", default=str(classroom['number_of_students']), type=int)
 
         # Vérifie si les nouvelles informations sont fournies, sinon conserve les informations actuelles
         new_classroom_name = new_classroom_name if new_classroom_name else classroom['classroom_name']
@@ -373,7 +373,7 @@ class ClassroomView:
         table.add_column("Valeur")
 
         table.add_row("Nom de la classe", new_classroom_name)
-        table.add_row("Nombre de places disponibles", new_number_of_places_available)
+        table.add_row("Nombre de places disponibles", str(new_number_of_places_available))  # Convertir en chaîne de caractères
         table.add_row("Nombre d'étudiants", new_number_of_students)
 
         # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
