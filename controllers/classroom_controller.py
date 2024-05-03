@@ -54,15 +54,15 @@ class ClassroomDatabaseController:
 
     def update_classroom_info_database_controller(self, classroom_name, new_classroom_data):
         # Recherche de la classe par son nom
-        classroom = self.classroom_collection.find_one({'$or': [{'classroom_name': classroom_name}]})
+        classroom = self.classroom_collection.find_one({'classroom_name': classroom_name})
 
         if classroom:
             try:
                 # Création d'une instance de ClassroomModel avec les nouvelles données
                 updated_classroom = ClassroomModel(
                     new_classroom_data.get('classroom_name', classroom['classroom_name']),
-                    new_classroom_data.get('new_number_of_places_available', classroom['number_of_places_available']),
-                    new_classroom_data.get('new_number_of_students', classroom['number_of_students'])
+                    new_classroom_data.get('number_of_places_available', classroom['number_of_places_available']),
+                    new_classroom_data.get('number_of_students', classroom['number_of_students'])
                 )
 
                 # Mise à jour des données de la classe dans la base de données
@@ -72,7 +72,7 @@ class ClassroomDatabaseController:
                     'number_of_students': updated_classroom.number_of_students
                 }})
 
-                print(f"Les informations de la classe {classroom_name} ont été mises à jour avec succès ! ClassroomControlleur update_classroom_info_database_controller")
+                print(f"Les informations de la classe {classroom_name} ont été mises à jour avec succès !")
             except Exception as e:
                 print(f"Une erreur s'est produite lors de la mise à jour des informations de la classe : {str(e)}")
         else:
