@@ -94,19 +94,26 @@ class ClassroomView:
     def add_students_to_classroom(self):
 
         while True:
-            print("\nMenu gestion d'ajout d'étudiants")
-            print("1. Afficher les classes disponibles")
-            print("r. Retour au menu précédent")
+            table = Table(show_header=True, header_style="bold magenta")
+            table.add_column("Choix", style="cyan")
+            table.add_column("Action", style="cyan")
+            table.add_row("1", "Afficher les classes disponibles", style="cyan")
+            table.add_row("r", "Retour au menu précédent", style="cyan")
 
-            choice = input("Choisissez le numéro de votre choix.\n> ")
+            # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
+            self.console.print()
+            self.console.print("Menu gestion d'ajout d'étudiants", style="bold magenta")
+            self.console.print(table)
+
+            choice = click.prompt("Choisissez le numéro de votre choix", type=str)
 
             if choice == "1":
                 self.display_available_classes()
                 break
-            elif choice == "r":
+            elif choice.lower() == "r":
                 return
             else:
-                print("Choix invalide, saisissez un 1 ou r.")
+                self.console.print("Choix invalide, saisissez 1 ou r.", style="bold red")
 
     def display_available_classes(self):
 
@@ -373,7 +380,7 @@ class ClassroomView:
         table.add_column("Valeur")
 
         table.add_row("Nom de la classe", new_classroom_name)
-        table.add_row("Nombre de places disponibles", str(new_number_of_places_available))  # Convertir en chaîne de caractères
+        table.add_row("Nombre de places disponibles", str(new_number_of_places_available))
         table.add_row("Nombre d'étudiants", new_number_of_students)
 
         # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
