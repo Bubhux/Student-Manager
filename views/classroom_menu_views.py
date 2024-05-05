@@ -120,17 +120,22 @@ class ClassroomView:
         while True:
             classrooms = self.classroom_controller.get_all_classrooms_database_controller()
             if not classrooms:
-                print("Il n'y a pas de classes disponibles.")
+                self.console.print("Il n'y a pas de classes disponibles.", style="bold red")
             else:
-                # Trie les classes par ordre alphabétique en fonction de leur nom
                 sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
-
-                print("Classes disponibles triés par ordre alphabétique :")
+                table = Table(show_header=True, header_style="bold magenta")
+                table.add_column("Numéro", style="cyan")
+                table.add_column("Nom de la classe", style="cyan")
                 for index, classroom in enumerate(sorted_classrooms, start=1):
-                    print(f"{index}. {classroom['classroom_name']}")
+                    table.add_row(str(index), classroom['classroom_name'])
 
-                class_choice = input("Choisissez la classe à laquelle vous souhaitez ajouter des étudiants (ou 'r' pour revenir) :\n> ")
-                if class_choice == "r":
+                # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
+                self.console.print()
+                self.console.print("Classes disponibles triées par ordre alphabétique", style="bold magenta")
+                self.console.print(table)
+
+                class_choice = click.prompt("Choisissez la classe à laquelle vous souhaitez ajouter des étudiants (ou 'r' pour revenir)", type=str)
+                if class_choice.lower() == "r":
                     return
                 elif class_choice.isdigit():
                     class_choice = int(class_choice)
@@ -139,9 +144,9 @@ class ClassroomView:
                         self.add_students_to_selected_class(selected_class['classroom_name'])
                         break
                     else:
-                        print("Choix invalide.")
+                        self.console.print("Choix invalide.", style="bold red")
                 else:
-                    print("Choix invalide, choisissez une classe disponible.")
+                    self.console.print("Choix invalide, choisissez une classe disponible.", style="bold red")
 
     def add_students_to_selected_class(self, classroom_name):
         while True:
