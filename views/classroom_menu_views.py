@@ -149,64 +149,52 @@ class ClassroomView:
                     self.console.print("Choix invalide, choisissez une classe disponible.", style="bold red")
 
     def add_students_to_selected_class(self, classroom_name):
-        while True:
-            num_students_to_add = input("Entrez le nombre d'étudiants à ajouter.\n> ")
-            if num_students_to_add.isdigit():
-                num_students_to_add = int(num_students_to_add)
-                if num_students_to_add != 0:
-                    break
-                else:
-                    print("Le nombre d'étudiants ne peut pas être 0.")
-            else:
-                print("Veuillez entrer un nombre valide.")
 
-        # Récupére les étudiants déjà présents dans la classe sélectionnée
+        while True:
+            num_students_to_add = click.prompt("Entrez le nombre d'étudiants à ajouter", type=int)
+            if num_students_to_add != 0:
+                break
+            else:
+                self.console.print("Le nombre d'étudiants ne peut pas être 0.", style="bold red")
+
+        # Récupère les étudiants déjà présents dans la classe sélectionnée
         current_students = self.classroom_controller.get_students_in_classroom_database_controller(classroom_name)
 
         # Affiche la liste des étudiants triés par ordre alphabétique
         students_from_database = self.student_controller.get_all_students_database_controller()
         if not students_from_database:
-            print("Il n'y a pas d'élèves à afficher.")
+            self.console.print("Il n'y a pas d'élèves à afficher.", style="bold red")
             return
 
         sorted_students = sorted(students_from_database, key=lambda x: x['first_name'])
 
-        print("Liste des étudiants triés par ordre alphabétique :")
+        table = Table(show_header=True, header_style="bold magenta")
+        table.add_column("Numéro", style="cyan")
+        table.add_column("Nom", style="cyan")
+        table.add_column("Prénom", style="cyan")
         for index, student in enumerate(sorted_students, start=1):
-            print(f"{index}. {student['first_name']} {student['last_name']}")
+            table.add_row(str(index), student['last_name'], student['first_name'])
+
+        # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
+        self.console.print()
+        self.console.print("Liste des étudiants triés par ordre alphabétique", style="bold magenta")
+        self.console.print(table)
 
         # Liste pour stocker les étudiants sélectionnés
         selected_students = []
         for i in range(num_students_to_add):
             while True:
-                student_choice = input(f"Saisissez le nom et prénom ou l'ID de l'étudiant {i+1} :\n> ")
-                if student_choice.isdigit():
-                    student_index = int(student_choice) - 1
-                    if 0 <= student_index < len(sorted_students):
-                        selected_student = sorted_students[student_index]
-                        # Vérifie si l'étudiant est déjà dans une classe
-                        if selected_student['_id'] in [student['_id'] for student in current_students]:
-                            print(f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans une classe.")
-                        else:
-                            selected_students.append(selected_student)
-                            break
+                student_choice = click.prompt(f"Saisissez le numéro de l'étudiant {i+1}", type=int)
+                if 0 < student_choice <= len(sorted_students):
+                    selected_student = sorted_students[student_choice - 1]
+                    # Vérifie si l'étudiant est déjà dans une classe
+                    if selected_student['_id'] in [student['_id'] for student in current_students]:
+                        self.console.print(f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans une classe.", style="bold red")
                     else:
-                        print("ID invalide.")
+                        selected_students.append(selected_student)
+                        break
                 else:
-                    try:
-                        student_index = int(student_choice) - 1
-                        if 0 <= student_index < len(sorted_students):
-                            selected_student = sorted_students[student_index]
-                            # Vérifie si l'étudiant est déjà dans une classe
-                            if selected_student['_id'] in [student['_id'] for student in current_students]:
-                                print(f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans une classe.")
-                            else:
-                                selected_students.append(selected_student)
-                                break
-                        else:
-                            print("ID invalide.")
-                    except ValueError:
-                        print("Nom/prénom invalide.")
+                    self.console.print("Numéro invalide, veuillez saisir un numéro valide.", style="bold red")
 
         # Ajoute les étudiants sélectionnés à la classe
         self.classroom_controller.add_students_to_classroom_database_controller(classroom_name, selected_students)
