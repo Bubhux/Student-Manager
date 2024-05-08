@@ -204,10 +204,11 @@ class ClassroomView:
         while True:
             menu_table = Table(show_header=False, show_lines=False)
             menu_table.add_column("")
-            menu_table.add_row("[bold magenta]Menu gestion de suppression d'étudiants[/bold magenta]")
             menu_table.add_row("1. Afficher les classes disponibles", style="cyan")
             menu_table.add_row("r. Retour au menu précédent", style="cyan")
 
+            self.console.print()
+            self.console.print("Menu gestion de suppression d'étudiants", style="bold magenta")
             self.console.print(menu_table)
 
             choice = input("Choisissez le numéro de votre choix.\n> ")
