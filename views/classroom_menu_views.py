@@ -222,18 +222,20 @@ class ClassroomView:
                 print("Choix invalide, saisissez 1 ou r.")
 
     def display_available_classes_for_deletion(self):
-
         while True:
             classrooms = self.classroom_controller.get_all_classrooms_database_controller()
             if not classrooms:
-                print("Il n'y a pas de classes disponibles.")
+                self.console.print("Il n'y a pas de classes disponibles.")
             else:
                 # Trie les classes par ordre alphabétique en fonction de leur nom
                 sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
-                print("Classes disponibles triés par ordre alphabétique :")
+                table = Table(title="Classes disponibles triés par ordre alphabétique")
+
                 for index, classroom in enumerate(sorted_classrooms, start=1):
-                    print(f"{index}. {classroom['classroom_name']}")
+                    table.add_row(str(index), classroom['classroom_name'])
+
+                self.console.print(table)
 
                 class_choice = input("Choisissez la classe dont vous souhaitez supprimer des étudiants (ou 'r' pour revenir) :\n> ")
                 if class_choice == "r":
@@ -245,9 +247,9 @@ class ClassroomView:
                         self.remove_students_from_selected_class(selected_class['classroom_name'])
                         break
                     else:
-                        print("Choix invalide.")
+                        self.console.print("Choix invalide.", style="red")
                 else:
-                    print("Choix invalide, choisissez une classe disponible.")
+                    self.console.print("Choix invalide, choisissez une classe disponible.", style="red")
 
     def remove_students_from_selected_class(self, classroom_name):
         classroom = self.classroom_controller.get_classroom_database_controller(classroom_name)
