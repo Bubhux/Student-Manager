@@ -231,6 +231,7 @@ class ClassroomView:
                 sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
                 table = Table(title="Classes disponibles triés par ordre alphabétique")
+                table.add_column("Numéro", justify="right", style="cyan")
 
                 for index, classroom in enumerate(sorted_classrooms, start=1):
                     table.add_row(str(index), classroom['classroom_name'])
