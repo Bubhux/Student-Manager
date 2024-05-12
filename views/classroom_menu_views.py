@@ -230,13 +230,15 @@ class ClassroomView:
                 # Trie les classes par ordre alphabétique en fonction de leur nom
                 sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
-                table = Table(title="Classes disponibles triés par ordre alphabétique")
+                table = Table(show_header=False, show_lines=False)
                 table.add_column("Numéro", justify="right", style="cyan")
                 table.add_column("Nom de la classe", style="magenta")
 
                 for index, classroom in enumerate(sorted_classrooms, start=1):
                     table.add_row(str(index), classroom['classroom_name'])
-
+                
+                self.console.print()
+                self.console.print("Classes disponibles triés par ordre alphabétique", style="bold magenta")
                 self.console.print(table)
 
                 class_choice = input("Choisissez la classe dont vous souhaitez supprimer des étudiants (ou 'r' pour revenir) :\n> ")
