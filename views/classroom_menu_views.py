@@ -232,7 +232,7 @@ class ClassroomView:
 
                 table = Table(show_header=False, show_lines=False)
                 table.add_column("Numéro", justify="right", style="cyan")
-                table.add_column("Nom de la classe", style="magenta")
+                table.add_column("Nom de la classe", style="cyan")
 
                 for index, classroom in enumerate(sorted_classrooms, start=1):
                     table.add_row(str(index), classroom['classroom_name'])
