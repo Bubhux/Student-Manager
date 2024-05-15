@@ -230,7 +230,7 @@ class ClassroomView:
                 # Trie les classes par ordre alphabétique en fonction de leur nom
                 sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
-                table = Table(show_header=False, show_lines=False, header_style="bold magenta")
+                table = Table(show_header=True, show_lines=False, header_style="bold magenta")
                 table.add_column("Numéro", justify="right", style="cyan")
                 table.add_column("Nom de la classe", style="cyan")
 
