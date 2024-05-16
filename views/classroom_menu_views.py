@@ -236,7 +236,7 @@ class ClassroomView:
 
                 for index, classroom in enumerate(sorted_classrooms, start=1):
                     table.add_row(str(index), classroom['classroom_name'])
-                
+
                 self.console.print()
                 self.console.print("Classes disponibles triés par ordre alphabétique", style="bold magenta")
                 self.console.print(table)
