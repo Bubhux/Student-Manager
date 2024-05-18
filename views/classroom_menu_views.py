@@ -259,12 +259,12 @@ class ClassroomView:
         classroom = self.classroom_controller.get_classroom_database_controller(classroom_name)
 
         if not classroom:
-            print(f"Aucune classe trouvée avec le nom {classroom_name}.")
+            self.console.print(f"[bold red]Aucune classe trouvée avec le nom {classroom_name}.[/bold red]")
             return
 
         students = classroom.get('number_of_students', [])
         if not students:
-            print("Il n'y a pas d'étudiants dans cette classe à supprimer.")
+            self.console.print("[bold yellow]Il n'y a pas d'étudiants dans cette classe à supprimer.[/bold yellow]")
             return
 
         # Trie les étudiants par ordre alphabétique en fonction de leur nom complet
