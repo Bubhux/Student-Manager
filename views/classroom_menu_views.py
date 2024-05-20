@@ -277,7 +277,9 @@ class ClassroomView:
         table.add_column("Nom", justify="left")
 
         for index, student in enumerate(sorted_students, start=1):
-            print(f"{index}. {student['first_name']} {student['last_name']}")
+            table.add_row(str(index), student['first_name'], student['last_name'])
+
+        self.console.print(table)
 
         while True:
             num_students_to_remove = input("Entrez le nombre d'étudiants à supprimer.\n> ")
