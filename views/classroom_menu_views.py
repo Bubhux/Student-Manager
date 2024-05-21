@@ -288,9 +288,9 @@ class ClassroomView:
                 if num_students_to_remove != 0:
                     break
                 else:
-                    print("Le nombre d'étudiants à supprimer ne peut pas être 0.")
+                    self.console.print("[bold yellow]Le nombre d'étudiants à supprimer ne peut pas être 0.[/bold yellow]")
             else:
-                print("Veuillez entrer un nombre valide.")
+                self.console.print("[bold yellow]Veuillez entrer un nombre valide.[/bold yellow]")
 
         for i in range(num_students_to_remove):
             while True:
