@@ -303,10 +303,9 @@ class ClassroomView:
                         self.classroom_controller.remove_student_from_classroom_database_controller(classroom_name, student_to_remove)
                         # Met à jour le champ classroom_name dans le profil de l'étudiant
                         self.student_controller.remove_student_from_classroom(student_to_remove['_id'], classroom_name)
-                        # print(f"{student_to_remove['first_name']} {student_to_remove['last_name']} supprimé de la classe {classroom_name}.")
-
-                        # Affiche la liste des étudiants dans la classe triée par ordre alphabétique
-                        print("Liste des étudiants dans la classe triés par ordre alphabétique :")
+                        
+                        # Met à jour la table
+                        table = Table(title="Liste des étudiants dans la classe triés par ordre alphabétique")
                         for index, student in enumerate(sorted_students, start=1):
                             print(f"{index}. {student['first_name']} {student['last_name']}")
 
