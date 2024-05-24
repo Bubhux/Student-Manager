@@ -307,6 +307,7 @@ class ClassroomView:
                         # Met à jour la table
                         table = Table(title="Liste des étudiants dans la classe triés par ordre alphabétique")
                         table.add_column("Numéro", justify="right")
+                        table.add_column("Prénom", justify="left")
                         for index, student in enumerate(sorted_students, start=1):
                             print(f"{index}. {student['first_name']} {student['last_name']}")
 
