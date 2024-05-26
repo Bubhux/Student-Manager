@@ -310,7 +310,9 @@ class ClassroomView:
                         table.add_column("Prénom", justify="left")
                         table.add_column("Nom", justify="left")
                         for index, student in enumerate(sorted_students, start=1):
-                            print(f"{index}. {student['first_name']} {student['last_name']}")
+                            table.add_row(str(index), student['first_name'], student['last_name'])
+                        
+                        self.console.print(table)
 
                         break
                     else:
