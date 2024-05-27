@@ -316,9 +316,9 @@ class ClassroomView:
 
                         break
                     else:
-                        print("Numéro invalide.")
+                        self.console.print("[bold red]Numéro invalide.[/bold red]")
                 else:
-                    print("Veuillez entrer un numéro valide.")
+                    self.console.print("[bold red]Veuillez entrer un numéro valide.[/bold red]")
 
         # Mise à jour du nombre d'étudiants dans la classe
         self.classroom_controller.update_classroom_info_database_controller(classroom_name, {'new_number_of_students': sorted_students})
