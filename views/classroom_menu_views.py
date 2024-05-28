@@ -271,15 +271,17 @@ class ClassroomView:
         sorted_students = sorted(students, key=lambda x: (x['last_name'], x['first_name']))
 
         # Affiche la liste des étudiants dans la classe triée par ordre alphabétique
-        table = Table(title="Liste des étudiants dans la classe triés par ordre alphabétique")
+        table = Table(show_header=True, header_style="bold magenta")
         table.add_column("Numéro", justify="right")
         table.add_column("Prénom", justify="left")
         table.add_column("Nom", justify="left")
 
         for index, student in enumerate(sorted_students, start=1):
             table.add_row(str(index), student['first_name'], student['last_name'])
-
+        
         self.console.print(table)
+
+        "Liste des étudiants dans la classe triés par ordre alphabétique"
 
         while True:
             num_students_to_remove = input("Entrez le nombre d'étudiants à supprimer.\n> ")
