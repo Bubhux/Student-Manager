@@ -305,7 +305,7 @@ class ClassroomView:
                         self.classroom_controller.remove_student_from_classroom_database_controller(classroom_name, student_to_remove)
                         # Met à jour le champ classroom_name dans le profil de l'étudiant
                         self.student_controller.remove_student_from_classroom(student_to_remove['_id'], classroom_name)
-                        
+
                         # Met à jour la table
                         table = Table(show_header=True, header_style="bold magenta")
                         table.add_column("Numéro", justify="right")
@@ -313,7 +313,9 @@ class ClassroomView:
                         table.add_column("Nom", justify="left")
                         for index, student in enumerate(sorted_students, start=1):
                             table.add_row(str(index), student['first_name'], student['last_name'])
-                        
+
+                        self.console.print()
+                        self.console.print("Liste des étudiants dans la classe triés par ordre alphabétique", style="bold magenta")
                         self.console.print(table)
 
                         break
