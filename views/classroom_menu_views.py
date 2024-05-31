@@ -308,9 +308,9 @@ class ClassroomView:
 
                         # Met à jour la table
                         table = Table(show_header=True, header_style="bold magenta")
-                        table.add_column("Numéro", justify="right")
-                        table.add_column("Prénom", justify="left")
-                        table.add_column("Nom", justify="left")
+                        table.add_column("Numéro", justify="right", style="cyan")
+                        table.add_column("Prénom", justify="left", style="cyan")
+                        table.add_column("Nom", justify="left", style="cyan")
                         for index, student in enumerate(sorted_students, start=1):
                             table.add_row(str(index), student['first_name'], student['last_name'])
 
