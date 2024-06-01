@@ -90,26 +90,42 @@ class ClassroomDatabaseController:
                 # Assure que number_of_students est une liste
                 number_of_students = classroom['number_of_students'] if isinstance(classroom['number_of_students'], list) else []
 
-                # Étendre la liste des étudiants avec les nouveaux étudiants
-                number_of_students.extend(students)
+                # Liste pour stocker les informations complètes des étudiants
+                complete_student_info = []
+
+                # Mettre à jour la classe de chaque étudiant ajouté et récupérer les informations complètes
+                for student in students:
+                    student_id = student['_id']
+                    student_info = self.student_collection.find_one({'_id': student_id})
+
+                    if student_info:
+                        # Assure que classroom_name est une liste
+                        student_classroom = student_info.get('classroom_name', [])
+                        if not isinstance(student_classroom, list):
+                            student_classroom = []  # Initialise en tant que liste si ce n'est pas déjà une liste
+
+                        # Si la classe n'est pas déjà dans la liste, ajoute la classe
+                        if classroom_name not in student_classroom:
+                            student_classroom.append(classroom_name)
+
+                        # Met à jour la classe de l'étudiant dans la base de données
+                        self.student_collection.update_one({'_id': student_id}, {'$set': {'classroom_name': student_classroom}})
+
+                        # Ajouter les informations mises à jour de l'étudiant à la liste
+                        student_info['classroom_name'] = student_classroom
+                        complete_student_info.append(student_info)
+
+                # Étendre la liste des étudiants avec les informations complètes mises à jour
+                number_of_students.extend(complete_student_info)
 
                 # Mettre à jour le champ number_of_students dans la base de données
-                self.classroom_collection.update_one({'classroom_name': classroom_name}, {'$set': {'number_of_students': number_of_students}})
+                self.classroom_collection.update_one(
+                    {'classroom_name': classroom_name},
+                    {'$set': {'number_of_students': number_of_students}}
+                )
+
                 student_names = ', '.join([f"{student['first_name']} {student['last_name']}" for student in students])
                 print(f"Étudiant(e) {student_names} ajouté(e) à la classe {classroom_name} avec succès !")
-
-                # Mettre à jour la classe de chaque étudiant ajouté
-                for student in students:
-                    student_classroom = student.get('classroom_name', [])
-                    if isinstance(student_classroom, list):
-                        # Si la classe est une liste, ajoute la nouvelle classe
-                        student_classroom.append(classroom_name)
-                    else:
-                        # Sinon, crée une nouvelle liste avec la nouvelle classe
-                        student_classroom = [student_classroom, classroom_name]
-
-                    # Met à jour la classe de l'étudiant dans la base de données
-                    self.student_collection.update_one({'_id': student['_id']}, {'$set': {'classroom_name': student_classroom}})
             except Exception as e:
                 print(f"Une erreur s'est produite lors de l'ajout de l'étudiants à la classe {classroom_name} : {str(e)}")
         else:
