@@ -90,10 +90,7 @@ class ClassroomDatabaseController:
                 # Assure que number_of_students est une liste
                 number_of_students = classroom['number_of_students'] if isinstance(classroom['number_of_students'], list) else []
 
-                # Liste pour stocker les informations complètes des étudiants
-                complete_student_info = []
-
-                # Mettre à jour la classe de chaque étudiant ajouté et récupérer les informations complètes
+                # Mettre à jour la classe de chaque étudiant ajouté
                 for student in students:
                     student_id = student['_id']
                     student_info = self.student_collection.find_one({'_id': student_id})
@@ -111,12 +108,9 @@ class ClassroomDatabaseController:
                         # Met à jour la classe de l'étudiant dans la base de données
                         self.student_collection.update_one({'_id': student_id}, {'$set': {'classroom_name': student_classroom}})
 
-                        # Ajouter les informations mises à jour de l'étudiant à la liste
-                        student_info['classroom_name'] = student_classroom
-                        complete_student_info.append(student_info)
-
-                # Étendre la liste des étudiants avec les informations complètes mises à jour
-                number_of_students.extend(complete_student_info)
+                        # Ajouter l'ID de l'étudiant à la liste
+                        if student_id not in number_of_students:
+                            number_of_students.append(student_id)
 
                 # Mettre à jour le champ number_of_students dans la base de données
                 self.classroom_collection.update_one(
