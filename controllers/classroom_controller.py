@@ -108,9 +108,9 @@ class ClassroomDatabaseController:
                         # Met à jour la classe de l'étudiant dans la base de données
                         self.student_collection.update_one({'_id': student_id}, {'$set': {'classroom_name': student_classroom}})
 
-                        # Ajouter l'ID de l'étudiant à la liste
-                        if student_id not in number_of_students:
-                            number_of_students.append(student_id)
+                        # Ajouter les informations complètes de l'étudiant à la liste
+                        student_info['classroom_name'] = student_classroom
+                        number_of_students.append(student_info)
 
                 # Mettre à jour le champ number_of_students dans la base de données
                 self.classroom_collection.update_one(
