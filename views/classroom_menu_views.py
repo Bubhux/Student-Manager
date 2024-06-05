@@ -421,7 +421,7 @@ class ClassroomView:
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
 
         if not classrooms:
-            print("Il n'y a pas de classes disponibles.")
+            self.console.print("Il n'y a pas de classes disponibles.", style="bold red")
             return
         else:
             # Trie les classes par ordre alphabétique en fonction de leur nom
