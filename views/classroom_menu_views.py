@@ -427,7 +427,9 @@ class ClassroomView:
             # Trie les classes par ordre alphabétique en fonction de leur nom
             sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
-        print("Classes disponibles :")
+        # Affiche les classes disponibles dans un tableau
+        table = Table(show_header=True, header_style="bold magenta")
+
         for index, classroom in enumerate(sorted_classrooms, start=1):
             print(f"{index}. Nom : {classroom['classroom_name']}")
 
