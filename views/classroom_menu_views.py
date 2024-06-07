@@ -429,6 +429,7 @@ class ClassroomView:
 
         # Affiche les classes disponibles dans un tableau
         table = Table(show_header=True, header_style="bold magenta")
+        table.add_column("Numéro", style="cyan")
 
         for index, classroom in enumerate(sorted_classrooms, start=1):
             print(f"{index}. Nom : {classroom['classroom_name']}")
