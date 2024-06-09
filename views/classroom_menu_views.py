@@ -433,7 +433,7 @@ class ClassroomView:
         table.add_column("Nom de la classe", style="cyan")
 
         for index, classroom in enumerate(sorted_classrooms, start=1):
-            print(f"{index}. Nom : {classroom['classroom_name']}")
+            table.add_row(str(index), classroom['classroom_name'])
 
         while True:
             choice = input("Choisissez le numéro de la classe pour calculer la moyenne (ou 'r' pour revenir) :\n> ")
