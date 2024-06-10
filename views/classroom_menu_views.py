@@ -435,6 +435,8 @@ class ClassroomView:
         for index, classroom in enumerate(sorted_classrooms, start=1):
             table.add_row(str(index), classroom['classroom_name'])
 
+        self.console.print()
+
         while True:
             choice = input("Choisissez le numéro de la classe pour calculer la moyenne (ou 'r' pour revenir) :\n> ")
 
