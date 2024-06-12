@@ -437,6 +437,7 @@ class ClassroomView:
 
         self.console.print()
         self.console.print("Classes disponibles triés par ordre alphabétique", style="bold magenta")
+        self.console.print(table)
 
         while True:
             choice = input("Choisissez le numéro de la classe pour calculer la moyenne (ou 'r' pour revenir) :\n> ")
