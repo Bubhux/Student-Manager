@@ -440,7 +440,7 @@ class ClassroomView:
         self.console.print(table)
 
         while True:
-            choice = input("Choisissez le numéro de la classe pour calculer la moyenne (ou 'r' pour revenir) :\n> ")
+            choice = click.prompt(click.style("Choisissez le numéro de la classe pour calculer la moyenne (ou 'r' pour revenir) :", fg="white"), type=str, prompt_suffix="")
 
             if choice == "r":
                 return
