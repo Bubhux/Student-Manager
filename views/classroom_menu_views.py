@@ -450,7 +450,7 @@ class ClassroomView:
                     selected_class = sorted_classrooms[choice - 1]
                     average = self.classroom_controller.calculate_classroom_average_database_controller(selected_class['classroom_name'])
                     if average is not None:
-                        print(f"Moyenne de {selected_class['classroom_name']} : {average:.2f}")
+                        self.console.print(f"Moyenne de la classe de {selected_class['classroom_name']} : {average:.2f}", style="bold green")
                     else:
                         print(f"Aucune donnée trouvée pour la classe {selected_class['classroom_name']}. Vérifiez le nom de la classe.")
                     break
