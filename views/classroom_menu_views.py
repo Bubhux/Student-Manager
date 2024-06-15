@@ -452,7 +452,7 @@ class ClassroomView:
                     if average is not None:
                         self.console.print(f"Moyenne de la classe de {selected_class['classroom_name']} : {average:.2f}", style="bold green")
                     else:
-                        print(f"Aucune donnée trouvée pour la classe {selected_class['classroom_name']}. Vérifiez le nom de la classe.")
+                        self.console.print(f"Aucune donnée trouvée pour la classe {selected_class['classroom_name']}. Vérifiez le nom de la classe.", style="bold red")
                     break
                 else:
                     print("Choix invalide. Veuillez saisir un numéro valide.")
