@@ -455,6 +455,6 @@ class ClassroomView:
                         self.console.print(f"Aucune donnée trouvée pour la classe {selected_class['classroom_name']}. Vérifiez le nom de la classe.", style="bold red")
                     break
                 else:
-                    print("Choix invalide. Veuillez saisir un numéro valide.")
+                    self.console.print("Choix invalide. Veuillez saisir un numéro valide.", style="bold red")
             else:
                 print("Choix invalide, veuillez saisir un nombre ou 'r' pour revenir.")
