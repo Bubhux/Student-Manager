@@ -457,4 +457,4 @@ class ClassroomView:
                 else:
                     self.console.print("Choix invalide. Veuillez saisir un numéro valide.", style="bold red")
             else:
-                print("Choix invalide, veuillez saisir un nombre ou 'r' pour revenir.")
+                self.console.print("Choix invalide, veuillez saisir un nombre ou 'r' pour revenir.", style="bold red")
