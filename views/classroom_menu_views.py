@@ -414,8 +414,14 @@ class ClassroomView:
             self.console.print("[bold cyan]La mise à jour des informations de la classe a été annulée.[/bold cyan]")
 
     def delete_classroom(self):
-        classroom_name = input("Nom de la classe à supprimer. : ")
-        self.classroom_controller.delete_classroom_database_controller(classroom_name)
+        classrooms = self.classroom_controller.get_all_classrooms_database_controller()
+
+        if not classrooms:
+            self.console.print("Il n'y a pas de classes disponibles.", style="bold red")
+            return
+        else:
+            # Trie les classes par ordre alphabétique en fonction de leur nom
+            sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
     def calculate_classroom_average(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
