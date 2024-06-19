@@ -422,6 +422,11 @@ class ClassroomView:
         else:
             # Trie les classes par ordre alphabétique en fonction de leur nom
             sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
+        
+        # Affiche les classes disponibles dans un tableau
+        table = Table(show_header=True, header_style="bold magenta")
+
+
 
     def calculate_classroom_average(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
