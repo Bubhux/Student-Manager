@@ -425,7 +425,7 @@ class ClassroomView:
         
         # Affiche les classes disponibles dans un tableau
         table = Table(show_header=True, header_style="bold magenta")
-
+        table.add_column("Numéro", style="cyan")
 
 
     def calculate_classroom_average(self):
