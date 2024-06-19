@@ -426,7 +426,7 @@ class ClassroomView:
         # Affiche les classes disponibles dans un tableau
         table = Table(show_header=True, header_style="bold magenta")
         table.add_column("Numéro", style="cyan")
-        table.add_column("Nom de la classe", style="cyan")
+
 
     def calculate_classroom_average(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
