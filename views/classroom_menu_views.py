@@ -431,6 +431,10 @@ class ClassroomView:
         for index, classroom in enumerate(sorted_classrooms, start=1):
             table.add_row(str(index), classroom['classroom_name'])
 
+        self.console.print()
+        self.console.print("Classes disponibles pour suppression", style="bold magenta")
+        self.console.print(table)
+
     def calculate_classroom_average(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
 
