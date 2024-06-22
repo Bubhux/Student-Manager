@@ -435,6 +435,12 @@ class ClassroomView:
         self.console.print("Classes disponibles pour suppression", style="bold magenta")
         self.console.print(table)
 
+        while True:
+            choice = click.prompt(click.style("Choisissez le numéro de la classe à supprimer (ou 'r' pour revenir) :", fg="white"), type=str, prompt_suffix="")
+
+            if choice.lower() == "r":
+                return
+
     def calculate_classroom_average(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
 
