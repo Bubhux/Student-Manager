@@ -440,6 +440,11 @@ class ClassroomView:
 
             if choice.lower() == "r":
                 return
+            elif choice.isdigit():
+                choice = int(choice)
+                if 1 <= choice <= len(sorted_classrooms):
+                    selected_class = sorted_classrooms[choice - 1]
+                    confirm = click.confirm(click.style(f"Êtes-vous sûr de vouloir supprimer la classe '{selected_class['classroom_name']}' ?", fg="yellow"), default=False)
 
     def calculate_classroom_average(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
