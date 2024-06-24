@@ -445,6 +445,12 @@ class ClassroomView:
                 if 1 <= choice <= len(sorted_classrooms):
                     selected_class = sorted_classrooms[choice - 1]
                     confirm = click.confirm(click.style(f"Êtes-vous sûr de vouloir supprimer la classe '{selected_class['classroom_name']}' ?", fg="yellow"), default=False)
+                    if confirm:
+                        self.classroom_controller.delete_classroom_database_controller(selected_class['classroom_name'])
+                        self.console.print(f"La classe '{selected_class['classroom_name']}' a été supprimée avec succès.", style="bold green")
+                    else:
+                        self.console.print("Suppression annulée.", style="bold red")
+                    break
 
     def calculate_classroom_average(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
