@@ -451,6 +451,8 @@ class ClassroomView:
                     else:
                         self.console.print("Suppression annulée.", style="bold red")
                     break
+                else:
+                    self.console.print("Choix invalide. Veuillez saisir un numéro valide.", style="bold red")
 
     def calculate_classroom_average(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
