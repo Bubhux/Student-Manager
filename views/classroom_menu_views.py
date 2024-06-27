@@ -329,7 +329,7 @@ class ClassroomView:
 
     def add_classroom(self):
         classroom_name = click.prompt("Nom de la classe : ")
-        number_of_places_available_input = click.prompt("Nombre de places disponibles (appuyez sur Entrée pour laisser vide) ", type=str)
+        number_of_places_available_input = click.prompt("Nombre de places disponibles (appuyez sur Entrée pour laisser vide) ", default="", show_default=False, type=str)
         number_of_students_input = click.prompt("Nombre d'étudiants (appuyez sur Entrée pour laisser vide) ", type=str)
 
         # Vérifie si rien n'est saisi pour le nombre de places disponibles, puis définit 0 comme valeur par défaut
