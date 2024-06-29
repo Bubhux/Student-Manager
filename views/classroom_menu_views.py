@@ -333,7 +333,7 @@ class ClassroomView:
         number_of_students_input = click.prompt("Nombre d'étudiants (appuyez sur Entrée pour laisser vide) ", default="", show_default=False, type=str)
 
         # Vérifie si rien n'est saisi pour le nombre de places disponibles, puis définit 0 comme valeur par défaut
-        if number_of_places_available_input:
+        if number_of_places_available_input.strip():
             number_of_places_available = int(number_of_places_available_input)
         else:
             number_of_places_available = 0
