@@ -339,7 +339,7 @@ class ClassroomView:
             number_of_places_available = 0
 
         # Vérifie si rien n'est saisi pour le nombre d'étudiants, puis définit 0 comme valeur par défaut
-        if number_of_students_input:
+        if number_of_students_input.strip():
             number_of_students = int(number_of_students_input)
         else:
             number_of_students = 0
