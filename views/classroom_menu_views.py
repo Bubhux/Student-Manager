@@ -358,6 +358,8 @@ class ClassroomView:
                 'number_of_places_available': number_of_places_available,
                 'number_of_students': number_of_students
             }
+
+            confirmation_message = click.style("Confirmez-vous la création de cette classe ?", fg="yellow")
             if click.confirm("Confirmez-vous la création de cette classe ?", default=True):
                 self.classroom_controller.add_classroom_database_controller(classroom_data)
                 self.console.print("[bold green]La classe a été ajoutée avec succès![/bold green]")
