@@ -328,7 +328,7 @@ class ClassroomView:
         self.classroom_controller.update_classroom_info_database_controller(classroom_name, {'new_number_of_students': sorted_students})
 
     def add_classroom(self):
-        classroom_name = click.prompt("Nom de la classe : ")
+        classroom_name = click.prompt(click.style("Choisissez le nom de la classe de votre choix \n>", fg="white"), type=str, prompt_suffix="")
         number_of_places_available_input = click.prompt("Nombre de places disponibles (appuyez sur Entrée pour laisser vide) ", default="", show_default=False, type=str)
         number_of_students_input = click.prompt("Nombre d'étudiants (appuyez sur Entrée pour laisser vide) ", default="", show_default=False, type=str)
 
