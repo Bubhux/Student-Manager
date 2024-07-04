@@ -359,6 +359,9 @@ class ClassroomView:
                 'number_of_students': number_of_students
             }
 
+            # Crée et affiche le tableau de résumé
+            table = Table(show_header=True, header_style="bold magenta")
+
             confirmation_message = click.style("Confirmez-vous la création de cette classe ?", fg="yellow")
             if click.confirm(confirmation_message, default=True):
                 self.classroom_controller.add_classroom_database_controller(classroom_data)
