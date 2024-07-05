@@ -361,6 +361,7 @@ class ClassroomView:
 
             # Crée et affiche le tableau de résumé
             table = Table(show_header=True, header_style="bold magenta")
+            table.add_column("Champ", style="cyan")
 
             confirmation_message = click.style("Confirmez-vous la création de cette classe ?", fg="yellow")
             if click.confirm(confirmation_message, default=True):
