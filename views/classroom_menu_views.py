@@ -364,6 +364,8 @@ class ClassroomView:
             table.add_column("Champ", style="cyan")
             table.add_column("Valeur", style="cyan")
 
+            table.add_row("Nom de la classe", classroom_name)
+
             confirmation_message = click.style("Confirmez-vous la création de cette classe ?", fg="yellow")
             if click.confirm(confirmation_message, default=True):
                 self.classroom_controller.add_classroom_database_controller(classroom_data)
