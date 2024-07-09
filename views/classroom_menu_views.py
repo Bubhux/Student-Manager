@@ -366,6 +366,7 @@ class ClassroomView:
 
             table.add_row("Nom de la classe", classroom_name)
             table.add_row("Nombre de places disponibles", str(number_of_places_available))
+            table.add_row("Nombre d'étudiants", str(number_of_students))
 
             confirmation_message = click.style("Confirmez-vous la création de cette classe ?", fg="yellow")
             if click.confirm(confirmation_message, default=True):
