@@ -370,6 +370,7 @@ class ClassroomView:
 
             self.console.print()
             self.console.print("Résumé des informations de la nouvelle classe", style="bold magenta")
+            self.console.print(table)
 
             confirmation_message = click.style("Confirmez-vous la création de cette classe ?", fg="yellow")
             if click.confirm(confirmation_message, default=True):
