@@ -372,6 +372,7 @@ class ClassroomView:
             self.console.print("Résumé des informations de la nouvelle classe", style="bold magenta")
             self.console.print(table)
 
+            # Confirmation pour la création de la classe
             confirmation_message = click.style("Confirmez-vous la création de cette classe ?", fg="yellow")
             if click.confirm(confirmation_message, default=True):
                 self.classroom_controller.add_classroom_database_controller(classroom_data)
