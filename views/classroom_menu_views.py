@@ -383,7 +383,7 @@ class ClassroomView:
             self.console.print("[bold red]Les données d'entrée sont invalides.[/bold red]")
 
     def update_classroom_info(self):
-        classroom_name = click.prompt("Nom de la classe à mettre à jour ", type=str)
+        classrooms = self.classroom_controller.get_all_classrooms_database_controller()
 
         # Vérifie si la classe existe
         classroom = self.classroom_controller.get_classroom_database_controller(classroom_name)
