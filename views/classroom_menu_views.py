@@ -385,10 +385,9 @@ class ClassroomView:
     def update_classroom_info(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
 
-        # Vérifie si la classe existe
-        classroom = self.classroom_controller.get_classroom_database_controller(classroom_name)
-        if not classroom:
-            self.console.print(f"Aucune classe trouvée avec le nom [bold]{classroom_name}[/bold]. Vérifiez le nom de la classe.", style="bold red")
+        # Vérifie si des classes existent
+        if not classrooms:
+            self.console.print("Il n'y a pas de classes disponibles.", style="bold red")
             return
 
         # Demande les nouvelles informations
