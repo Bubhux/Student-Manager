@@ -389,6 +389,9 @@ class ClassroomView:
         if not classrooms:
             self.console.print("Il n'y a pas de classes disponibles.", style="bold red")
             return
+        else:
+            # Trie les classes par ordre alphabétique en fonction de leur nom
+            sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
         # Demande les nouvelles informations
         new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) ", default=classroom['classroom_name'], type=str).strip()
