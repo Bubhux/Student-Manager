@@ -393,6 +393,9 @@ class ClassroomView:
             # Trie les classes par ordre alphabétique en fonction de leur nom
             sorted_classrooms = sorted(classrooms, key=lambda x: x['classroom_name'])
 
+        # Affiche les classes disponibles dans un tableau
+        table = Table(show_header=True, header_style="bold magenta")
+    
         # Demande les nouvelles informations
         new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) ", default=classroom['classroom_name'], type=str).strip()
         new_number_of_places_available = click.prompt("Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) ", default=str(classroom['number_of_places_available']), type=int)
