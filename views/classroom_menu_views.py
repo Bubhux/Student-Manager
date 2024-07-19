@@ -396,6 +396,7 @@ class ClassroomView:
         # Affiche les classes disponibles dans un tableau
         table = Table(show_header=True, header_style="bold magenta")
         table.add_column("Numéro", style="cyan")
+        table.add_column("Nom de la classe", style="cyan")
     
         # Demande les nouvelles informations
         new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) ", default=classroom['classroom_name'], type=str).strip()
