@@ -397,7 +397,10 @@ class ClassroomView:
         table = Table(show_header=True, header_style="bold magenta")
         table.add_column("Numéro", style="cyan")
         table.add_column("Nom de la classe", style="cyan")
-    
+
+        for index, classroom in enumerate(sorted_classrooms, start=1):
+            table.add_row(str(index), classroom['classroom_name'])
+
         # Demande les nouvelles informations
         new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) ", default=classroom['classroom_name'], type=str).strip()
         new_number_of_places_available = click.prompt("Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) ", default=str(classroom['number_of_places_available']), type=int)
