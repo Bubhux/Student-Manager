@@ -401,6 +401,8 @@ class ClassroomView:
         for index, classroom in enumerate(sorted_classrooms, start=1):
             table.add_row(str(index), classroom['classroom_name'])
 
+        self.console.print()
+
         # Demande les nouvelles informations
         new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) ", default=classroom['classroom_name'], type=str).strip()
         new_number_of_places_available = click.prompt("Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) ", default=str(classroom['number_of_places_available']), type=int)
