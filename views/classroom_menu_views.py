@@ -402,6 +402,7 @@ class ClassroomView:
             table.add_row(str(index), classroom['classroom_name'])
 
         self.console.print()
+        self.console.print("Classes disponibles pour modification", style="bold magenta")
 
         # Demande les nouvelles informations
         new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) ", default=classroom['classroom_name'], type=str).strip()
