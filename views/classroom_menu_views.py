@@ -410,6 +410,8 @@ class ClassroomView:
 
             if choice.lower() == "r":
                 return
+            elif choice.isdigit():
+                choice = int(choice)
 
 
         # Demande les nouvelles informations
