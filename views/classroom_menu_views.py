@@ -412,6 +412,8 @@ class ClassroomView:
                 return
             elif choice.isdigit():
                 choice = int(choice)
+                if 1 <= choice <= len(sorted_classrooms):
+                    selected_class = sorted_classrooms[choice - 1]
 
 
         # Demande les nouvelles informations
