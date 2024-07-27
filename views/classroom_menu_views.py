@@ -414,6 +414,7 @@ class ClassroomView:
                 choice = int(choice)
                 if 1 <= choice <= len(sorted_classrooms):
                     selected_class = sorted_classrooms[choice - 1]
+                    confirm = click.confirm(click.style(f"Êtes-vous sûr de vouloir modifier la classe '{selected_class['classroom_name']}' ?", fg="yellow"), default=False)
 
 
         # Demande les nouvelles informations
