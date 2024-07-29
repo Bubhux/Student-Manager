@@ -418,6 +418,9 @@ class ClassroomView:
                     if confirm:
                         classroom = selected_class
                         break
+                    else:
+                        self.console.print("Modifiction annulée.", style="bold red")
+                    break
 
 
         # Demande les nouvelles informations
