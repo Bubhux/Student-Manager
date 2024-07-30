@@ -421,6 +421,8 @@ class ClassroomView:
                     else:
                         self.console.print("Modifiction annulée.", style="bold red")
                     break
+                else:
+                    self.console.print("Choix invalide. Veuillez saisir un numéro valide.", style="bold red")
 
 
         # Demande les nouvelles informations
