@@ -432,7 +432,7 @@ class ClassroomView:
         # Demande les nouvelles informations
         new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) ->", default=classroom['classroom_name'], type=str).strip()
         new_number_of_places_available = click.prompt("Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) ->", default=str(classroom['number_of_places_available']), type=int)
-        new_number_of_students = click.prompt("Nouveau nombre d'étudiants (appuyez sur Entrée pour laisser vide) ", default=str(classroom['number_of_students']), type=int)
+        new_number_of_students = click.prompt("Nouveau nombre d'étudiants (appuyez sur Entrée pour laisser vide) ->", default=str(current_number_of_students), type=int)
 
         # Vérifie si les nouvelles informations sont fournies, sinon conserve les informations actuelles
         new_classroom_name = new_classroom_name if new_classroom_name else classroom['classroom_name']
