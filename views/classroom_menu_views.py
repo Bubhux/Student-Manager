@@ -437,7 +437,7 @@ class ClassroomView:
         # Vérifie si les nouvelles informations sont fournies, sinon conserve les informations actuelles
         new_classroom_name = new_classroom_name if new_classroom_name else classroom['classroom_name']
         new_number_of_places_available = new_number_of_places_available if new_number_of_places_available else classroom['number_of_places_available']
-        new_number_of_students = new_number_of_students if new_number_of_students else classroom['number_of_students']
+        new_number_of_students = new_number_of_students if new_number_of_students else current_number_of_students
 
         # Crée un dictionnaire avec les nouvelles informations de la classe
         new_classroom_data = {
