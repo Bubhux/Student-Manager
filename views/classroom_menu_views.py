@@ -447,7 +447,7 @@ class ClassroomView:
         }
 
         # Affiche les nouvelles informations de la classe dans un tableau
-        table = Table(style="bold magenta")
+        table = Table(show_header=True, header_style="bold magenta")
         table.add_column("Champ")
         table.add_column("Valeur")
 
