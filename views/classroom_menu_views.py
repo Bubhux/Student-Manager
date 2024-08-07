@@ -453,7 +453,7 @@ class ClassroomView:
 
         table.add_row("Nom de la classe", new_classroom_name)
         table.add_row("Nombre de places disponibles", str(new_number_of_places_available))
-        table.add_row("Nombre d'étudiants", new_number_of_students)
+        table.add_row("Nombre d'étudiants", str(new_number_of_students))
 
         # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
         self.console.print()
