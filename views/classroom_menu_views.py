@@ -462,7 +462,7 @@ class ClassroomView:
 
         # Confirmation pour la mise à jour des informations
         confirmation_message = click.style("Confirmez-vous la mise à jour des informations de cette classe ?", fg="yellow")
-        if click.confirm("Confirmez-vous la mise à jour des informations de cette classe ?", default=True):
+        if click.confirm(confirmation_message, default=True):
             self.classroom_controller.update_classroom_info_database_controller(classroom_name, new_classroom_data)
             self.console.print("[bold green]Les informations de la classe ont été mises à jour avec succès ![/bold green]")
         else:
