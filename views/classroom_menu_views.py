@@ -385,7 +385,6 @@ class ClassroomView:
     def update_classroom_info(self):
         classrooms = self.classroom_controller.get_all_classrooms_database_controller()
 
-        # Vérifie si des classes existent
         if not classrooms:
             self.console.print("Il n'y a pas de classes disponibles.", style="bold red")
             return
@@ -419,8 +418,7 @@ class ClassroomView:
                         classroom = selected_class
                         break
                     else:
-                        self.console.print("Modifiction annulée.", style="bold red")
-                    break
+                        self.console.print("Modification annulée.", style="bold red")
                 else:
                     self.console.print("Choix invalide. Veuillez saisir un numéro valide.", style="bold red")
             else:
@@ -455,7 +453,6 @@ class ClassroomView:
         table.add_row("Nombre de places disponibles", str(new_number_of_places_available))
         table.add_row("Nombre d'étudiants", str(new_number_of_students))
 
-        # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
         self.console.print()
         self.console.print("Résumé des nouvelles informations de la classe", style="bold magenta")
         self.console.print(table)
@@ -463,7 +460,7 @@ class ClassroomView:
         # Confirmation pour la mise à jour des informations
         confirmation_message = click.style("Confirmez-vous la mise à jour des informations de cette classe ?", fg="yellow")
         if click.confirm(confirmation_message, default=True):
-            self.classroom_controller.update_classroom_info_database_controller(classroom_name, new_classroom_data)
+            self.classroom_controller.update_classroom_info_database_controller(classroom['classroom_name'], new_classroom_data)
             self.console.print("[bold green]Les informations de la classe ont été mises à jour avec succès ![/bold green]")
         else:
             self.console.print("[bold cyan]La mise à jour des informations de la classe a été annulée.[/bold cyan]")
