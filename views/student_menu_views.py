@@ -75,7 +75,7 @@ class StudentView:
             table.add_column("Nom et prénom", style="cyan")
             table.add_column("Classe", style="cyan")
 
-            # Ajouter les étudiants au tableau
+            # Ajoute les étudiants au tableau
             for index, student in enumerate(sorted_students, start=1):
                 student_name = f"{student['first_name']} {student['last_name']}"
                 classroom_name = student.get('classroom_name', 'N/A')
@@ -387,12 +387,8 @@ class StudentView:
             self.student_controller.delete_student_database_controller(student_name)
 
     def calculate_student_average(self):
-        student_name = input("Nom de l'étudiant à calculer la moyenne (Prénom et Nom ou Prénom seul) : ")
-        average = self.student_controller.calculate_student_average_database_controller(student_name)
-        if average is not None:
-            click.secho(f"Moyenne de {student_name} : {average:.2f}", fg="green")
-        else:
-            print(f"Aucun étudiant trouvé avec le nom {student_name}. Vérifiez le nom de l'étudiant.")
+        # Récupére tous les étudiants de la base de données
+        students = self.student_controller.get_all_students_database_controller()
 
     def calculate_class_average(self):
         average = self.student_controller.calculate_class_average_database_controller()
