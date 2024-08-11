@@ -26,7 +26,7 @@ class StudentDatabaseController:
     def add_student_database_controller(self, student_data):
         try:
             self.student_collection.insert_one(student_data)
-            print(f"L'étudiant {student_data['first_name']} {student_data['last_name']} a été ajouté avec succès!")
+            print(f"L'étudiant {student_data['first_name']} {student_data['last_name']} a été ajouté avec succès !")
         except Exception as e:
             print(f"Une erreur s'est produite lors de l'ajout de l'étudiant : {str(e)}")
 
@@ -140,7 +140,7 @@ class StudentDatabaseController:
             try:
                 # Suppression de l'étudiant
                 self.student_collection.delete_one({'_id': student['_id']})
-                click.secho(f"L'étudiant {student_name} a été supprimé avec succès!", fg="green", bold=True)
+                click.secho(f"L'étudiant {student_name} a été supprimé avec succès !", fg="green", bold=True)
             except Exception as e:
                 click.secho(f"Une erreur s'est produite lors de la suppression de l'étudiant : {str(e)}", fg="red", bold=True)
         else:
