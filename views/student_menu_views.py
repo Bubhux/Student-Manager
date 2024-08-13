@@ -394,6 +394,9 @@ class StudentView:
         if not students:
             self.console.print("Il n'y a pas d'étudiants disponibles.", style="bold red")
             return
+        else:
+            # Trie les étudiants par ordre alphabétique en fonction de leur prénom
+            sorted_students = sorted(students, key=lambda x: (x['first_name']))
 
     def calculate_class_average(self):
         average = self.student_controller.calculate_class_average_database_controller()
