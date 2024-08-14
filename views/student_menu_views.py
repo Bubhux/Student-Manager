@@ -398,6 +398,12 @@ class StudentView:
             # Trie les étudiants par ordre alphabétique en fonction de leur prénom
             sorted_students = sorted(students, key=lambda x: (x['first_name']))
 
+        # Affiche les étudiants disponibles dans un tableau
+        table = Table(show_header=True, header_style="bold magenta")
+        table.add_column("Numéro", style="cyan")
+        table.add_column("Nom et prénom", style="cyan")
+        table.add_column("Classe", style="cyan")
+
     def calculate_class_average(self):
         average = self.student_controller.calculate_class_average_database_controller()
         print(f"Moyenne de la classe : {average:.2f}")
