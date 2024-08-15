@@ -404,6 +404,11 @@ class StudentView:
         table.add_column("Nom et prénom", style="cyan")
         table.add_column("Classe", style="cyan")
 
+        # Remplir le tableau avec les informations des étudiants
+        for index, student in enumerate(sorted_students, start=1):
+            student_name = f"{student['first_name']} {student['last_name']}"
+            classroom_name = student.get('classroom_name', 'N/A')
+
     def calculate_class_average(self):
         average = self.student_controller.calculate_class_average_database_controller()
         print(f"Moyenne de la classe : {average:.2f}")
