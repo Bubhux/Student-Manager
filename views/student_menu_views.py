@@ -412,6 +412,11 @@ class StudentView:
                 classroom_name = ', '.join(classroom_name)
             table.add_row(str(index), student_name, classroom_name)
 
+        # Imprime la liste triée des étudiants
+        self.console.print()
+        self.console.print("Liste des étudiants triés par ordre alphabétique", style="bold magenta")
+        self.console.print(table)
+
     def calculate_class_average(self):
         average = self.student_controller.calculate_class_average_database_controller()
         print(f"Moyenne de la classe : {average:.2f}")
