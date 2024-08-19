@@ -421,6 +421,9 @@ class StudentView:
             # Demande à l'utilisateur de choisir un numéro d'étudiant ou de revenir
             choice = click.prompt(click.style("Choisissez le numéro de l'étudiant pour calculer la moyenne (ou 'r' pour revenir) :", fg="white"), type=str, prompt_suffix="")
 
+            if choice == "r":
+                return
+
     def calculate_class_average(self):
         average = self.student_controller.calculate_class_average_database_controller()
         print(f"Moyenne de la classe : {average:.2f}")
