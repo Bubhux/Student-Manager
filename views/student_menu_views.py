@@ -423,6 +423,8 @@ class StudentView:
 
             if choice == "r":
                 return
+            elif choice.isdigit():
+                choice = int(choice)
 
     def calculate_class_average(self):
         average = self.student_controller.calculate_class_average_database_controller()
