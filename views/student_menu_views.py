@@ -432,6 +432,8 @@ class StudentView:
                     student_full_name = f"{selected_student['first_name']} {selected_student['last_name']}"
                     # Calcul la moyenne de l'étudiant
                     average = self.student_controller.calculate_student_average_database_controller(student_full_name)
+                    if average is not None:
+                        self.console.print(f"Moyenne de l'étudiant {student_full_name} : {average:.2f}", style="bold green")
 
     def calculate_class_average(self):
         average = self.student_controller.calculate_class_average_database_controller()
