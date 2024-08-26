@@ -437,6 +437,8 @@ class StudentView:
                     else:
                         self.console.print(f"Aucune donnée trouvée pour l'étudiant {student_full_name}. Vérifiez le nom de l'étudiant.", style="bold red")
                     break
+                else:
+                    self.console.print("Choix invalide. Veuillez saisir un numéro valide.", style="bold red")
 
     def calculate_class_average(self):
         average = self.student_controller.calculate_class_average_database_controller()
