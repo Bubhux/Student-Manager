@@ -382,9 +382,8 @@ class StudentView:
             self.console.print("[bold red]La mise à jour des informations de l'étudiant a été annulée.[/bold red]")
 
     def delete_student(self):
-        student_name = click.prompt("Nom de l'étudiant à supprimer (Prénom et Nom ou Prénom seul) ", type=str)
-        if click.confirm(f"Confirmez-vous la suppression de l'étudiant {student_name} ?", default=False):
-            self.student_controller.delete_student_database_controller(student_name)
+        # Récupére tous les étudiants de la base de données
+        students = self.student_controller.get_all_students_database_controller()
 
     def calculate_student_average(self):
         # Récupére tous les étudiants de la base de données
