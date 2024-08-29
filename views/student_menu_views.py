@@ -385,6 +385,11 @@ class StudentView:
         # Récupére tous les étudiants de la base de données
         students = self.student_controller.get_all_students_database_controller()
 
+        # Vérifie s'il n'y a pas d'étudiants
+        if not students:
+            self.console.print("Il n'y a pas d'étudiants disponibles.", style="bold red")
+            return
+
     def calculate_student_average(self):
         # Récupére tous les étudiants de la base de données
         students = self.student_controller.get_all_students_database_controller()
