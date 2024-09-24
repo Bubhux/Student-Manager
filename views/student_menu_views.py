@@ -403,6 +403,9 @@ class StudentView:
         for index, student in enumerate(sorted_students, start=1):
             student_name = f"{student['first_name']} {student['last_name']}"
             classroom_name = student.get('classroom_name', 'N/A')
+            if isinstance(classroom_name, list):
+                classroom_name = ', '.join(classroom_name)
+            table.add_row(str(index), student_name, classroom_name)
 
     def calculate_student_average(self):
         # Récupére tous les étudiants de la base de données
