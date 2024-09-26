@@ -412,6 +412,10 @@ class StudentView:
         self.console.print("Liste des étudiants triés par ordre alphabétique", style="bold magenta")
         self.console.print(table)
 
+        while True:
+            # Demande à l'utilisateur de choisir un numéro d'étudiant ou de revenir
+            choice = click.prompt(click.style("Choisissez le numéro de l'étudiant à supprimer (ou 'r' pour revenir) :", fg="white"), type=str, prompt_suffix="")
+
     def calculate_student_average(self):
         # Récupére tous les étudiants de la base de données
         students = self.student_controller.get_all_students_database_controller()
