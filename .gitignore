@@ -1,5 +1,5 @@
 # Exclure les fichiers et dossiers générés par Python lors de la compilation
-__pycache__/**
+__pycache__/
 *.pyc
 
 # Exclure le dossier .vscode
@@ -7,3 +7,11 @@ __pycache__/**
 
 # Exclure le dossier venv (environnement virtuel Python)
 env/
+
+# Exclure les fichiers et dossiers générés par Pytest
+.pytest_cache/
+
+# Exclure les fichiers .coveragerc coverage et le dossier coverage_html_report
+.coveragerc
+.coverage
+coverage_html_report/
