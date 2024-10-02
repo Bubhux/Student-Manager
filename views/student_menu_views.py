@@ -418,6 +418,8 @@ class StudentView:
 
             if choice.lower() == "r":
                 return
+            elif choice.isdigit():
+                choice = int(choice)
 
     def calculate_student_average(self):
         # Récupére tous les étudiants de la base de données
