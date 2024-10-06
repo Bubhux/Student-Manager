@@ -420,6 +420,9 @@ class StudentView:
                 return
             elif choice.isdigit():
                 choice = int(choice)
+                # Vérifie si le choix est dans la plage valide
+                if 1 <= choice <= len(sorted_students):
+                    selected_student = sorted_students[choice - 1]
 
     def calculate_student_average(self):
         # Récupére tous les étudiants de la base de données
