@@ -423,6 +423,8 @@ class StudentView:
                 # Vérifie si le choix est dans la plage valide
                 if 1 <= choice <= len(sorted_students):
                     selected_student = sorted_students[choice - 1]
+                    # Crée le nom complet de l'étudiant
+                    student_name = f"{selected_student['first_name']} {selected_student['last_name']}"
 
     def calculate_student_average(self):
         # Récupére tous les étudiants de la base de données
