@@ -425,6 +425,8 @@ class StudentView:
                     selected_student = sorted_students[choice - 1]
                     # Crée le nom complet de l'étudiant
                     student_name = f"{selected_student['first_name']} {selected_student['last_name']}"
+                    # Demande confirmation avant la suppression
+                    confirm = click.confirm(click.style(f"Êtes-vous sûr de vouloir supprimer l'étudiant '{student_name}' ?", fg="yellow"), default=False)
 
     def calculate_student_average(self):
         # Récupére tous les étudiants de la base de données
