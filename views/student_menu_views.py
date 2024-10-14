@@ -427,6 +427,8 @@ class StudentView:
                     student_name = f"{selected_student['first_name']} {selected_student['last_name']}"
                     # Demande confirmation avant la suppression
                     confirm = click.confirm(click.style(f"Êtes-vous sûr de vouloir supprimer l'étudiant '{student_name}' ?", fg="yellow"), default=False)
+                    if confirm:
+                        self.student_controller.delete_student_database_controller(student_name)
 
     def calculate_student_average(self):
         # Récupére tous les étudiants de la base de données
