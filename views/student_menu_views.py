@@ -434,6 +434,8 @@ class StudentView:
                     break
                 else:
                     self.console.print("Choix invalide. Veuillez saisir un numéro valide.", style="bold red")
+            else:
+                self.console.print("Choix invalide, veuillez saisir un nombre ou 'r' pour revenir.", style="bold red")
 
     def calculate_student_average(self):
         # Récupére tous les étudiants de la base de données
