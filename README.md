@@ -9,7 +9,7 @@
 2. **[Liste pré-requis](#liste-pre-requis)**   
 3. **[Lancement du programme](#lancement-du-programme)**   
 4. **[Interface de l'application](#interface-application)**   
-5. **[Auteurs et contact](#auteur-contact)**   
+5. **[Auteur et contact](#auteur-contact)**   
 
 ### Projet Student Manager
 
@@ -111,7 +111,7 @@ $ python main.py
 <div id="auteur-contact"></div>
 <a href="#top" style="float: right;">Retour en haut 🡅</a>
 
-### Auteurs et contact   
+### Auteur et contact   
 
 Pour toute information supplémentaire, vous pouvez me contacter.   
 **Bubhux:** bubhuxpaindepice@gmail.com   
