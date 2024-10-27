@@ -3,9 +3,6 @@ import pytest
 from models.classroom_models import ClassroomModel
 
 
-import pytest
-from models.classroom_models import ClassroomModel
-
 class TestClassroomModels:
 
     @pytest.fixture
@@ -30,14 +27,34 @@ class TestClassroomModels:
         classroom.add_students_classroom(students)
         assert str(classroom) == "Classe : Math Class, Nombre d'étudiants : 2"
 
-    def test_add_students_classroom(self, classroom):
-        students = [
-            {'first_name': 'Alice', 'last_name': 'Johnson'},
-            {'first_name': 'Bob', 'last_name': 'Smith'}
-        ]
-
+    @pytest.mark.parametrize("students, expected_count", [
+        ([{'first_name': 'Alice', 'last_name': 'Johnson'}], 1),
+        ([{'first_name': 'Alice', 'last_name': 'Johnson'}, {'first_name': 'Bob', 'last_name': 'Smith'}], 2),
+        ([], 0)
+    ])
+    def test_add_students_classroom(self, classroom, students, expected_count):
         classroom.add_students_classroom(students)
-        assert len(classroom.number_of_students) == 2
+        assert len(classroom.number_of_students) == expected_count
+
+    @pytest.mark.parametrize("initial_students, student_to_remove, expected_count", [
+        ([{'first_name': 'Alice', 'last_name': 'Johnson'}], {'first_name': 'Alice', 'last_name': 'Johnson'}, 0),
+        ([{'first_name': 'Alice', 'last_name': 'Johnson'}], {'first_name': 'John', 'last_name': 'Doe'}, 1),
+        ([], {'first_name': 'John', 'last_name': 'Doe'}, 0)
+    ])
+    def test_remove_student_classroom(self, classroom, initial_students, student_to_remove, expected_count):
+        classroom.add_students_classroom(initial_students)
+        classroom.remove_student_classroom(student_to_remove)
+        assert len(classroom.number_of_students) == expected_count
+
+    @pytest.mark.parametrize("classroom_name, number_of_places, expected", [
+        ("", 30, False),  # Nom de classe vide
+        ("Math Class", -1, False),  # Nombre de places négatif
+        ("Valid Name", 20, True)  # Cas valide
+    ])
+    def test_validate_input_data_classroom(self, classroom, classroom_name, number_of_places, expected):
+        classroom.classroom_name = classroom_name
+        classroom.number_of_places_available = number_of_places
+        assert classroom.validate_input_data_classroom() == expected
 
     def test_sort_students_alphabetically(self, classroom):
         students = [
@@ -123,17 +140,3 @@ class TestClassroomModels:
         non_existing_student = {'first_name': 'John', 'last_name': 'Doe'}
         classroom.remove_student_classroom(non_existing_student)  # Ne devrait pas lever d'exception
         assert len(classroom.number_of_students) == 0
-
-    def test_validate_input_data_classroom(self, classroom):
-        # Cas où le nom de la classe est vide
-        classroom.classroom_name = ""
-        assert not classroom.validate_input_data_classroom()
-
-        # Cas où le nombre de places est négatif
-        classroom.classroom_name = "Valid Name"
-        classroom.number_of_places_available = -1
-        assert not classroom.validate_input_data_classroom()
-
-        # Cas valide
-        classroom.number_of_places_available = 20
-        assert classroom.validate_input_data_classroom()

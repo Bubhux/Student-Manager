@@ -26,6 +26,29 @@ class TestStudentModel:
         student_with_no_last_name = StudentModel(first_name="Jane")
         assert str(student_with_no_last_name) == "Étudiant Jane None"
 
+    @pytest.mark.parametrize("grades, expected", [
+        ([0, 15, 20], True),   # Cas valide
+        ([25, -5, 10], False), # Notes hors des limites
+        (["A", "15", None], False), # Notes non numériques
+        ([], True),            # Liste vide
+        ([None, ''], True)     # Notes None et chaînes vides
+    ])
+    def test_validate_input_data_student(self, student, grades, expected):
+        student.grades = grades
+        assert student.validate_input_data_student() == expected
+
+    @pytest.mark.parametrize("update_data, expected_first_name, expected_last_name, expected_grades, expected_classroom", [
+        ({"first_name": "Alice", "grades": [16, 19]}, "Alice", "Doe", [16, 19], "Math Class"),  # Mise à jour partielle
+        ({"first_name": None, "last_name": None}, "John", "Doe", [15, 18, 12], "Math Class"),   # Pas de mise à jour
+        ({"first_name": "Jane", "last_name": "Smith"}, "Jane", "Smith", [15, 18, 12], "Math Class")  # Mise à jour complète
+    ])
+    def test_update_student_info_partial_update(self, student, update_data, expected_first_name, expected_last_name, expected_grades, expected_classroom):
+        student.update_student_info(**update_data)
+        assert student.first_name == expected_first_name
+        assert student.last_name == expected_last_name
+        assert student.grades == expected_grades
+        assert student.classroom_name == expected_classroom
+
     def test_update_student_info_all_fields(self, student):
         # Mise à jour avec tous les champs
         student.update_student_info(first_name="Jane", last_name="Smith", grades=[10, 14], classroom_name="Science Class", lessons=["Physics"])
@@ -60,27 +83,3 @@ class TestStudentModel:
         assert student.grades == [15, 18, 12]
         assert student.classroom_name == "Math Class"
         assert student.lessons == ["Math", "Science"]
-
-    def test_validate_input_data_student_valid_grades(self, student):
-        # Notes valides
-        student.grades = [0, 15, 20]
-        assert student.validate_input_data_student() is True
-
-    def test_validate_input_data_student_invalid_grades(self, student):
-        # Notes invalides (hors des limites)
-        student.grades = [25, -5, 10]
-        assert student.validate_input_data_student() is False
-
-        # Notes contenant des valeurs non numériques
-        student.grades = ["A", "15", None]
-        assert student.validate_input_data_student() is False
-
-    def test_validate_input_data_student_empty_grades(self, student):
-        # Liste de notes vides
-        student.grades = []
-        assert student.validate_input_data_student() is True
-
-    def test_validate_input_data_student_with_none_grades(self, student):
-        # Liste de notes avec None et chaînes vides
-        student.grades = [None, '']
-        assert student.validate_input_data_student() is True  # Devrait ignorer ces valeurs
