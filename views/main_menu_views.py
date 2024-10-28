@@ -1,3 +1,4 @@
+# views/main_menu_views.py
 import click
 from rich.console import Console
 from rich.table import Table
@@ -25,7 +26,7 @@ class MainMenuView:
             table.add_column("Action", style="cyan")
             table.add_row("1", "Gestion des étudiants")
             table.add_row("2", "Gestion des classes")
-            table.add_row("3", "Quitter le programme")
+            table.add_row("q", "Quitter le programme")
 
             # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
             self.console.print()
@@ -33,14 +34,14 @@ class MainMenuView:
 
             self.console.print(table)
 
-            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix ", fg="white"), type=int)
+            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix \n>", fg="white"), type=str, prompt_suffix="")
 
-            if choice_menu == 1:
+            if choice_menu == "1":
                 self.student_view.display_main_menu()
-            elif choice_menu == 2:
+            elif choice_menu == "2":
                 self.classroom_view.display_main_menu()
-            elif choice_menu == 3:
+            elif choice_menu == "q":
                 self.console.print("Merci d'avoir utilisé ce programme !")
                 break
             else:
-                self.console.print("Choix invalide, saisissez un nombre entre 1 et 3.", style="bold red")
+                self.console.print("Choix invalide, saisissez un nombre entre 1 et 2 ou q pour quitter l'application.", style="bold red")
