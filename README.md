@@ -73,29 +73,38 @@ $ python main.py
 
 - Le programme se compose des menus suivants :   
 
-##### - Menu principal.   
+    |      Menu principal       |
+    |---------------------------|
+    | 1. Gestion des étudiants  |
+    | 2. Gestion des classes    |
+    | 3. Quitter le programme   |
 
-<div style="display: flex; justify-content: flex-start; margin: 20px 0;">
-    <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; display: inline-block; margin-right: 10px; margin-left: 20px;">
-        <img src="/static/img/main_menu.png" alt="Menu principal" style="width: 300px; height: auto;">
-    </div>
-</div>
+  &nbsp;   
 
-##### - Menu des étudiants.   
+    |      Menu gestion des étudiants            |
+    |--------------------------------------------|
+    | 1. Afficher les étudiants                  |
+    | 2. Créer un étudiant                       |
+    | 3. Ajouter une matière à un étudiant       |
+    | 4. Modifier les notes d'un étudiant        |
+    | 5. Modifier les informations d'un étudiant |
+    | 6. Calculer la moyenne d'un étudiant       |
+    | 7. Supprimer un étudiant                   |
+    | r. Retour au menu précedent                |
 
-<div style="display: flex; justify-content: flex-start; margin: 20px 0;">
-    <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; display: inline-block; margin-right: 10px; margin-left: 20px;">
-        <img src="/static/img/student_menu.png" alt="Menu étudiant" style="width: 300px; height: auto;">
-    </div>
-</div>
+  &nbsp;   
 
-##### - Menu des classes.   
+    |       Menu gestion des classes             |
+    |--------------------------------------------|
+    | 1. Afficher les classes                    |
+    | 2. Créer une classe                        |
+    | 3. Modifier les informations d'une classe  |
+    | 4. Ajouter des étudiants à une classe      |
+    | 5. Supprimer des étudiants d'une classe    |
+    | 6. Calculer la moyenne d'une classe        |
+    | 7. Supprimer une classe                    |
+    | r. Retour au menu précedent                |
 
-<div style="display: flex; justify-content: flex-start; margin: 20px 0;">
-    <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; display: inline-block; margin-right: 10px; margin-left: 20px;">
-        <img src="/static/img/classroom_menu.png" alt="Menu classe" style="width: 300px; height: auto;">
-    </div>
-</div>
 
 --------------------------------------------------------------------------------------------------------------------------------
 
