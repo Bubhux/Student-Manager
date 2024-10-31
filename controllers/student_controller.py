@@ -1,3 +1,4 @@
+# controllers/student_controller.py
 from pymongo import MongoClient
 import click
 
