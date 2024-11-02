@@ -73,7 +73,7 @@ class StudentView:
 
             table = Table(show_header=True, header_style="bold magenta")
             table.add_column("Index", style="cyan")
-            table.add_column("Nom et prénom", style="cyan")
+            table.add_column("Prénom et nom", style="cyan")
             table.add_column("Classe", style="cyan")
 
             # Ajoute les étudiants au tableau
@@ -91,7 +91,7 @@ class StudentView:
         self.display_student_informations(sorted_students) if students else None
 
     def display_student_informations(self, students):
-        student_input = click.prompt("\nEntrez le nom, prénom ou le numéro de l'étudiant pour voir ses informations (ou 'r' pour revenir au menu précédent) \n>", type=str, prompt_suffix="")
+        student_input = click.prompt("\nEntrez le prénomn, nom ou le numéro de l'étudiant pour voir ses informations (ou 'r' pour revenir au menu précédent) \n>", type=str, prompt_suffix="")
 
         if student_input == 'r':
             return
@@ -104,11 +104,22 @@ class StudentView:
             if 0 <= student_index < len(students):
                 selected_student = students[student_index]
         else:
-            # Recherche l'étudiant par son nom ou prénom
-            for student in students:
-                if student_input.lower() in student['first_name'].lower() or student_input.lower() in student['last_name'].lower():
-                    selected_student = student
-                    break
+            # Sépare l'entrée de l'utilisateur en plusieurs parties (prénom et nom)
+            student_input_parts = student_input.split()
+
+            if len(student_input_parts) == 1:
+                # Recherche par prénom ou nom si une seule partie est fournie
+                for student in students:
+                    if student_input_parts[0].lower() in student['first_name'].lower() or student_input_parts[0].lower() in student['last_name'].lower():
+                        selected_student = student
+                        break
+            elif len(student_input_parts) == 2:
+                # Recherche par combinaison prénom + nom
+                first_name_input, last_name_input = student_input_parts
+                for student in students:
+                    if (first_name_input.lower() == student['first_name'].lower() and last_name_input.lower() == student['last_name'].lower()):
+                        selected_student = student
+                        break
 
         # Affiche les informations de l'étudiant si trouvé, sinon affiche un message d'erreur
         if selected_student:
@@ -116,11 +127,17 @@ class StudentView:
             table.add_column("Attribut", style="cyan")
             table.add_column("Valeur", style="cyan")
 
-            table.add_row("Nom", f"{selected_student['first_name']} {selected_student['last_name']}")
+            table.add_row("Prénom et nom", f"{selected_student['first_name']} {selected_student['last_name']}")
+
+            # Ajoute une ligne vide pour créer un espace
+            table.add_row("", "")  # Ligne vide
 
             # Construit une chaîne de caractères pour les matières et notes
             subjects_grades = "\n".join([f"- {lesson['name']} : {lesson['grade']}" for lesson in selected_student['lessons']])
             table.add_row("Matières et notes", subjects_grades)
+
+            # Ajoute une ligne vide pour créer un espace
+            table.add_row("", "")  # Ligne vide
 
             classroom_name = selected_student.get('classroom_name', 'N/A')
             if isinstance(classroom_name, list):

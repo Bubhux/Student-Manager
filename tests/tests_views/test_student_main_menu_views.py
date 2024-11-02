@@ -16,6 +16,7 @@ def mock_mongo_db():
 
 # Classe de simulation pour contrôler les données des étudiants
 class MockStudentDatabaseController:
+
     def __init__(self):
         # Liste d'étudiants fictifs pour les tests
         self.students = [
