@@ -34,7 +34,7 @@ class StudentView:
 
             self.console.print(table)
 
-            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix ", fg="white"), type=str)
+            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix \n> ", fg="white"), type=str, prompt_suffix="")
 
             if choice_menu == "1":
                 self.display_students()
@@ -91,7 +91,7 @@ class StudentView:
         self.display_student_informations(sorted_students) if students else None
 
     def display_student_informations(self, students):
-        student_input = click.prompt("\nEntrez le prénomn, nom ou le numéro de l'étudiant pour voir ses informations (ou 'r' pour revenir au menu précédent) \n>", type=str, prompt_suffix="")
+        student_input = click.prompt("\nEntrez le prénomn, nom ou le numéro de l'étudiant pour voir ses informations (Ou 'r' pour revenir au menu précédent) \n> ", type=str, prompt_suffix="")
 
         if student_input == 'r':
             return
@@ -158,16 +158,16 @@ class StudentView:
         while adding_student:
             self.console.print("[bold cyan]Ajout d'un nouvel étudiant[/bold cyan]")
 
-            first_name = input("Prénom de l'étudiant : ").strip()
+            first_name = input("Prénom de l'étudiant \n> ").strip()
             if not first_name:
                 self.console.print("Le prénom de l'étudiant ne peut pas être vide.", style="bold red")
                 continue
 
-            last_name = click.prompt("Nom de l'étudiant (appuyez sur Entrée pour laisser vide) ", type=str, default="", show_default=False)
+            last_name = click.prompt("Nom de l'étudiant (Appuyez sur Entrée pour laisser vide) \n> ", type=str, default="", show_default=False, prompt_suffix="")
             
             num_subjects_valid = False
             while not num_subjects_valid:
-                num_subjects = input("Combien de matières cet étudiant suit-il ? (Appuyez sur Entrée pour ne choisir aucune matière) ")
+                num_subjects = input("Combien de matières cet étudiant suit-il ? (Appuyez sur Entrée pour ne choisir aucune matière) \n> ")
                 if num_subjects.strip() == "":
                     num_subjects = 0
                     num_subjects_valid = True
@@ -186,8 +186,8 @@ class StudentView:
 
         subjects = []
         for i in range(num_subjects):
-            subject_name = click.prompt(f"Nom de la matière {i+1}", type=str)
-            subject_grade = click.prompt(f"Note pour la matière {subject_name} (appuyez sur Entrée pour laisser la note à 0)", type=float, show_default=True)
+            subject_name = click.prompt(f"Nom de la matière {i+1} \n> ", type=str, prompt_suffix="")
+            subject_grade = click.prompt(f"Note pour la matière {subject_name} (appuyez sur Entrée pour laisser la note à 0) \n> ", type=float, default=0, show_default=False, prompt_suffix="")
             if not (0 <= subject_grade <= 20):
                 self.console.print("La note doit être comprise entre 0 et 20.", style="bold red")
                 return
