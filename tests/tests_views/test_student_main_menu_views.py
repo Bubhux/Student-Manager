@@ -48,6 +48,22 @@ class MockStudentDatabaseController:
         # Ajoute un nouvel étudiant à la liste
         self.students.append(student_data)
 
+    def get_student_database_controller(self, student_name):
+        # Simule la récupération d'un étudiant par nom
+        for student in self.students:
+            full_name = f"{student['first_name']} {student['last_name']}"
+            if student_name == full_name or student_name == student['first_name']:
+                return student
+        return None  # Si l'étudiant n'est pas trouvé
+
+    def update_student_info_database_controller(self, student_name, updated_student_data):
+        # Met à jour les informations de l'étudiant
+        for index, student in enumerate(self.students):
+            full_name = f"{student['first_name']} {student['last_name']}"
+            if student_name == full_name or student_name == student['first_name']:
+                self.students[index] = updated_student_data
+                break
+
 
 # Classe de test pour les vues du menu principal des étudiants
 class TestStudentMainMenuView:
@@ -119,3 +135,28 @@ class TestStudentMainMenuView:
         mock_input.assert_called()
         mock_prompt.assert_called()
         mock_confirm.assert_called()
+
+    @patch("click.prompt")
+    @patch("click.confirm")
+    def test_add_subject_to_student(self, mock_confirm, mock_prompt, capsys):
+        # Simulation des inputs utilisateur pour click.prompt
+        mock_prompt.side_effect = ["John Doe", "Physics", "18"]
+
+        # Simulation de la confirmation utilisateur pour click.confirm
+        mock_confirm.return_value = True
+
+        # Exécution de la méthode add_subject_to_student
+        self.view.add_subject_to_student()
+
+        # Capture de la sortie console pour validation
+        captured = capsys.readouterr()
+
+        # Vérification que les bonnes informations sont affichées dans la console
+        assert "Résumé des informations saisies" in captured.out
+        assert "John Doe" in captured.out
+        assert "Physics" in captured.out
+        assert "18.0" in captured.out
+
+        # Vérification que la matière a bien été ajoutée à l'étudiant
+        student = self.view.student_controller.students[0]
+        assert any(subject['name'] == "Physics" and subject['grade'] == 18.0 for subject in student['lessons'])
