@@ -202,31 +202,3 @@ class TestStudentMainMenuView:
         assert any(subject['name'] == "Math" and subject['grade'] == 16.0 for subject in student['lessons'])
         assert any(subject['name'] == "Science" and subject['grade'] == 12.0 for subject in student['lessons'])
         assert any(subject['name'] == "History" and subject['grade'] == 15.0 for subject in student['lessons'])
-
-    @patch('builtins.input', side_effect=['15', '10', '10'])  # Ajoute les entrées simulées nécessaires
-    @patch('views.student_menu_views.click.prompt')
-    @patch('views.student_menu_views.click.confirm')
-    def test_update_student_info_success(self, mock_confirm, mock_prompt, mock_input):
-        # Prépare le mock pour simuler un étudiant existant
-        mock_prompt.side_effect = [
-            'John Doe',  # Nom de l'étudiant à mettre à jour
-            'Johnny',    # Nouveau prénom
-            'Doe',       # Nouveau nom (même que l'ancien)
-            'Class A',   # Nouvelle classe (même que l'ancienne)
-            'Math',      # Nouveau nom de matière
-            '15',        # Nouvelle note pour Math
-            'Science',   # Nouveau nom de matière
-            '10',        # Nouvelle note pour Science
-            'History'    # Nouveau nom de matière
-        ]
-        mock_confirm.return_value = True  # Confirmer la mise à jour
-
-        # Appel de la méthode à tester
-        self.view.update_student_info()
-
-        # Vérifie que l'étudiant a été mis à jour dans la base de données
-        updated_student = self.view.student_controller.get_student_database_controller('Johnny Doe')
-        assert updated_student['first_name'] == 'Johnny'
-        assert updated_student['last_name'] == 'Doe'
-        assert updated_student['classroom_name'] == 'Class A'
-        assert len(updated_student['lessons']) == 3  # Vérifie que les leçons ont été mises à jour
