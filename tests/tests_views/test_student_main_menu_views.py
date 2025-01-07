@@ -64,6 +64,14 @@ class MockStudentDatabaseController:
                 self.students[index] = updated_student_data
                 break
 
+    def update_student_grades_database_controller(self, student_name, new_grades):
+        # Met à jour les notes de l'étudiant
+        for student in self.students:
+            full_name = f"{student['first_name']} {student['last_name']}"
+            if student_name == full_name or student_name == student['first_name']:
+                student['lessons'] = new_grades  # Met à jour les leçons avec les nouvelles notes
+                break
+
 
 # Classe de test pour les vues du menu principal des étudiants
 class TestStudentMainMenuView:
@@ -160,3 +168,37 @@ class TestStudentMainMenuView:
         # Vérification que la matière a bien été ajoutée à l'étudiant
         student = self.view.student_controller.students[0]
         assert any(subject['name'] == "Physics" and subject['grade'] == 18.0 for subject in student['lessons'])
+
+    @patch("click.prompt")
+    @patch("click.confirm")
+    def test_update_student_grades(self, mock_confirm, mock_prompt, capsys):
+        # Simule les inputs utilisateur pour click.prompt
+        # Simule la saisie du nom de l'étudiant et des nouvelles notes
+        mock_prompt.side_effect = [
+            "John Doe",  # Nom de l'étudiant
+            "16",        # Nouvelle note pour Math
+            "12",        # Nouvelle note pour Science
+            "15"         # Nouvelle note pour History
+        ]
+
+        # Simule la confirmation de la mise à jour des notes
+        mock_confirm.return_value = True
+
+        # Exécution de la méthode update_student_grades
+        self.view.update_student_grades()
+
+        # Capture de la sortie console pour validation
+        captured = capsys.readouterr()
+
+        # Vérifie que les bonnes informations sont affichées dans la console
+        assert "Notes modifiées" in captured.out
+        assert "Nouvelle note de Math : 16.0" in captured.out
+        assert "Nouvelle note de Science : 12.0" in captured.out
+        assert "Nouvelle note de History : 15.0" in captured.out
+        assert "Les notes de l'étudiant ont été mises à jour avec succès !" in captured.out
+
+        # Vérifie que les notes de l'étudiant ont été correctement mises à jour
+        student = self.view.student_controller.get_student_database_controller("John Doe")
+        assert any(subject['name'] == "Math" and subject['grade'] == 16.0 for subject in student['lessons'])
+        assert any(subject['name'] == "Science" and subject['grade'] == 12.0 for subject in student['lessons'])
+        assert any(subject['name'] == "History" and subject['grade'] == 15.0 for subject in student['lessons'])
