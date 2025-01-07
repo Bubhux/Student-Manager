@@ -89,7 +89,7 @@ class TestStudentMainMenuView:
         assert f"{first_name} {last_name}" in captured.out
         assert classroom_name in captured.out
 
-        # Si des matières sont fournies, vérifier également leur affichage
+        # Si des matières sont fournies, vérifie également leur affichage
         if subjects:
             for subject in subjects:
                 assert subject in captured.out
@@ -219,7 +219,7 @@ class TestStudentMainMenuView:
             '10',        # Nouvelle note pour Science
             'History'    # Nouveau nom de matière
         ]
-        mock_confirm.return_value = True  # Confirmer la mise à jour
+        mock_confirm.return_value = True  # Confirme la mise à jour
 
         # Appel de la méthode à tester
         self.view.update_student_info()
@@ -230,3 +230,32 @@ class TestStudentMainMenuView:
         assert updated_student['last_name'] == 'Doe'
         assert updated_student['classroom_name'] == 'Class A'
         assert len(updated_student['lessons']) == 3  # Vérifie que les leçons ont été mises à jour
+
+    @patch('builtins.input', side_effect=['John Doe', '', '', '', 'Math', '', 'Science', '', 'History'])
+    @patch('views.student_menu_views.click.confirm')
+    @patch('views.student_menu_views.click.prompt', return_value='John Doe')  # Mock click.prompt ici
+    def test_update_student_info_no_changes(self, mock_prompt, mock_confirm, mock_input):
+        # Simule que la confirmation est vraie
+        mock_confirm.return_value = True  
+
+        # Prépare le mock pour simuler un étudiant existant
+        self.view.student_controller.add_student_database_controller({
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'classroom_name': 'Class A',
+            'lessons': [
+                {'name': 'Math', 'grade': ''},
+                {'name': 'Science', 'grade': ''},
+                {'name': 'History', 'grade': ''},
+            ]
+        })
+
+        # Appel de la méthode à tester
+        self.view.update_student_info()
+
+        # Vérifie que l'étudiant n'a pas été mis à jour
+        updated_student = self.view.student_controller.get_student_database_controller('John Doe')
+        assert updated_student['first_name'] == 'John'  # Doit conserver l'ancien prénom
+        assert updated_student['last_name'] == 'Doe'    # Doit conserver l'ancien nom
+        assert updated_student['classroom_name'] == 'Class A'  # Doit conserver l'ancienne classe
+        assert len(updated_student['lessons']) == 3  # Vérifie que les leçons n'ont pas changé
