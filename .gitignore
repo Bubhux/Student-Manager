@@ -11,7 +11,8 @@ env/
 # Exclure les fichiers et dossiers générés par Pytest
 .pytest_cache/
 
-# Exclure les fichiers .coveragerc coverage et le dossier coverage_html_report
+# Exclure les fichiers .env .coveragerc coverage et le dossier coverage_html_report
+.env
 .coveragerc
 .coverage
 coverage_html_report/

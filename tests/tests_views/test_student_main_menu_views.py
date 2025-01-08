@@ -4,6 +4,7 @@ import mongomock
 from unittest.mock import patch
 from rich.console import Console
 from views.student_menu_views import StudentView
+import re
 
 
 # Fixture pour simuler une base de données MongoDB en mémoire
@@ -82,6 +83,9 @@ class TestStudentMainMenuView:
         self.view = StudentView()
         self.view.student_controller = MockStudentDatabaseController()
         self.console = Console()
+
+    def clean_output(self, output):
+        return re.sub(r'\x1b\[[0-9;]*m', '', output)  # Supprime les codes d'échappement ANSI
 
     def assert_student_displayed(self, captured, first_name, last_name, classroom_name, subjects=None):
         # Fonction utilitaire pour vérifier le nom, prénom, classe et éventuellement les matières
@@ -172,8 +176,6 @@ class TestStudentMainMenuView:
     @patch("click.prompt")
     @patch("click.confirm")
     def test_update_student_grades(self, mock_confirm, mock_prompt, capsys):
-        # Simule les inputs utilisateur pour click.prompt
-        # Simule la saisie du nom de l'étudiant et des nouvelles notes
         mock_prompt.side_effect = [
             "John Doe",  # Nom de l'étudiant
             "16",        # Nouvelle note pour Math
@@ -181,21 +183,20 @@ class TestStudentMainMenuView:
             "15"         # Nouvelle note pour History
         ]
 
-        # Simule la confirmation de la mise à jour des notes
         mock_confirm.return_value = True
 
-        # Exécution de la méthode update_student_grades
         self.view.update_student_grades()
 
-        # Capture de la sortie console pour validation
         captured = capsys.readouterr()
 
-        # Vérifie que les bonnes informations sont affichées dans la console
+        print(captured.out)  # Pour voir la sortie capturée
+
+        # Enlève les codes d'échappement ANSI avant d'affirmer
         assert "Notes modifiées" in captured.out
-        assert "Nouvelle note de Math : 16.0" in captured.out
-        assert "Nouvelle note de Science : 12.0" in captured.out
-        assert "Nouvelle note de History : 15.0" in captured.out
-        assert "Les notes de l'étudiant ont été mises à jour avec succès !" in captured.out
+        assert "Nouvelle note de Math : 16.0" in self.clean_output(captured.out)
+        assert "Nouvelle note de Science : 12.0" in self.clean_output(captured.out)
+        assert "Nouvelle note de History : 15.0" in self.clean_output(captured.out) 
+        assert "Les notes de l'étudiant ont été mises à jour avec succès !" in self.clean_output(captured.out)
 
         # Vérifie que les notes de l'étudiant ont été correctement mises à jour
         student = self.view.student_controller.get_student_database_controller("John Doe")
@@ -259,3 +260,13 @@ class TestStudentMainMenuView:
         assert updated_student['last_name'] == 'Doe'    # Doit conserver l'ancien nom
         assert updated_student['classroom_name'] == 'Class A'  # Doit conserver l'ancienne classe
         assert len(updated_student['lessons']) == 3  # Vérifie que les leçons n'ont pas changé
+
+    @patch('views.student_menu_views.click.prompt')
+    def test_update_student_info_student_not_found(self, mock_prompt):
+        # Prépare le mock pour simuler la tentative de mise à jour d'un étudiant qui n'existe pas
+        mock_prompt.return_value = 'Non Existant Student'  # Nom de l'étudiant qui n'existe pas
+
+        # Capture les sorties de la console
+        with patch('rich.console.Console.print') as mock_print:
+            self.view.update_student_info()
+            mock_print.assert_called_with("Aucun étudiant trouvé avec le nom [bold]Non Existant Student[/bold]. Vérifiez le nom de l'étudiant.", style="bold red")
