@@ -44,5 +44,5 @@ class ClassroomModel:
 
         return True
 
-    def count_students_classroom(self):
-        return len(self.number_of_students)
+    #def count_students_classroom(self):
+    #    return len(self.number_of_students)

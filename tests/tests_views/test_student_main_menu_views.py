@@ -73,6 +73,20 @@ class MockStudentDatabaseController:
                 student['lessons'] = new_grades  # Met à jour les leçons avec les nouvelles notes
                 break
 
+    def delete_student_database_controller(self, student_name):
+        # Simule la suppression d'un étudiant en le retirant de la liste
+        for index, student in enumerate(self.students):
+            full_name = f"{student['first_name']} {student['last_name']}"
+            if student_name == full_name or student_name == student['first_name']:
+                del self.students[index]  # Retire l'étudiant de la liste
+                break
+
+    def calculate_student_average_database_controller(self, student_name):
+        student = self.get_student_database_controller(student_name)
+        if student and student.get('grades'):
+            return sum(student['grades']) / len(student['grades'])
+        return None  # Aucun étudiant trouvé ou pas de notes disponibles
+
 
 # Classe de test pour les vues du menu principal des étudiants
 class TestStudentMainMenuView:
@@ -86,6 +100,10 @@ class TestStudentMainMenuView:
 
     def clean_output(self, output):
         return re.sub(r'\x1b\[[0-9;]*m', '', output)  # Supprime les codes d'échappement ANSI
+
+    def remove_ansi_sequences(self, text):
+        ansi_escape = re.compile(r'\x1b\[([0-9]+)(;[0-9]+)*m')
+        return ansi_escape.sub('', text)
 
     def assert_student_displayed(self, captured, first_name, last_name, classroom_name, subjects=None):
         # Fonction utilitaire pour vérifier le nom, prénom, classe et éventuellement les matières
@@ -270,3 +288,51 @@ class TestStudentMainMenuView:
         with patch('rich.console.Console.print') as mock_print:
             self.view.update_student_info()
             mock_print.assert_called_with("Aucun étudiant trouvé avec le nom [bold]Non Existant Student[/bold]. Vérifiez le nom de l'étudiant.", style="bold red")
+
+    @patch('views.student_menu_views.click.prompt')
+    @patch('views.student_menu_views.click.confirm')
+    def test_delete_student_success(self, mock_confirm, mock_prompt, capsys):
+        mock_prompt.return_value = '1'  # Sélectionne 'Jane Smith'
+        mock_confirm.return_value = True
+
+        # Appelle la méthode
+        self.view.delete_student()
+
+        # Nettoie les séquences ANSI des appels réels
+        actual_calls = [self.remove_ansi_sequences(str(call)) for call in mock_confirm.call_args_list]
+
+        # Vérifie que le message attendu est dans les appels réels
+        expected_message = "Êtes-vous sûr de vouloir supprimer l'étudiant 'Jane Smith' ?"
+        assert any(expected_message in call for call in actual_calls)
+
+    @patch('views.student_menu_views.click.prompt')
+    @patch('views.student_menu_views.StudentDatabaseController.delete_student_database_controller')
+    def test_delete_student_cancel(self, mock_delete, mock_prompt):
+        # Simule une entrée utilisateur pour sélectionner un étudiant
+        mock_prompt.return_value = '1'  # Simule la sélection de l'étudiant à supprimer
+
+        # Teste la suppression d'un étudiant mais avec annulation
+        mock_delete.return_value = None  # La suppression ne doit pas réellement se produire
+
+        # Capture la sortie console pendant l'exécution de la fonction
+        with patch('rich.console.Console.print') as mock_print, patch('click.confirm') as mock_confirm:
+            mock_confirm.return_value = False  # Simule l'annulation de la suppression
+
+            # Appel à la fonction de suppression d'un étudiant
+            self.view.delete_student()
+
+            # Vérifie que la suppression a bien été annulée
+            mock_print.assert_any_call("Suppression annulée.", style="bold red")
+
+            # Vérifie que la méthode delete_student_database_controller n'a pas été appelée
+            mock_delete.assert_not_called()
+
+    def test_no_students_to_delete(self):
+        # Teste l'absence d'étudiants à supprimer
+        self.view.student_controller.students = []  # Vide la liste des étudiants
+
+        with patch('rich.console.Console.print') as mock_print:
+            self.view.delete_student()
+
+            # Vérifie que le message "Il n'y a pas d'étudiants disponibles" est affiché
+            mock_print.assert_any_call("Il n'y a pas d'étudiants disponibles.", style="bold red")
