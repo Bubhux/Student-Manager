@@ -1,7 +1,7 @@
 # tests/tests_views/test_student_main_menu_views.py
 import pytest
 import mongomock
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from rich.console import Console
 from views.student_menu_views import StudentView
 import re
@@ -83,9 +83,9 @@ class MockStudentDatabaseController:
 
     def calculate_student_average_database_controller(self, student_name):
         student = self.get_student_database_controller(student_name)
-        if student and student.get('grades'):
-            return sum(student['grades']) / len(student['grades'])
-        return None  # Aucun étudiant trouvé ou pas de notes disponibles
+        if student and student.get('grades'):  # Vérifie que les notes existent
+            return sum(student['grades']) / len(student['grades'])  # Retourne une moyenne correcte
+        return None  # Retourne None si aucun étudiant ou aucune 
 
 
 # Classe de test pour les vues du menu principal des étudiants
@@ -252,7 +252,7 @@ class TestStudentMainMenuView:
 
     @patch('builtins.input', side_effect=['John Doe', '', '', '', 'Math', '', 'Science', '', 'History'])
     @patch('views.student_menu_views.click.confirm')
-    @patch('views.student_menu_views.click.prompt', return_value='John Doe')  # Mock click.prompt ici
+    @patch('views.student_menu_views.click.prompt', return_value='John Doe')
     def test_update_student_info_no_changes(self, mock_prompt, mock_confirm, mock_input):
         # Simule que la confirmation est vraie
         mock_confirm.return_value = True  
@@ -336,3 +336,17 @@ class TestStudentMainMenuView:
 
             # Vérifie que le message "Il n'y a pas d'étudiants disponibles" est affiché
             mock_print.assert_any_call("Il n'y a pas d'étudiants disponibles.", style="bold red")
+
+    @patch('views.student_menu_views.click.prompt')
+    @patch('views.student_menu_views.StudentDatabaseController.calculate_student_average_database_controller')
+    def test_calculate_student_average(self, MockStudentController, mock_prompt, capsys):
+
+        mock_student_controller = MockStudentController.return_value
+        mock_student_controller.calculate_student_average_database_controller.return_value = 15.33 
+
+        mock_prompt.side_effect = ['1']
+
+        self.view.calculate_student_average()
+
+        captured = capsys.readouterr()
+        assert "Moyenne de l'étudiant Jane Smith : 15.33" in captured.out
