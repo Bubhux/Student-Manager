@@ -1,7 +1,7 @@
 # tests/tests_views/test_student_main_menu_views.py
 import pytest
 import mongomock
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from rich.console import Console
 from views.student_menu_views import StudentView
 import re
@@ -350,3 +350,98 @@ class TestStudentMainMenuView:
 
         captured = capsys.readouterr()
         assert "Moyenne de l'étudiant Jane Smith : 15.33" in captured.out
+
+
+# Classe de test pour les vues du menu principal des étudiants
+class TestStudentMainMenuViewChoice:
+
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        """Fixture qui crée une instance de StudentView."""
+        self.student_main_menu = StudentView()
+
+    def test_display_student_choice(self, mocker):
+        mocker.patch('click.prompt', side_effect=["1", "r"])
+
+        mock_student_menu_view = mocker.patch.object(self.student_main_menu, 'display_students')
+
+        mocker.patch.object(Console, 'print')
+
+        self.student_main_menu.display_main_menu()
+
+        mock_student_menu_view.assert_called_once()
+
+    def test_add_student_choice(self, mocker):
+        mocker.patch('click.prompt', side_effect=["2", "r"]) 
+
+        mock_add_student = mocker.patch.object(self.student_main_menu, 'add_student')
+
+        mocker.patch.object(Console, 'print')
+
+        self.student_main_menu.display_main_menu()
+
+        mock_add_student.assert_called_once()
+
+    def test_add_subject_to_student_choice(self, mocker):
+        mocker.patch('click.prompt', side_effect=["3", "r"]) 
+
+        mock_add_subject = mocker.patch.object(self.student_main_menu, 'add_subject_to_student') 
+
+        mocker.patch.object(Console, 'print')
+
+        self.student_main_menu.display_main_menu()
+
+        mock_add_subject.assert_called_once()
+
+    def test_update_student_grades_choice(self, mocker):
+        mocker.patch('click.prompt', side_effect=["4", "r"])
+
+        mock_update_grades = mocker.patch.object(self.student_main_menu, 'update_student_grades')
+
+        mocker.patch.object(Console, 'print')
+
+        self.student_main_menu.display_main_menu()
+
+        mock_update_grades.assert_called_once()
+
+    def test_update_student_info_choice(self, mocker):
+        mocker.patch('click.prompt', side_effect=["5", "r"]) 
+
+        mock_update_info = mocker.patch.object(self.student_main_menu, 'update_student_info')
+
+        mocker.patch.object(Console, 'print')
+
+        self.student_main_menu.display_main_menu()
+
+        mock_update_info.assert_called_once()
+
+    def test_calculate_student_average_choice(self, mocker):
+        mocker.patch('click.prompt', side_effect=["6", "r"])
+
+        mock_calculate_average = mocker.patch.object(self.student_main_menu, 'calculate_student_average')
+
+        mocker.patch.object(Console, 'print')
+
+        self.student_main_menu.display_main_menu()
+
+        mock_calculate_average.assert_called_once()
+
+    def test_delete_student_choice(self, mocker):
+        mocker.patch('click.prompt', side_effect=["7", "r"])
+
+        mock_delete_student = mocker.patch.object(self.student_main_menu, 'delete_student')
+
+        mocker.patch.object(Console, 'print')
+
+        self.student_main_menu.display_main_menu()
+
+        mock_delete_student.assert_called_once()
+
+    def test_return_to_main_menu_choice(self, mocker):
+        mocker.patch('click.prompt', side_effect=["r"]) 
+
+        mocker.patch.object(Console, 'print')
+
+        self.student_main_menu.display_main_menu()
+
+        Console.print.assert_called_with("Menu principal !")
