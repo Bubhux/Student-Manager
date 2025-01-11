@@ -1,3 +1,4 @@
+# controllers/main_controller.py
 from views.main_menu_views import MainMenuView
 from controllers.student_controller import StudentDatabaseController
 from controllers.classroom_controller import ClassroomDatabaseController
