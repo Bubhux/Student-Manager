@@ -15,14 +15,30 @@ services:
       - mongo
     env_file:
       - .env
+    environment:
+      - DOCKER=true
+      - MONGO_HOST=mongo
+    networks:
+      - student_network
 
   mongo:
     image: mongo:7.0.5
     container_name: mongodb
     ports:
       - "27017:27017"
+    networks:
+      - student_network
     volumes:
       - mongodb_data:/data/db
+    restart: always
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mongodb_data:
+
+networks:
+  student_network:

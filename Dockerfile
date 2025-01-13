@@ -6,6 +6,9 @@ FROM python:3.12-slim-bullseye
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     gcc \
+    wget \
+    && wget -qO /usr/local/bin/wait-for-it https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
+    && chmod +x /usr/local/bin/wait-for-it \
     && rm -rf /var/lib/apt/lists/*
 
 # Configuration des variables d'environnement pour Python
