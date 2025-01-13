@@ -1,0 +1,20 @@
+# .coveragerc
+[run]
+branch = True
+source =
+    models
+    views
+
+[report]
+omit =
+    main.py
+    controllers/*
+    */tests/*
+    */env/*
+    */__pycache__/*
+    *__init__.py
+
+show_missing = True
+
+[html]
+directory = coverage_html_report

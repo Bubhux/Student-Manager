@@ -1,0 +1,10 @@
+# Dockerfile.mongo
+# Étape 1 : Utilisation de l'image MongoDB 3.6 officielle
+FROM mongo:3.6
+
+# Étape 2 : Ajoutez des configurations personnalisées ici (si nécessaire)
+# Par exemple, vous pouvez ajouter des scripts d'initialisation
+
+# Étape 3 : (Optionnel) Configurer des variables d'environnement ou des volumes
+# ENV MONGO_INITDB_ROOT_USERNAME=admin
+# ENV MONGO_INITDB_ROOT_PASSWORD=password
