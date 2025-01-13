@@ -2,35 +2,39 @@
 version: '3.9'
 
 services:
-  app:
+  studentmanager-app:
     build:
       context: .
       dockerfile: Dockerfile
     image: bubhux/student-manager:latest
-    volumes:
-      - .:/app
     ports:
       - "8000:8000"
+    stdin_open: true
+    tty: true
+    command: ""
     depends_on:
       - mongo
-    env_file:
-      - .env
     environment:
       - DOCKER=true
       - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+    env_file:
+      - .env
     networks:
       - student_network
 
   mongo:
-    image: mongo:7.0.5
+    image: mongo:3.6
     container_name: mongodb
+    environment:
+      - MONGO_INITDB_STORAGE_ENGINE=wiredTiger
     ports:
       - "27017:27017"
     networks:
       - student_network
     volumes:
       - mongodb_data:/data/db
-    restart: always
+    restart: no
     healthcheck:
       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -42,3 +46,4 @@ volumes:
 
 networks:
   student_network:
+    driver: bridge
