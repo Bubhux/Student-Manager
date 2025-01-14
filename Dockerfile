@@ -27,4 +27,4 @@ RUN pip install --no-cache-dir --upgrade pip \
 COPY . .
 
 # Étape 6 : Commande par défaut
-CMD ["wait-for-it", "mongo:27017", "--", "python", "main.py"]
+CMD ["sh", "-c", "pwd && ls -l /app && wait-for-it mongo:27017 -- python /app/main.py"]
