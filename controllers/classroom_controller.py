@@ -1,18 +1,35 @@
 # controllers/classroom_controller.py
+import os
 from pymongo import MongoClient
+from dotenv import load_dotenv
 
 from models.student_models import StudentModel
 from models.classroom_models import ClassroomModel
 
 
+load_dotenv()
+
 class ClassroomDatabaseController:
 
     def __init__(self):
-        self.client = MongoClient('localhost', 27017)  # Connexion au serveur MongoDB
-        self.db_name = 'StudentCG'  # Nom de la base de données
-        self.db = self.client[self.db_name]  # Sélection de la base de données
-        self.classroom_collection = self.db['classrooms'] # Sélection de la collection
-        self.student_collection = self.db['students']  # Sélection de la collection
+        # Vérifie si l'application tourne dans un environnement Docker
+        is_docker = os.getenv('DOCKER', 'false').lower() == 'true'
+
+        if is_docker:
+            # Utilisation des variables pour Docker
+            mongo_host = os.getenv('MONGO_HOST', 'mongo')
+            mongo_port = int(os.getenv('MONGO_PORT', 27017))
+        else:
+            # Utilisation des variables pour un environnement local
+            mongo_host = os.getenv('LOCAL_MONGO_HOST', 'localhost')
+            mongo_port = int(os.getenv('LOCAL_MONGO_PORT', 27017))
+
+        # Connexion au serveur MongoDB
+        self.client = MongoClient(mongo_host, mongo_port)
+        self.db_name = os.getenv('MONGO_INITDB_DATABASE', 'StudentCG')  # Nom de la base de données
+        self.db = self.client[self.db_name]
+        self.student_collection = self.db['students']
+        self.classroom_collection = self.db['classrooms']
 
     def add_classroom_database_controller(self, classroom_data):
         existing_classroom = self.classroom_collection.find_one({'classroom_name': classroom_data['classroom_name']})
