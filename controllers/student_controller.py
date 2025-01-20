@@ -1,19 +1,41 @@
 # controllers/student_controller.py
+import os
 from pymongo import MongoClient
-import click
+from dotenv import load_dotenv
 
 from models.student_models import StudentModel
 from models.classroom_models import ClassroomModel
 
 
+load_dotenv()
+
+# Vérifie si les variables d'environnement sont bien chargées
+print("MONGO_HOST:", os.getenv("MONGO_HOST"))
+print("MONGO_INITDB_ROOT_USERNAME:", os.getenv("MONGO_INITDB_ROOT_USERNAME"))
+print("MONGO_INITDB_ROOT_PASSWORD:", os.getenv("MONGO_INITDB_ROOT_PASSWORD"))
+print("MONGO_INITDB_DATABASE:", os.getenv("MONGO_INITDB_DATABASE"))
+
 class StudentDatabaseController:
 
     def __init__(self):
-        self.client = MongoClient('localhost', 27017)  # Connexion au serveur MongoDB
-        self.db_name = 'StudentCG'  # Nom de la base de données
-        self.db = self.client[self.db_name]  # Sélection de la base de données
-        self.student_collection = self.db['students']  # Sélection de la collection
-        self.classroom_collection = self.db['classrooms'] # Sélection de la collection
+        # Vérifie si l'application tourne dans un environnement Docker
+        is_docker = os.getenv('DOCKER', 'false').lower() == 'true'
+
+        if is_docker:
+            # Utilisation des variables pour Docker
+            mongo_host = os.getenv('MONGO_HOST', 'mongo')
+            mongo_port = int(os.getenv('MONGO_PORT', 27017))
+        else:
+            # Utilisation des variables pour un environnement local
+            mongo_host = os.getenv('LOCAL_MONGO_HOST', 'localhost')
+            mongo_port = int(os.getenv('LOCAL_MONGO_PORT', 27017))
+
+        # Connexion au serveur MongoDB
+        self.client = MongoClient(mongo_host, mongo_port)
+        self.db_name = os.getenv('MONGO_INITDB_DATABASE', 'StudentCG')  # Nom de la base de données
+        self.db = self.client[self.db_name]
+        self.student_collection = self.db['students']
+        self.classroom_collection = self.db['classrooms']
 
     def connect_to_database(self):
         try:
