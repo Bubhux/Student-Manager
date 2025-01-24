@@ -1,5 +1,6 @@
 # controllers/student_controller.py
 import os
+import click
 from pymongo import MongoClient
 from dotenv import load_dotenv
 

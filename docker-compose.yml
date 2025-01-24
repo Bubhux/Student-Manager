@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: bubhux/student-manager:latest
+    image: bubhux/repository-student-manager:latest
     ports:
       - "8000:8000"
     stdin_open: true
@@ -23,7 +23,10 @@ services:
       - student_network
 
   mongo:
-    image: mongo:3.6
+    build:
+      context: .
+      dockerfile: Dockerfile.mongo
+    image: bubhux/repository-student-manager:mongo-3.6
     container_name: mongodb
     environment:
       - MONGO_INITDB_STORAGE_ENGINE=wiredTiger
