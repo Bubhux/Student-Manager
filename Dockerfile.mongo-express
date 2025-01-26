@@ -1,0 +1,12 @@
+# Dockerfile.mongo-express
+
+# Étape 1 : Utiliser l'image officielle de mongo-express
+FROM mongo-express
+
+# Étape 2 : Ajouter des configurations ou des modifications supplémentaires si nécessaire
+# Par exemple, vous pouvez ajouter des fichiers de configuration personnalisés ou installer des dépendances supplémentaires
+
+# Étape 3 : (Optionnel) Si vous avez des fichiers de configuration à ajouter
+# COPY ./config.js /etc/mongo-express/config.js
+
+# Par défaut, mongo-express utilise le port 8081, donc nous n'avons pas besoin de modifier cela.
