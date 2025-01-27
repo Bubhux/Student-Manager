@@ -65,7 +65,7 @@ class TestMainMenuView:
         self.main_menu.display_main_menu()
 
         # Vérifie que le message de sortie est bien affiché
-        mock_console_print.assert_any_call("Merci d'avoir utilisé ce programme !")
+        mock_console_print.assert_any_call("Merci d'avoir utilisé Student Manager !")
 
     def test_display_main_menu_invalid_choice(self, mocker):
         """
