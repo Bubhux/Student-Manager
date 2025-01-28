@@ -10,13 +10,14 @@ services:
       - "8000:8000"
     stdin_open: true
     tty: true
-    command: ""
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     environment:
       - DOCKER=true
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
+      - MONGO_INITDB_DATABASE=StudentCG
     env_file:
       - .env
     networks:
@@ -30,6 +31,9 @@ services:
     container_name: mongodb
     environment:
       - MONGO_INITDB_STORAGE_ENGINE=wiredTiger
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=mongoadmin
+      - MONGO_INITDB_DATABASE=StudentCG
     ports:
       - "27017:27017"
     networks:
@@ -38,7 +42,7 @@ services:
       - mongodb_data:/data/db
     restart: no
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongo", "-u", "mongoadmin", "-p", "mongoadmin", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
