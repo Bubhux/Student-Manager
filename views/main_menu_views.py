@@ -11,11 +11,11 @@ from views.classroom_menu_views import ClassroomView
 
 class MainMenuView:
 
-    def __init__(self):
-        self.student_view = StudentView()
-        self.classroom_view = ClassroomView()
-        self.student_database_controller = StudentDatabaseController()
-        self.classroom_database_controller = ClassroomDatabaseController()
+    def __init__(self, db):
+        self.student_view = StudentView(db)
+        self.classroom_view = ClassroomView(db)
+        self.student_database_controller = StudentDatabaseController(db)
+        self.classroom_database_controller = ClassroomDatabaseController(db)
         self.console = Console()
 
     def display_main_menu(self):
@@ -41,7 +41,7 @@ class MainMenuView:
             elif choice_menu == "2":
                 self.classroom_view.display_main_menu()
             elif choice_menu == "q":
-                self.console.print("Merci d'avoir utilisé ce programme !")
+                self.console.print("Merci d'avoir utilisé Student Manager !")
                 break
             else:
                 self.console.print("Choix invalide, saisissez un nombre entre 1 et 2 ou q pour quitter l'application.", style="bold red")
