@@ -1,35 +1,23 @@
 # controllers/classroom_controller.py
-import os
-from pymongo import MongoClient
-from dotenv import load_dotenv
-
 from models.student_models import StudentModel
 from models.classroom_models import ClassroomModel
 
 
-load_dotenv()
-
 class ClassroomDatabaseController:
 
-    def __init__(self):
-        # Vérifie si l'application tourne dans un environnement Docker
-        is_docker = os.getenv('DOCKER', 'false').lower() == 'true'
-
-        if is_docker:
-            # Utilisation des variables pour Docker
-            mongo_host = os.getenv('MONGO_HOST', 'mongo')
-            mongo_port = int(os.getenv('MONGO_PORT', 27017))
-        else:
-            # Utilisation des variables pour un environnement local
-            mongo_host = os.getenv('LOCAL_MONGO_HOST', 'localhost')
-            mongo_port = int(os.getenv('LOCAL_MONGO_PORT', 27017))
-
-        # Connexion au serveur MongoDB
-        self.client = MongoClient(mongo_host, mongo_port)
-        self.db_name = os.getenv('MONGO_INITDB_DATABASE', 'StudentCG')  # Nom de la base de données
-        self.db = self.client[self.db_name]
+    def __init__(self, db):
+        self.db = db
         self.student_collection = self.db['students']
         self.classroom_collection = self.db['classrooms']
+
+    def connect_to_database(self):
+        try:
+            # Vérifie la connexion à la base de données
+            self.db.command("ping")
+            print(f"Connexion de ClassroomDatabaseController à la base de données MongoDB '{self.db.name}' établie avec succès.")
+        except Exception as e:
+            print("ClassroomDatabaseController erreur de connexion à la base de données MongoDB :", str(e))
+            raise
 
     def add_classroom_database_controller(self, classroom_data):
         existing_classroom = self.classroom_collection.find_one({'classroom_name': classroom_data['classroom_name']})
