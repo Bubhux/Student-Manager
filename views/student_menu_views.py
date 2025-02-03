@@ -9,8 +9,8 @@ from models.student_models import StudentModel
 
 class StudentView:
 
-    def __init__(self):
-        self.student_controller = StudentDatabaseController()
+    def __init__(self, db):
+        self.student_controller = StudentDatabaseController(db)
         self.console = Console()
 
     def display_main_menu(self):
