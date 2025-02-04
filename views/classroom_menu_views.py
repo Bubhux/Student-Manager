@@ -11,9 +11,9 @@ from models.classroom_models import ClassroomModel
 
 class ClassroomView:
 
-    def __init__(self):
-        self.classroom_controller = ClassroomDatabaseController()
-        self.student_controller = StudentDatabaseController()
+    def __init__(self, db):
+        self.classroom_controller = ClassroomDatabaseController(db)
+        self.student_controller = StudentDatabaseController(db)
         self.console = Console()
 
     def display_main_menu(self):
