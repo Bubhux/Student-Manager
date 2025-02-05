@@ -1,5 +1,6 @@
 # tests/tests_views/test_main_menu_views.py
 import pytest
+from unittest.mock import MagicMock
 from views.main_menu_views import MainMenuView
 from rich.console import Console
 
@@ -9,7 +10,8 @@ class TestMainMenuView:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Fixture qui crée une instance de MainMenuView."""
-        self.main_menu = MainMenuView()
+        mock_db = MagicMock()  # Mock de la base de données
+        self.main_menu = MainMenuView(mock_db)
 
     def test_display_main_menu_student_choice(self, mocker):
         """
