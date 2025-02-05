@@ -85,7 +85,7 @@ class MockStudentDatabaseController:
         student = self.get_student_database_controller(student_name)
         if student and student.get('grades'):  # Vérifie que les notes existent
             return sum(student['grades']) / len(student['grades'])  # Retourne une moyenne correcte
-        return None  # Retourne None si aucun étudiant ou aucune 
+        return None  # Retourne None si aucun étudiant ou aucune
 
 
 # Classe de test pour les vues du menu principal des étudiants
@@ -93,8 +93,11 @@ class TestStudentMainMenuView:
 
     @pytest.fixture(autouse=True)
     def setup(self, mock_mongo_db):
-        # Initialisation de la vue d'étudiant et de la console avant chaque test
-        self.view = StudentView()
+         # Simule une base de données MongoDB avec mongomock
+        self.mock_db = mongomock.MongoClient()['test_database']
+
+        # Injecte la base de données fictive dans StudentView
+        self.view = StudentView(self.mock_db)
         self.view.student_controller = MockStudentDatabaseController()
         self.console = Console()
 
@@ -358,7 +361,8 @@ class TestStudentMainMenuViewChoice:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Fixture qui crée une instance de StudentView."""
-        self.student_main_menu = StudentView()
+        self.mock_db = MockStudentDatabaseController()
+        self.student_main_menu = StudentView(db=self.mock_db)
 
     def test_display_student_choice(self, mocker):
         mocker.patch('click.prompt', side_effect=["1", "r"])
