@@ -48,11 +48,8 @@ class TestClassroomMainMenuView:
 
     @pytest.fixture(autouse=True)
     def setup(self, mock_mongo_db):
-        # Simule une base de données MongoDB avec mongomock
-        self.mock_db = mongomock.MongoClient()['test_database']
-
-        # Injecte la base de données fictive dans ClassroomView
-        self.view = ClassroomView(self.mock_db)
+        # Initialisation de la vue de la classe et de la console avant chaque test
+        self.view = ClassroomView()
         self.view.classroom_controller = MockClassroomDatabaseController()
         self.console = Console()
 
