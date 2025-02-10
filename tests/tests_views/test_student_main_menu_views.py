@@ -41,6 +41,13 @@ class MockStudentDatabaseController:
             }
         ]
 
+    def __getitem__(self, item):
+        if item == 'students':
+            return self.students
+        elif item == 'classrooms':
+            return []
+        raise KeyError(f"Collection '{item}' non trouvée.")
+
     def get_all_students_database_controller(self):
         # Retourne la liste des étudiants
         return self.students
@@ -85,7 +92,7 @@ class MockStudentDatabaseController:
         student = self.get_student_database_controller(student_name)
         if student and student.get('grades'):  # Vérifie que les notes existent
             return sum(student['grades']) / len(student['grades'])  # Retourne une moyenne correcte
-        return None  # Retourne None si aucun étudiant ou aucune 
+        return None  # Retourne None si aucun étudiant ou aucune
 
 
 # Classe de test pour les vues du menu principal des étudiants
@@ -93,8 +100,11 @@ class TestStudentMainMenuView:
 
     @pytest.fixture(autouse=True)
     def setup(self, mock_mongo_db):
-        # Initialisation de la vue d'étudiant et de la console avant chaque test
-        self.view = StudentView()
+         # Simule une base de données MongoDB avec mongomock
+        self.mock_db = mongomock.MongoClient()['test_database']
+
+        # Injecte la base de données fictive dans StudentView
+        self.view = StudentView(self.mock_db)
         self.view.student_controller = MockStudentDatabaseController()
         self.console = Console()
 
@@ -358,90 +368,68 @@ class TestStudentMainMenuViewChoice:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Fixture qui crée une instance de StudentView."""
-        self.student_main_menu = StudentView()
+        self.mock_db = MockStudentDatabaseController()
+        self.student_main_menu = StudentView(db=self.mock_db)
 
     def test_display_student_choice(self, mocker):
         mocker.patch('click.prompt', side_effect=["1", "r"])
-
         mock_student_menu_view = mocker.patch.object(self.student_main_menu, 'display_students')
-
         mocker.patch.object(Console, 'print')
 
         self.student_main_menu.display_main_menu()
-
         mock_student_menu_view.assert_called_once()
 
     def test_add_student_choice(self, mocker):
         mocker.patch('click.prompt', side_effect=["2", "r"]) 
-
         mock_add_student = mocker.patch.object(self.student_main_menu, 'add_student')
-
         mocker.patch.object(Console, 'print')
 
         self.student_main_menu.display_main_menu()
-
         mock_add_student.assert_called_once()
 
     def test_add_subject_to_student_choice(self, mocker):
         mocker.patch('click.prompt', side_effect=["3", "r"]) 
-
         mock_add_subject = mocker.patch.object(self.student_main_menu, 'add_subject_to_student') 
-
         mocker.patch.object(Console, 'print')
 
         self.student_main_menu.display_main_menu()
-
         mock_add_subject.assert_called_once()
 
     def test_update_student_grades_choice(self, mocker):
         mocker.patch('click.prompt', side_effect=["4", "r"])
-
         mock_update_grades = mocker.patch.object(self.student_main_menu, 'update_student_grades')
-
         mocker.patch.object(Console, 'print')
 
         self.student_main_menu.display_main_menu()
-
         mock_update_grades.assert_called_once()
 
     def test_update_student_info_choice(self, mocker):
         mocker.patch('click.prompt', side_effect=["5", "r"]) 
-
         mock_update_info = mocker.patch.object(self.student_main_menu, 'update_student_info')
-
         mocker.patch.object(Console, 'print')
 
         self.student_main_menu.display_main_menu()
-
         mock_update_info.assert_called_once()
 
     def test_calculate_student_average_choice(self, mocker):
         mocker.patch('click.prompt', side_effect=["6", "r"])
-
         mock_calculate_average = mocker.patch.object(self.student_main_menu, 'calculate_student_average')
-
         mocker.patch.object(Console, 'print')
 
         self.student_main_menu.display_main_menu()
-
         mock_calculate_average.assert_called_once()
 
     def test_delete_student_choice(self, mocker):
         mocker.patch('click.prompt', side_effect=["7", "r"])
-
         mock_delete_student = mocker.patch.object(self.student_main_menu, 'delete_student')
-
         mocker.patch.object(Console, 'print')
 
         self.student_main_menu.display_main_menu()
-
         mock_delete_student.assert_called_once()
 
     def test_return_to_main_menu_choice(self, mocker):
         mocker.patch('click.prompt', side_effect=["r"]) 
-
         mocker.patch.object(Console, 'print')
 
         self.student_main_menu.display_main_menu()
-
         Console.print.assert_called_with("Menu principal !")
