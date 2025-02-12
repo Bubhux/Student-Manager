@@ -24,23 +24,47 @@ class MockClassroomDatabaseController:
             {
                 'classroom_name': 'Mathématiques',
                 'number_of_places_available': 30,
-                "number_of_students": [2]
+                "number_of_students": 2
             },
             {
                 'classroom_name': 'Physique',
                 'number_of_places_available': 25,
-                "number_of_students": [1]
+                "number_of_students": 1
             },
             {
                 'classroom_name': 'Chimie',
                 'number_of_places_available': 20,
-                'number_of_students': []
+                'number_of_students': 0
             }
         ]
+
+    def __getitem__(self, item):
+        if item == 'classrooms':
+            return self.classrooms
+        elif item == 'students':
+            return []
+        raise KeyError(f"Collection '{item}' non trouvée.")
 
     def get_all_classrooms_database_controller(self):
         # Retourne la liste des classes
         return self.classrooms
+
+    def add_classroom_database_controller(self, classroom_data):
+        # Ajoute une nouvelle classe à la liste
+        self.classrooms.append(classroom_data)
+
+    def update_classroom_info_database_controller(self, classroom_name, new_classroom_data):
+        for classroom in self.classrooms:
+            if classroom['classroom_name'] == classroom_name:
+                classroom.update(new_classroom_data)
+                return
+
+    def get_classroom_database_controller(self, classroom_name):
+        # Recherche et retour d'une classe spécifique
+        for classroom in self.classrooms:
+            if classroom['classroom_name'] == classroom_name:
+                return classroom
+        return None
 
 
 # Classe de test pour les vues du menu principal des classes
@@ -80,3 +104,32 @@ class TestClassroomMainMenuView:
         self.assert_classroom_displayed(captured, "Mathématiques", 30, 1)
         self.assert_classroom_displayed(captured, "Physique", 25, 1)
         self.assert_classroom_displayed(captured, "Chimie", 20, 0)
+
+    @patch('click.prompt', side_effect=['Histoire', '10', '0'])
+    @patch('click.confirm', return_value=True)
+    def test_add_classroom(self, mock_prompt, mock_confirm, capsys):
+        # Exécution de la méthode add_classroom
+        self.view.add_classroom()
+
+        # Vérification que la classe a bien été ajoutée
+        added_classroom = next(
+            (classroom for classroom in self.view.classroom_controller.get_all_classrooms_database_controller()
+            if classroom['classroom_name'] == 'Histoire'),
+            None
+        )
+
+        assert added_classroom is not None
+        assert added_classroom['classroom_name'] == 'Histoire'
+        assert added_classroom['number_of_places_available'] == 10
+        assert added_classroom['number_of_students'] == 0
+
+        # Vérification des appels aux mocks
+        mock_prompt.assert_called()
+        mock_confirm.assert_called()
+
+        # Capture de la sortie après l'ajout de la salle
+        captured = capsys.readouterr()
+
+        # Vérification de l'affichage correct de la nouvelle salle
+        self.assert_classroom_displayed(captured, "Histoire", 10, 0)
+
