@@ -133,3 +133,30 @@ class TestClassroomMainMenuView:
         # Vérification de l'affichage correct de la nouvelle salle
         self.assert_classroom_displayed(captured, "Histoire", 10, 0)
 
+    @patch('click.prompt', side_effect=['1', 'Chimie avancées', '35', '5'])
+    @patch('click.confirm', side_effect=[True, True])
+    def test_update_classroom_info(self, mock_confirm, mock_prompt, capsys):
+        # Exécution de la méthode `update_classroom_info`
+        self.view.update_classroom_info()
+
+        # Vérification des mises à jour
+        updated_classroom = next(
+            (classroom for classroom in self.view.classroom_controller.get_all_classrooms_database_controller()
+            if classroom['classroom_name'] == 'Chimie avancées'),
+            None
+        )
+
+        assert updated_classroom is not None, "La classe mise à jour n'a pas été trouvée."
+        assert updated_classroom['classroom_name'] == 'Chimie avancées'
+        assert int(updated_classroom['number_of_places_available']) == 35
+        assert int(updated_classroom['number_of_students']) == 5
+
+        # Capture de la sortie pour vérifier l'affichage
+        captured = capsys.readouterr()
+
+        # Utilisation de `assert_classroom_displayed` pour vérifier l'affichage
+        self.assert_classroom_displayed(captured, "Chimie avancées", 35, 5)
+
+        # Vérification supplémentaire si nécessaire
+        output = self.clean_output(captured.out)
+        assert "Résumé des nouvelles informations de la classe" in output
