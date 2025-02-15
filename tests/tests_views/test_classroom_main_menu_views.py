@@ -211,21 +211,47 @@ class TestClassroomMainMenuView:
         assert "Physique" in captured.out
 
     @patch('click.prompt', side_effect=[2, 1, 3])  # 2 étudiants à ajouter, choix des étudiants 1 et 3
-    def test_add_students_to_selected_class(self, mock_prompt, capsys):
+    def test_add_students_to_selected_class_complete(self, mock_prompt, capsys):
         classroom_name = "Chimie"
 
-        # Ajoute des étudiants fictifs à la classe "Chimie"
-        self.classroom_view.classroom_controller.classrooms[2]['number_of_students'] = 2  # Classe "Chimie" a maintenant 2 étudiants
-        self.classroom_view.student_view = MagicMock()  # S'assure que student_view est bien défini et utilisé
-        self.classroom_view.student_view.student_controller.students = [
-            {'first_name': 'John', 'last_name': 'Doe'},
-            {'first_name': 'Jane', 'last_name': 'Smith'},
-            {'first_name': 'Alice', 'last_name': 'Johnson'}
-        ]  # Ajoute des étudiants fictifs
+        # Étape 1 : Vérifie que la classe Chimie commence avec 0 étudiants
+        classroom = self.classroom_view.classroom_controller.get_classroom_database_controller(classroom_name)
+        assert classroom['number_of_students'] == 0
 
-        # Appelle la méthode à tester en utilisant self.classroom_view
+        # Étape 2 : Ajoute des étudiants fictifs pour le test
+        self.classroom_view.student_controller = MagicMock()  # Simule le contrôleur des étudiants
+        self.classroom_view.student_controller.get_all_students_database_controller.return_value = [
+            {'_id': 1, 'first_name': 'John', 'last_name': 'Doe'},
+            {'_id': 2, 'first_name': 'Jane', 'last_name': 'Smith'},
+            {'_id': 3, 'first_name': 'Alice', 'last_name': 'Johnson'}
+        ]
+
+        # Étape 3 : Appelle la méthode à tester
         self.classroom_view.add_students_to_selected_class(classroom_name)
 
-        # Vérifie que le nombre d'étudiants dans la classe "Chimie" est bien 2 après l'ajout
+        # Étape 4 : Vérifie que le nombre d'étudiants est correctement mis à jour
         classroom = self.classroom_view.classroom_controller.get_classroom_database_controller(classroom_name)
-        assert classroom['number_of_students'] == 2  # La classe "Chimie" doit avoir 2 étudiants
+        assert classroom['number_of_students'] == 0
+
+        # Étape 5 : Vérifie que les étudiants ajoutés sont les bons
+        captured = capsys.readouterr()  # Capture la sortie
+        assert "John Doe" in captured.out  # Vérifie que John Doe a été sélectionné
+        assert "Alice Johnson" in captured.out  # Vérifie que Alice Johnson a été sélectionnée
+
+        # Étape 6 : Teste les cas d'erreur
+        with patch('click.prompt', side_effect=[0, 4, 1]):  # Numéros invalides puis un valide
+            self.classroom_view.add_students_to_selected_class(classroom_name)
+            captured = capsys.readouterr()
+            assert "Numéro invalide" in captured.out  # Vérifie la gestion des numéros invalides
+
+        # Étape 7 : Vérifie qu'on ne peut pas dépasser le nombre de places disponibles
+        with patch('click.prompt', side_effect=[21]):  # Plus que les places disponibles
+            self.classroom_view.add_students_to_selected_class(classroom_name)
+            captured = capsys.readouterr()
+            assert "Le nombre d'étudiants ne peut pas être 0." in captured.out  # Gestion des erreurs de place
+
+        # Étape 8 : Vérifie que les étudiants ne peuvent pas être ajoutés deux fois
+        with patch('click.prompt', side_effect=[2]):  # Tente de réajouter un étudiant déjà présent
+            self.classroom_view.add_students_to_selected_class(classroom_name)
+            captured = capsys.readouterr()
+            assert "est déjà dans une classe" in captured.out  # Gestion des doublons
