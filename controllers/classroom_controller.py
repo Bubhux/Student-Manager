@@ -42,25 +42,15 @@ class ClassroomDatabaseController:
         return classrooms
 
     def get_students_in_classroom_database_controller(self, classroom_name):
-        # Récupére la liste des ID d'étudiants associés à la classe
-        classroom = self.classroom_collection.find_one({'classroom_name': classroom_name})
-        student_ids = classroom.get('student_ids', [])
+        # Récupère les informations de la classe depuis la base de données
+        classroom_info = self.classroom_collection.find_one({'classroom_name': classroom_name})
 
-        # Vérifie si la liste d'étudiants est vide
-        if not student_ids:
-            print("Aucun étudiant trouvé pour cette classe.")
-            return []
-
-        # S'assure que student_ids est une liste
-        if not isinstance(student_ids, list):
-            student_ids = [student_ids]
-
-        # Effectue la requête MongoDB
-        try:
-            students_info = list(self.student_collection.find({'_id': {'$in': student_ids}}))
+        if classroom_info:
+            # Récupère directement les informations des étudiants de la classe
+            students_info = classroom_info.get('number_of_students', [])
             return students_info
-        except Exception as e:
-            print(f"Erreur lors de la récupération des étudiants : {e}")
+        else:
+            print(f"Aucune classe trouvée avec le nom {classroom_name}.")
             return []
 
     def update_classroom_info_database_controller(self, classroom_name, new_classroom_data):
