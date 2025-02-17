@@ -4,6 +4,8 @@ from rich.console import Console
 from rich.table import Table
 
 from controllers.student_controller import StudentDatabaseController
+from controllers.classroom_controller import ClassroomDatabaseController
+
 from models.student_models import StudentModel
 
 
@@ -164,7 +166,21 @@ class StudentView:
                 continue
 
             last_name = click.prompt("Nom de l'étudiant (Appuyez sur Entrée pour laisser vide) \n> ", type=str, default="", show_default=False, prompt_suffix="")
-            
+
+            # Saisie facultative de la classe
+            classroom_name = input("Nom de la classe (Appuyez sur Entrée pour ne pas ajouter l'étudiant à une classe) \n> ").strip()
+
+            if classroom_name:
+                classroom = ClassroomDatabaseController(self.student_controller.db).get_classroom_database_controller(classroom_name)
+                if not classroom:
+                    self.console.print(f"[bold red]La classe '{classroom_name}' n'existe pas.[/bold red]")
+                    continue
+
+                if classroom["number_of_places_available"] <= classroom.get("number_of_students", 0):
+                    self.console.print(f"[bold red]La classe '{classroom_name}' n'a plus de places disponibles.[/bold red]")
+                    continue
+
+            # Saisie du nombre de matières
             num_subjects_valid = False
             while not num_subjects_valid:
                 num_subjects = input("Combien de matières cet étudiant suit-il ? (Appuyez sur Entrée pour ne choisir aucune matière) \n> ")
@@ -184,6 +200,7 @@ class StudentView:
             # Si le prénom n'est pas vide et le nombre de matières est valide, sortir de la boucle
             adding_student = False
 
+        # Saisie des matières et notes
         subjects = []
         for i in range(num_subjects):
             subject_name = click.prompt(f"Nom de la matière {i+1} \n> ", type=str, prompt_suffix="")
@@ -199,17 +216,46 @@ class StudentView:
         table.add_column("Valeur", style="cyan")
         table.add_row("Prénom", first_name)
         table.add_row("Nom", last_name if last_name else "Non renseigné")
+        if classroom_name:
+            table.add_row("Classe", classroom_name)
         for subject in subjects:
             table.add_row(f"Matière : {subject['name']}", f"Note : {subject['grade']}")
         self.console.print(table)
 
         if click.confirm("Confirmez-vous l'ajout de cet étudiant ?", default=True, show_default=True):
+            # Création de l'étudiant
             student_data = {
                 'first_name': first_name,
                 'last_name': last_name,
                 'lessons': subjects,
                 'grades': [subject['grade'] for subject in subjects]
             }
+
+            if classroom_name:
+                student_data['classroom_name'] = classroom_name
+
+                # Ajouter l'étudiant à la liste des étudiants de la classe
+                try:
+                    # Récupère les étudiants existants dans la classe
+                    number_of_students = classroom.get("number_of_students", [])
+                    
+                    if isinstance(number_of_students, list):
+                        # Ajouter le nouvel étudiant à la liste
+                        updated_students = number_of_students + [student_data]
+                    elif isinstance(number_of_students, int):
+                        # Si c'est un nombre, le convertir en liste
+                        updated_students = [student_data]
+                    else:
+                        raise ValueError("Type inattendu pour 'number_of_students' dans la base de données.")
+                    
+                    # Mettre à jour la base de données pour la classe
+                    ClassroomDatabaseController(self.student_controller.db).update_classroom_info_database_controller(
+                        classroom_name, {'number_of_students': updated_students}
+                    )
+                except Exception as e:
+                    print(f"Une erreur s'est produite lors de l'ajout de l'étudiant à la classe {classroom_name} : {str(e)}")
+
+            # Ajouter l'étudiant à la base de données des étudiants
             self.student_controller.add_student_database_controller(student_data)
             self.console.print("[bold green]L'étudiant a été ajouté avec succès ![/bold green]")
         else:
