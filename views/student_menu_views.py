@@ -13,6 +13,7 @@ class StudentView:
 
     def __init__(self, db):
         self.student_controller = StudentDatabaseController(db)
+        self.classroom_controller = ClassroomDatabaseController(db)
         self.console = Console()
 
     def display_main_menu(self):
@@ -234,13 +235,13 @@ class StudentView:
             if classroom_name:
                 student_data['classroom_name'] = classroom_name
 
-                # Ajouter l'étudiant à la liste des étudiants de la classe
+                # Ajoute l'étudiant à la liste des étudiants de la classe
                 try:
                     # Récupère les étudiants existants dans la classe
                     number_of_students = classroom.get("number_of_students", [])
                     
                     if isinstance(number_of_students, list):
-                        # Ajouter le nouvel étudiant à la liste
+                        # Ajoute le nouvel étudiant à la liste
                         updated_students = number_of_students + [student_data]
                     elif isinstance(number_of_students, int):
                         # Si c'est un nombre, le convertir en liste
@@ -255,7 +256,7 @@ class StudentView:
                 except Exception as e:
                     print(f"Une erreur s'est produite lors de l'ajout de l'étudiant à la classe {classroom_name} : {str(e)}")
 
-            # Ajouter l'étudiant à la base de données des étudiants
+            # Ajoute l'étudiant à la base de données des étudiants
             self.student_controller.add_student_database_controller(student_data)
             self.console.print("[bold green]L'étudiant a été ajouté avec succès ![/bold green]")
         else:
@@ -382,8 +383,17 @@ class StudentView:
 
         new_classroom = click.prompt(f"Nouvelle classe (appuyez sur Entrée pour conserver la classe actuelle) ", type=str, show_default=False, default="").strip()
 
-        # Vérifie si la saisie est vide et attribue None si c'est le cas
-        new_classroom = new_classroom if new_classroom != "" else None
+        # Vérifie si la classe saisie existe et a des places disponibles
+        if new_classroom:
+            classroom = ClassroomDatabaseController(self.student_controller.db).get_classroom_database_controller(new_classroom)
+            if not classroom:
+                self.console.print(f"La classe [bold]{new_classroom}[/bold] n'existe pas. Vérifiez le nom de la classe.", style="bold red")
+                return
+            if classroom.get('number_of_places_available', 0) <= 0:
+                self.console.print(f"La classe [bold]{new_classroom}[/bold] n'a plus de places disponibles.", style="bold red")
+                return
+        else:
+            new_classroom = student.get('classroom_name', None)
 
         # Liste pour stocker les nouvelles matières et notes de l'étudiant
         new_lessons = []
@@ -392,7 +402,7 @@ class StudentView:
         for lesson in student.get('lessons', []):
             lesson_name = click.prompt(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['name']}] :", default=lesson['name'], type=str, show_default=False, prompt_suffix="")
             lesson_grade_input = input(f"Nouvelle note pour la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['grade']}] : ").strip()
-            
+
             # Si aucun nouveau nom n'est saisi, conserve le nom actuel
             if not lesson_name:
                 lesson_name = lesson['name']
@@ -441,6 +451,9 @@ class StudentView:
 
             # Mettre à jour les informations de l'étudiant
             self.student_controller.update_student_info_database_controller(student_name, new_student_data)
+            
+            # Met à jour la classe de l'étudiant dans la base de données des classes
+            self.classroom_controller.add_students_to_classroom_database_controller(new_classroom, [student])
             self.console.print("[bold green]Les informations de l'étudiant ont été mises à jour avec succès ![/bold green]")
         else:
             self.console.print("[bold red]La mise à jour des informations de l'étudiant a été annulée.[/bold red]")
