@@ -85,6 +85,9 @@ class ClassroomDatabaseController:
             try:
                 # Assure que number_of_students est une liste
                 number_of_students = classroom['number_of_students'] if isinstance(classroom['number_of_students'], list) else []
+                
+                # Nombre de places disponibles
+                available_places = classroom['number_of_places_available']
 
                 # Mettre à jour la classe de chaque étudiant ajouté
                 for student in students:
@@ -108,16 +111,20 @@ class ClassroomDatabaseController:
                         student_info['classroom_name'] = student_classroom
                         number_of_students.append(student_info)
 
-                # Mettre à jour le champ number_of_students dans la base de données
+                # Décrémenter le nombre de places disponibles
+                if available_places > 0:
+                    available_places -= len(students)
+
+                # Mettre à jour le champ number_of_students et number_of_places_available dans la base de données
                 self.classroom_collection.update_one(
                     {'classroom_name': classroom_name},
-                    {'$set': {'number_of_students': number_of_students}}
+                    {'$set': {'number_of_students': number_of_students, 'number_of_places_available': available_places}}
                 )
 
                 student_names = ', '.join([f"{student['first_name']} {student['last_name']}" for student in students])
                 print(f"Étudiant(e) {student_names} ajouté(e) à la classe {classroom_name} avec succès !")
             except Exception as e:
-                print(f"Une erreur s'est produite lors de l'ajout de l'étudiants à la classe {classroom_name} : {str(e)}")
+                print(f"Une erreur s'est produite lors de l'ajout de l'étudiant à la classe {classroom_name} : {str(e)}")
         else:
             print(f"Aucune classe trouvée avec le nom {classroom_name}.")
 
