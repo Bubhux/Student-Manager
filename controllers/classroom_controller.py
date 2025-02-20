@@ -134,6 +134,9 @@ class ClassroomDatabaseController:
             try:
                 # Assure que number_of_students est une liste
                 number_of_students = classroom['number_of_students'] if isinstance(classroom['number_of_students'], list) else []
+                
+                # Nombre de places disponibles
+                available_places = classroom['number_of_places_available']
 
                 # Recherche de l'étudiant par son ID
                 for student in number_of_students:
@@ -144,10 +147,13 @@ class ClassroomDatabaseController:
                         # Suppression de l'étudiant de la liste
                         number_of_students.remove(student)
 
-                        # Mettre à jour le champ number_of_students dans la base de données
-                        self.classroom_collection.update_one({'classroom_name': classroom_name}, {'$set': {'number_of_students': number_of_students}})
+                        # Incrémenter le nombre de places disponibles
+                        available_places += 1
 
-                        print(f"L'étudiant {student_name} a été supprimé de la classe {classroom_name} avec succès ClassroomControlleur remove_student_from_classroom_database_controller !")
+                        # Mettre à jour le champ number_of_students et number_of_places_available dans la base de données
+                        self.classroom_collection.update_one({'classroom_name': classroom_name}, {'$set': {'number_of_students': number_of_students, 'number_of_places_available': available_places}})
+
+                        print(f"L'étudiant {student_name} a été supprimé de la classe {classroom_name} avec succès !")
                         return
 
                 print(f"Aucun étudiant trouvé avec l'ID {student_info['_id']} dans la classe {classroom_name}.")
