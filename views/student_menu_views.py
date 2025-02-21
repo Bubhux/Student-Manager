@@ -41,25 +41,18 @@ class StudentView:
 
             if choice_menu == "1":
                 self.display_students()
-
             elif choice_menu == "2":
                 self.add_student()
-
             elif choice_menu == "3":
                 self.add_subject_to_student()
-
             elif choice_menu == "4":
                 self.update_student_grades()
-
             elif choice_menu == "5":
                 self.update_student_info()
-
             elif choice_menu == "6":
                 self.calculate_student_average()
-
             elif choice_menu == "7":
                 self.delete_student()
-
             elif choice_menu == "r":
                 self.console.print("Menu principal !")
                 break
@@ -177,7 +170,7 @@ class StudentView:
                     self.console.print(f"[bold red]La classe '{classroom_name}' n'existe pas.[/bold red]")
                     continue
 
-                if classroom["number_of_places_available"] <= classroom.get("number_of_students", 0):
+                if classroom["number_of_places_available"] <= len(classroom.get("number_of_students", [])):
                     self.console.print(f"[bold red]La classe '{classroom_name}' n'a plus de places disponibles.[/bold red]")
                     continue
 
