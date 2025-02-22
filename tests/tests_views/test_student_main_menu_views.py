@@ -1,7 +1,7 @@
 # tests/tests_views/test_student_main_menu_views.py
 import pytest
 import mongomock
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from rich.console import Console
 from views.student_menu_views import StudentView
 import re
@@ -40,6 +40,14 @@ class MockStudentDatabaseController:
                             {'name': 'Physical Education', 'grade': 19}]
             }
         ]
+
+        self.db = {
+            "students": self.students,
+            "classrooms": [
+                {"name": "Class A", "number_of_places_available": 10, "number_of_students": []},
+                {"name": "Class B", "number_of_places_available": 5, "number_of_students": []}
+            ]
+        }
 
     def __getitem__(self, item):
         if item == 'students':
@@ -108,6 +116,15 @@ class TestStudentMainMenuView:
         self.view.student_controller = MockStudentDatabaseController()
         self.console = Console()
 
+        # Patching dans setup
+        self.mock_classroom_patch = patch('controllers.classroom_controller.ClassroomDatabaseController.get_classroom_database_controller',
+                                          return_value={"name": "Wonderland", "number_of_places_available": 10, "number_of_students": []})
+        self.mock_classroom = self.mock_classroom_patch.start()
+
+    def teardown(self):
+        # Arrête le patch après chaque test
+        self.mock_classroom_patch.stop()
+
     def clean_output(self, output):
         return re.sub(r'\x1b\[[0-9;]*m', '', output)  # Supprime les codes d'échappement ANSI
 
@@ -175,6 +192,7 @@ class TestStudentMainMenuView:
         mock_input.assert_called()
         mock_prompt.assert_called()
         mock_confirm.assert_called()
+        self.mock_classroom.assert_called()
 
     @patch("click.prompt")
     @patch("click.confirm")
