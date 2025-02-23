@@ -160,6 +160,11 @@ class ClassroomView:
 
         # Récupère les étudiants déjà présents dans la classe sélectionnée
         current_students = self.classroom_controller.get_students_in_classroom_database_controller(classroom_name)
+        
+        # Vérifie la structure des données
+        for student in current_students:
+            if '_id' not in student:
+                self.console.print(f"Attention : l'étudiant {student} ne contient pas la clé '_id'.", style="bold red")
 
         # Affiche la liste des étudiants triés par ordre alphabétique
         students_from_database = self.student_controller.get_all_students_database_controller()
@@ -167,14 +172,14 @@ class ClassroomView:
             self.console.print("Il n'y a pas d'élèves à afficher.", style="bold red")
             return
 
-        sorted_students = sorted(students_from_database, key=lambda x: x['first_name'])
+        sorted_students = sorted(students_from_database, key=lambda x: x['last_name'])
 
         table = Table(show_header=True, header_style="bold magenta")
         table.add_column("Numéro", style="cyan")
         table.add_column("Nom", style="cyan")
         table.add_column("Prénom", style="cyan")
         for index, student in enumerate(sorted_students, start=1):
-            table.add_row(str(index), student['last_name'], student['first_name'])
+            table.add_row(str(index), student['first_name'], student['last_name'])
 
         # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
         self.console.print()
@@ -189,7 +194,7 @@ class ClassroomView:
                 if 0 < student_choice <= len(sorted_students):
                     selected_student = sorted_students[student_choice - 1]
                     # Vérifie si l'étudiant est déjà dans une classe
-                    if selected_student['_id'] in [student['_id'] for student in current_students]:
+                    if selected_student['_id'] in [student.get('_id') for student in current_students if '_id' in student]:
                         self.console.print(f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans une classe.", style="bold red")
                     else:
                         selected_students.append(selected_student)
@@ -301,32 +306,39 @@ class ClassroomView:
                 if student_choice.isdigit():
                     student_index = int(student_choice) - 1
                     if 0 <= student_index < len(sorted_students):
-                        student_to_remove = sorted_students.pop(student_index)
-                        # Retire l'étudiant de sa classe actuelle
-                        self.classroom_controller.remove_student_from_classroom_database_controller(classroom_name, student_to_remove)
-                        # Met à jour le champ classroom_name dans le profil de l'étudiant
-                        self.student_controller.remove_student_from_classroom(student_to_remove['_id'], classroom_name)
+                        student_to_remove = sorted_students[student_index]
 
-                        # Met à jour la table
-                        table = Table(show_header=True, header_style="bold magenta")
-                        table.add_column("Numéro", justify="right", style="cyan")
-                        table.add_column("Prénom", justify="left", style="cyan")
-                        table.add_column("Nom", justify="left", style="cyan")
-                        for index, student in enumerate(sorted_students, start=1):
-                            table.add_row(str(index), student['first_name'], student['last_name'])
+                        # Vérifie si '_id' existe
+                        if '_id' not in student_to_remove:
+                            self.console.print("[bold red]Erreur : Cet étudiant n'a pas d'ID valide. Suppression annulée.[/bold red]")
+                            break
 
-                        self.console.print()
-                        self.console.print("Liste des étudiants dans la classe triés par ordre alphabétique", style="bold magenta")
-                        self.console.print(table)
+                        # Demande de confirmation avant suppression
+                        if click.confirm(f"Êtes-vous sûr de vouloir supprimer l'étudiant(e) {student_to_remove['first_name']} {student_to_remove['last_name']} de la classe {classroom_name} ?", default=False):
+                            # Supprime l'étudiant
+                            self.classroom_controller.remove_student_from_classroom_database_controller(classroom_name, student_to_remove)
+                            self.student_controller.remove_student_from_classroom(student_to_remove['_id'], classroom_name)
+                            sorted_students.pop(student_index)
+
+                            # Mise à jour de la table
+                            table = Table(show_header=True, header_style="bold magenta")
+                            table.add_column("Numéro", justify="right", style="cyan")
+                            table.add_column("Prénom", justify="left", style="cyan")
+                            table.add_column("Nom", justify="left", style="cyan")
+                            for index, student in enumerate(sorted_students, start=1):
+                                table.add_row(str(index), student['first_name'], student['last_name'])
+
+                            self.console.print()
+                            self.console.print("Liste mise à jour des étudiants dans la classe :", style="bold magenta")
+                            self.console.print(table)
+                        else:
+                            self.console.print("[bold yellow]Suppression annulée.[/bold yellow]")
 
                         break
                     else:
                         self.console.print("[bold red]Numéro invalide.[/bold red]")
                 else:
                     self.console.print("[bold red]Veuillez entrer un numéro valide.[/bold red]")
-
-        # Mise à jour du nombre d'étudiants dans la classe
-        self.classroom_controller.update_classroom_info_database_controller(classroom_name, {'new_number_of_students': sorted_students})
 
     def add_classroom(self):
         classroom_name = click.prompt(click.style("Choisissez le nom de la classe de votre choix \n>", fg="white"), type=str, prompt_suffix="")

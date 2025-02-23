@@ -65,7 +65,7 @@ class StudentView:
             self.console.print("Il n'y a pas d'étudiants à afficher.", style="bold red")
         else:
             # Trie les étudiants par ordre alphabétique des noms et prénoms
-            sorted_students = sorted(students, key=lambda x: (x['first_name']))
+            sorted_students = sorted(students, key=lambda x: (x['last_name']))
 
             table = Table(show_header=True, header_style="bold magenta")
             table.add_column("Index", style="cyan")
@@ -378,12 +378,18 @@ class StudentView:
 
         # Vérifie si la classe saisie existe et a des places disponibles
         if new_classroom:
-            classroom = ClassroomDatabaseController(self.student_controller.db).get_classroom_database_controller(new_classroom)
+            classroom = self.classroom_controller.get_classroom_database_controller(new_classroom)
             if not classroom:
                 self.console.print(f"La classe [bold]{new_classroom}[/bold] n'existe pas. Vérifiez le nom de la classe.", style="bold red")
                 return
             if classroom.get('number_of_places_available', 0) <= 0:
                 self.console.print(f"La classe [bold]{new_classroom}[/bold] n'a plus de places disponibles.", style="bold red")
+                return
+
+            # Vérifie si l'étudiant est déjà inscrit dans la classe
+            students_in_class = self.classroom_controller.get_students_in_classroom_database_controller(new_classroom)
+            if any(s['first_name'] == student['first_name'] and s['last_name'] == student['last_name'] for s in students_in_class):
+                self.console.print(f"[bold yellow]L'étudiant est déjà inscrit dans la classe {new_classroom}.[/bold yellow]")
                 return
         else:
             new_classroom = student.get('classroom_name', None)
@@ -444,9 +450,10 @@ class StudentView:
 
             # Mettre à jour les informations de l'étudiant
             self.student_controller.update_student_info_database_controller(student_name, new_student_data)
-            
-            # Met à jour la classe de l'étudiant dans la base de données des classes
-            self.classroom_controller.add_students_to_classroom_database_controller(new_classroom, [student])
+
+            # Si la classe a changé, mettre à jour la classe de l'étudiant dans la base de données des classes
+            if student.get('classroom_name') != new_classroom:
+                self.classroom_controller.add_students_to_classroom_database_controller(new_classroom, [student])
             self.console.print("[bold green]Les informations de l'étudiant ont été mises à jour avec succès ![/bold green]")
         else:
             self.console.print("[bold red]La mise à jour des informations de l'étudiant a été annulée.[/bold red]")
@@ -461,7 +468,7 @@ class StudentView:
             return
         else:
             # Trie les étudiants par ordre alphabétique en fonction de leur prénom
-            sorted_students = sorted(students, key=lambda x: (x['first_name']))
+            sorted_students = sorted(students, key=lambda x: (x['last_name']))
 
         # Affiche les étudiants disponibles dans un tableau
         table = Table(show_header=True, header_style="bold magenta")
@@ -517,7 +524,7 @@ class StudentView:
             return
         else:
             # Trie les étudiants par ordre alphabétique en fonction de leur prénom
-            sorted_students = sorted(students, key=lambda x: (x['first_name']))
+            sorted_students = sorted(students, key=lambda x: (x['last_name']))
 
         # Affiche les étudiants disponibles dans un tableau
         table = Table(show_header=True, header_style="bold magenta")
