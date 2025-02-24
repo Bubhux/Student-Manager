@@ -46,8 +46,17 @@ class ClassroomDatabaseController:
         classroom_info = self.classroom_collection.find_one({'classroom_name': classroom_name})
 
         if classroom_info:
-            # Récupère directement les informations des étudiants de la classe
-            students_info = classroom_info.get('number_of_students', [])
+            # Vérifie si le champ 'number_of_students' est une liste. Si c'est un entier, le convertir en liste.
+            student_ids = classroom_info.get('number_of_students', [])
+            if isinstance(student_ids, int):
+                student_ids = [student_ids]
+            
+            # Récupère les informations complètes des étudiants à partir de leur ID
+            students_info = []
+            for student_id in student_ids:
+                student = self.student_collection.find_one({'_id': student_id})
+                if student:
+                    students_info.append(student)
             return students_info
         else:
             print(f"Aucune classe trouvée avec le nom {classroom_name}.")
