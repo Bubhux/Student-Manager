@@ -150,7 +150,6 @@ class ClassroomView:
                     self.console.print("Choix invalide, choisissez une classe disponible.", style="bold red")
 
     def add_students_to_selected_class(self, classroom_name):
-
         while True:
             num_students_to_add = click.prompt("Entrez le nombre d'étudiants à ajouter", type=int)
             if num_students_to_add != 0:
@@ -160,11 +159,6 @@ class ClassroomView:
 
         # Récupère les étudiants déjà présents dans la classe sélectionnée
         current_students = self.classroom_controller.get_students_in_classroom_database_controller(classroom_name)
-        
-        # Vérifie la structure des données
-        for student in current_students:
-            if '_id' not in student:
-                self.console.print(f"Attention : l'étudiant {student} ne contient pas la clé '_id'.", style="bold red")
 
         # Affiche la liste des étudiants triés par ordre alphabétique
         students_from_database = self.student_controller.get_all_students_database_controller()
@@ -193,8 +187,8 @@ class ClassroomView:
                 student_choice = click.prompt(f"Saisissez le numéro de l'étudiant {i+1}", type=int)
                 if 0 < student_choice <= len(sorted_students):
                     selected_student = sorted_students[student_choice - 1]
-                    # Vérifie si l'étudiant est déjà dans une classe
-                    if selected_student['_id'] in [student.get('_id') for student in current_students if '_id' in student]:
+                    # Vérifie si l'étudiant est déjà dans la classe
+                    if selected_student['_id'] in [student['_id'] for student in current_students]:
                         self.console.print(f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans une classe.", style="bold red")
                     else:
                         selected_students.append(selected_student)
