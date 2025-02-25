@@ -2,6 +2,7 @@
 import click
 from rich.console import Console
 from rich.table import Table
+from bson import ObjectId
 
 from controllers.classroom_controller import ClassroomDatabaseController
 from controllers.student_controller import StudentDatabaseController
@@ -188,7 +189,7 @@ class ClassroomView:
                 if 0 < student_choice <= len(sorted_students):
                     selected_student = sorted_students[student_choice - 1]
                     # Vérifie si l'étudiant est déjà dans la classe
-                    if selected_student['_id'] in [student['_id'] for student in current_students]:
+                    if any(ObjectId(student['_id']) == ObjectId(selected_student['_id']) for student in current_students):
                         self.console.print(f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans une classe.", style="bold red")
                     else:
                         selected_students.append(selected_student)

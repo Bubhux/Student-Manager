@@ -2,6 +2,8 @@
 from models.student_models import StudentModel
 from models.classroom_models import ClassroomModel
 
+from bson import ObjectId
+
 
 class ClassroomDatabaseController:
 
@@ -46,17 +48,23 @@ class ClassroomDatabaseController:
         classroom_info = self.classroom_collection.find_one({'classroom_name': classroom_name})
 
         if classroom_info:
-            # Vérifie si le champ 'number_of_students' est une liste. Si c'est un entier, le convertir en liste.
+            # Récupère les IDs des étudiants dans la classe, en vérifiant si c'est une liste
             student_ids = classroom_info.get('number_of_students', [])
+
             if isinstance(student_ids, int):
                 student_ids = [student_ids]
-            
+
+            # Assurez-vous que student_ids contient bien des ObjectId
+            if isinstance(student_ids[0], dict):
+                student_ids = [student['_id'] for student in student_ids]
+
             # Récupère les informations complètes des étudiants à partir de leur ID
             students_info = []
             for student_id in student_ids:
-                student = self.student_collection.find_one({'_id': student_id})
+                student = self.student_collection.find_one({'_id': ObjectId(student_id)})
                 if student:
                     students_info.append(student)
+
             return students_info
         else:
             print(f"Aucune classe trouvée avec le nom {classroom_name}.")
