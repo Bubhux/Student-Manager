@@ -159,25 +159,30 @@ class StudentView:
                 self.console.print("Le prénom de l'étudiant ne peut pas être vide.", style="bold red")
                 continue
 
-            last_name = click.prompt("Nom de l'étudiant (Appuyez sur Entrée pour laisser vide) \n> ", type=str, default="", show_default=False, prompt_suffix="")
+            last_name = click.prompt("Nom de l'étudiant (Appuyez sur Entrée pour laisser vide) \n> ",
+                                     type=str, default="", show_default=False, prompt_suffix="")
 
             # Saisie facultative de la classe
-            classroom_name = input("Nom de la classe (Appuyez sur Entrée pour ne pas ajouter l'étudiant à une classe) \n> ").strip()
+            classroom_name = input(
+                "Nom de la classe (Appuyez sur Entrée pour ne pas ajouter l'étudiant à une classe) \n> ").strip()
 
             if classroom_name:
-                classroom = ClassroomDatabaseController(self.student_controller.db).get_classroom_database_controller(classroom_name)
+                classroom = ClassroomDatabaseController(
+                    self.student_controller.db).get_classroom_database_controller(classroom_name)
                 if not classroom:
                     self.console.print(f"[bold red]La classe '{classroom_name}' n'existe pas.[/bold red]")
                     continue
 
                 if classroom["number_of_places_available"] <= len(classroom.get("number_of_students", [])):
-                    self.console.print(f"[bold red]La classe '{classroom_name}' n'a plus de places disponibles.[/bold red]")
+                    self.console.print(
+                        f"[bold red]La classe '{classroom_name}' n'a plus de places disponibles.[/bold red]")
                     continue
 
             # Saisie du nombre de matières
             num_subjects_valid = False
             while not num_subjects_valid:
-                num_subjects = input("Combien de matières cet étudiant suit-il ? (Appuyez sur Entrée pour ne choisir aucune matière) \n> ")
+                num_subjects = input(
+                    "Combien de matières cet étudiant suit-il ? (Appuyez sur Entrée pour ne choisir aucune matière) \n> ")
                 if num_subjects.strip() == "":
                     num_subjects = 0
                     num_subjects_valid = True
@@ -185,7 +190,8 @@ class StudentView:
                     try:
                         num_subjects = int(num_subjects)
                         if num_subjects < 0:
-                            self.console.print("Veuillez saisir un nombre entier supérieur ou égal à 0.", style="bold red")
+                            self.console.print(
+                                "Veuillez saisir un nombre entier supérieur ou égal à 0.", style="bold red")
                         else:
                             num_subjects_valid = True
                     except ValueError:
@@ -198,7 +204,8 @@ class StudentView:
         subjects = []
         for i in range(num_subjects):
             subject_name = click.prompt(f"Nom de la matière {i+1} \n> ", type=str, prompt_suffix="")
-            subject_grade = click.prompt(f"Note pour la matière {subject_name} (appuyez sur Entrée pour laisser la note à 0) \n> ", type=float, default=0, show_default=False, prompt_suffix="")
+            subject_grade = click.prompt(
+                f"Note pour la matière {subject_name} (appuyez sur Entrée pour laisser la note à 0) \n> ", type=float, default=0, show_default=False, prompt_suffix="")
             if not (0 <= subject_grade <= 20):
                 self.console.print("La note doit être comprise entre 0 et 20.", style="bold red")
                 return
@@ -232,7 +239,7 @@ class StudentView:
                 try:
                     # Récupère les étudiants existants dans la classe
                     number_of_students = classroom.get("number_of_students", [])
-                    
+
                     if isinstance(number_of_students, list):
                         # Ajoute le nouvel étudiant à la liste
                         updated_students = number_of_students + [student_data]
@@ -241,13 +248,14 @@ class StudentView:
                         updated_students = [student_data]
                     else:
                         raise ValueError("Type inattendu pour 'number_of_students' dans la base de données.")
-                    
+
                     # Mettre à jour la base de données pour la classe
                     ClassroomDatabaseController(self.student_controller.db).update_classroom_info_database_controller(
                         classroom_name, {'number_of_students': updated_students}
                     )
                 except Exception as e:
-                    print(f"Une erreur s'est produite lors de l'ajout de l'étudiant à la classe {classroom_name} : {str(e)}")
+                    print(
+                        f"Une erreur s'est produite lors de l'ajout de l'étudiant à la classe {classroom_name} : {str(e)}")
 
             # Ajoute l'étudiant à la base de données des étudiants
             self.student_controller.add_student_database_controller(student_data)
@@ -367,17 +375,15 @@ class StudentView:
 
         # Demande les nouvelles informations
         new_first_name = click.prompt(f"Nouveau prénom (appuyez sur Entrée pour conserver le prénom actuel) [{student['first_name']}] : ", default="", type=str, show_default=False, prompt_suffix="")
-        if not new_first_name:
-            new_first_name = student['first_name']
+        new_first_name = new_first_name or student['first_name']
 
         new_last_name = click.prompt(f"Nouveau nom (appuyez sur Entrée pour conserver le nom actuel) [{student['last_name']}] : ", default="", type=str, show_default=False, prompt_suffix="")
-        if not new_last_name:
-            new_last_name = student['last_name']
+        new_last_name = new_last_name or student['last_name']
 
         new_classroom = click.prompt(f"Nouvelle classe (appuyez sur Entrée pour conserver la classe actuelle) ", type=str, show_default=False, default="").strip()
-
-        # Vérifie si la classe saisie existe et a des places disponibles
-        if new_classroom:
+        if not new_classroom:
+            new_classroom_display = student.get('classroom_name', "Non défini")
+        else:
             classroom = self.classroom_controller.get_classroom_database_controller(new_classroom)
             if not classroom:
                 self.console.print(f"La classe [bold]{new_classroom}[/bold] n'existe pas. Vérifiez le nom de la classe.", style="bold red")
@@ -386,27 +392,15 @@ class StudentView:
                 self.console.print(f"La classe [bold]{new_classroom}[/bold] n'a plus de places disponibles.", style="bold red")
                 return
 
-            # Vérifie si l'étudiant est déjà inscrit dans la classe
-            students_in_class = self.classroom_controller.get_students_in_classroom_database_controller(new_classroom)
-            if any(s['first_name'] == student['first_name'] and s['last_name'] == student['last_name'] for s in students_in_class):
-                self.console.print(f"[bold yellow]L'étudiant est déjà inscrit dans la classe {new_classroom}.[/bold yellow]")
-                return
-        else:
-            new_classroom = student.get('classroom_name', None)
+            new_classroom_display = new_classroom
 
         # Liste pour stocker les nouvelles matières et notes de l'étudiant
         new_lessons = []
 
-        # Boucle pour saisir les nouvelles matières et notes
         for lesson in student.get('lessons', []):
             lesson_name = click.prompt(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['name']}] :", default=lesson['name'], type=str, show_default=False, prompt_suffix="")
             lesson_grade_input = input(f"Nouvelle note pour la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['grade']}] : ").strip()
 
-            # Si aucun nouveau nom n'est saisi, conserve le nom actuel
-            if not lesson_name:
-                lesson_name = lesson['name']
-
-            # Si aucune nouvelle note n'est saisie, conserve la note actuelle
             if not lesson_grade_input:
                 lesson_grade = lesson['grade']
             else:
@@ -416,7 +410,6 @@ class StudentView:
                     self.console.print("Veuillez saisir un nombre valide pour la note.", style="bold red")
                     return
 
-            # Ajoute la matière et la note à la liste des nouvelles matières
             new_lessons.append({'name': lesson_name, 'grade': lesson_grade})
 
         # Affiche les nouvelles informations de l'étudiant dans un tableau
@@ -426,34 +419,32 @@ class StudentView:
 
         table.add_row("Prénom", new_first_name)
         table.add_row("Nom", new_last_name)
-        table.add_row("Classe", new_classroom)
+
+        # Convertis en chaîne si c'est une liste
+        if isinstance(new_classroom_display, list):
+            new_classroom_display = ", ".join(new_classroom_display)
+        table.add_row("Classe", new_classroom_display)
 
         for lesson in new_lessons:
             table.add_row(f"Matière: {lesson['name']}", f"Note: {lesson['grade']}")
 
-        # Ajoute une chaîne vide avant le titre pour simuler l'alignement à gauche
-        self.console.print()
-        self.console.print("Résumé des nouvelles informations de l'étudiant", style="bold magenta")
-
+        self.console.print("\nRésumé des nouvelles informations de l'étudiant", style="bold magenta")
         self.console.print(table)
 
         # Confirmation pour la mise à jour des informations
         if click.confirm("Confirmez-vous la mise à jour des informations de cet étudiant ?", default=True):
-            # Crée un dictionnaire avec les nouvelles informations de l'étudiant
             new_student_data = {
                 'first_name': new_first_name,
                 'last_name': new_last_name,
-                'grades': student['grades'],  # Conserve les anciennes notes
-                'classroom_name': new_classroom,
+                'grades': student['grades'],
+                'classroom_name': new_classroom_display,
                 'lessons': new_lessons
             }
-
-            # Mettre à jour les informations de l'étudiant
             self.student_controller.update_student_info_database_controller(student_name, new_student_data)
 
-            # Si la classe a changé, mettre à jour la classe de l'étudiant dans la base de données des classes
-            if student.get('classroom_name') != new_classroom:
+            if student.get('classroom_name') != new_classroom_display:
                 self.classroom_controller.add_students_to_classroom_database_controller(new_classroom, [student])
+
             self.console.print("[bold green]Les informations de l'étudiant ont été mises à jour avec succès ![/bold green]")
         else:
             self.console.print("[bold red]La mise à jour des informations de l'étudiant a été annulée.[/bold red]")
