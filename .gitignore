@@ -16,3 +16,4 @@ env/
 .coveragerc
 .coverage
 coverage_html_report/
+reports/
