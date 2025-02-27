@@ -185,17 +185,33 @@ class ClassroomView:
         selected_students = []
         for i in range(num_students_to_add):
             while True:
-                student_choice = click.prompt(f"Saisissez le numéro de l'étudiant {i+1}", type=int)
-                if 0 < student_choice <= len(sorted_students):
+                student_choice = click.prompt(f"Saisissez le numéro de l'étudiant {i+1} (Ou 'r' pour revenir au menu précédent) \n> ", type=str, prompt_suffix="")
+
+                if student_choice.lower() == 'r':
+                    return
+
+                # Vérifie si l'entrée est un entier valide
+                if student_choice.isdigit() and 0 < int(student_choice) <= len(sorted_students):
+                    student_choice = int(student_choice)  # Convertir en entier après validation
                     selected_student = sorted_students[student_choice - 1]
-                    # Vérifie si l'étudiant est déjà dans la classe
-                    if any(ObjectId(student['_id']) == ObjectId(selected_student['_id']) for student in current_students):
-                        self.console.print(f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans une classe.", style="bold red")
+
+                    # Vérifie si l'étudiant est déjà dans une autre classe
+                    student_current_class = self.classroom_controller.get_classroom_by_student_id(selected_student['_id'])
+                    if student_current_class:
+                        self.console.print(
+                            f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} appartient déjà à la classe {student_current_class}.",
+                            style="bold red"
+                        )
+                    elif any(ObjectId(student['_id']) == ObjectId(selected_student['_id']) for student in current_students):
+                        self.console.print(
+                            f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans la classe sélectionnée.",
+                            style="bold red"
+                        )
                     else:
                         selected_students.append(selected_student)
                         break
                 else:
-                    self.console.print("Numéro invalide, veuillez saisir un numéro valide.", style="bold red")
+                    self.console.print("Entrée invalide. Veuillez saisir un numéro valide ou 'r'.", style="bold red")
 
         # Ajoute les étudiants sélectionnés à la classe
         self.classroom_controller.add_students_to_classroom_database_controller(classroom_name, selected_students)

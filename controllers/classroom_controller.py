@@ -43,6 +43,17 @@ class ClassroomDatabaseController:
             return []
         return classrooms
 
+    def get_classroom_by_student_id(self, student_id):
+        # Parcourt toutes les classes pour vérifier si l'étudiant est déjà inscrit
+        all_classrooms = self.get_all_classrooms_database_controller()
+        for classroom in all_classrooms:
+            student_ids = classroom.get('number_of_students', [])
+            if isinstance(student_ids[0], dict):
+                student_ids = [student['_id'] for student in student_ids]
+            if ObjectId(student_id) in map(ObjectId, student_ids):
+                return classroom['classroom_name']
+        return None
+
     def get_students_in_classroom_database_controller(self, classroom_name):
         # Récupère les informations de la classe depuis la base de données
         classroom_info = self.classroom_collection.find_one({'classroom_name': classroom_name})

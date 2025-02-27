@@ -2,6 +2,7 @@
 import click
 from rich.console import Console
 from rich.table import Table
+from bson import ObjectId
 
 from controllers.student_controller import StudentDatabaseController
 from controllers.classroom_controller import ClassroomDatabaseController
