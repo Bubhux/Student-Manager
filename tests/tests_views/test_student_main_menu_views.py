@@ -22,6 +22,7 @@ class MockStudentDatabaseController:
         # Liste d'étudiants fictifs pour les tests
         self.students = [
             {
+                '_id': 'student_1',
                 'first_name': 'John',
                 'last_name': 'Doe',
                 'classroom_name': 'Class A',
@@ -31,6 +32,7 @@ class MockStudentDatabaseController:
                             {'name': 'History', 'grade': 15}]
             },
             {
+                '_id': 'student_2',
                 'first_name': 'Jane',
                 'last_name': 'Smith',
                 'classroom_name': 'Class B',
@@ -317,21 +319,30 @@ class TestStudentMainMenuView:
             self.view.update_student_info()
             mock_print.assert_called_with("Aucun étudiant trouvé avec le nom [bold]Non Existant Student[/bold]. Vérifiez le nom de l'étudiant.", style="bold red")
 
-    @patch('views.student_menu_views.click.prompt')
-    @patch('views.student_menu_views.click.confirm')
-    def test_delete_student_success(self, mock_confirm, mock_prompt, capsys):
-        mock_prompt.return_value = '1'  # Sélectionne 'Jane Smith'
-        mock_confirm.return_value = True
+    @patch('click.prompt', side_effect=['1'])  # Simule que l'utilisateur choisit l'étudiant numéro 1
+    @patch('click.confirm', return_value=True)  # Simule que l'utilisateur confirme la suppression
+    def test_delete_student(self, mock_prompt, mock_confirm):
+        # Avant de supprimer, vérifie que l'étudiant existe dans la liste
+        initial_students = self.view.student_controller.get_all_students_database_controller()
+        assert len(initial_students) == 2  # Vérifie qu'il y a deux étudiants au départ
 
-        # Appelle la méthode
-        self.view.delete_student()
+        # Capture la sortie de la fonction delete_student
+        with patch('rich.console.Console.print') as mock_print:
+            self.view.delete_student()  # Exécute la suppression
 
-        # Nettoie les séquences ANSI des appels réels
-        actual_calls = [self.remove_ansi_sequences(str(call)) for call in mock_confirm.call_args_list]
+            # Vérifie que la fonction de suppression a été appelée
+            mock_confirm.assert_called()  # Vérifie que l'utilisateur a confirmé la suppression
 
-        # Vérifie que le message attendu est dans les appels réels
-        expected_message = "Êtes-vous sûr de vouloir supprimer l'étudiant 'Jane Smith' ?"
-        assert any(expected_message in call for call in actual_calls)
+            # Après la suppression, vérifie qu'il ne reste qu'un étudiant
+            remaining_students = self.view.student_controller.get_all_students_database_controller()
+            assert len(remaining_students) == 1  # Il ne devrait y avoir qu'un seul étudiant après la suppression
+
+            # Vérifie que l'étudiant supprimé n'est plus dans la liste
+            deleted_student = next((student for student in remaining_students if student['first_name'] == 'John'), None)
+            assert deleted_student is None  # L'étudiant "John Doe" devrait être supprimé
+
+            # Vérifie que le tableau des étudiants est affiché correctement
+            mock_print.assert_any_call("Liste des étudiants triés par ordre alphabétique", style="bold magenta")
 
     @patch('views.student_menu_views.click.prompt')
     @patch('views.student_menu_views.StudentDatabaseController.delete_student_database_controller')
@@ -355,6 +366,20 @@ class TestStudentMainMenuView:
             # Vérifie que la méthode delete_student_database_controller n'a pas été appelée
             mock_delete.assert_not_called()
 
+    @patch('views.student_menu_views.click.prompt')
+    @patch('views.student_menu_views.StudentDatabaseController.calculate_student_average_database_controller')
+    def test_calculate_student_average(self, MockStudentController, mock_prompt, capsys):
+
+        mock_student_controller = MockStudentController.return_value
+        mock_student_controller.calculate_student_average_database_controller.return_value = 15.33 
+
+        mock_prompt.side_effect = ['2']
+
+        self.view.calculate_student_average()
+
+        captured = capsys.readouterr()
+        assert "Moyenne de l'étudiant Jane Smith : 15.33" in captured.out
+
     def test_no_students_to_delete(self):
         # Teste l'absence d'étudiants à supprimer
         self.view.student_controller.students = []  # Vide la liste des étudiants
@@ -364,20 +389,6 @@ class TestStudentMainMenuView:
 
             # Vérifie que le message "Il n'y a pas d'étudiants disponibles" est affiché
             mock_print.assert_any_call("Il n'y a pas d'étudiants disponibles.", style="bold red")
-
-    @patch('views.student_menu_views.click.prompt')
-    @patch('views.student_menu_views.StudentDatabaseController.calculate_student_average_database_controller')
-    def test_calculate_student_average(self, MockStudentController, mock_prompt, capsys):
-
-        mock_student_controller = MockStudentController.return_value
-        mock_student_controller.calculate_student_average_database_controller.return_value = 15.33 
-
-        mock_prompt.side_effect = ['1']
-
-        self.view.calculate_student_average()
-
-        captured = capsys.readouterr()
-        assert "Moyenne de l'étudiant Jane Smith : 15.33" in captured.out
 
 
 # Classe de test pour les vues du menu principal des étudiants

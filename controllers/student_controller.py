@@ -149,7 +149,7 @@ class StudentDatabaseController:
         names = student_name.split(' ')
         first_name = names[0]
         last_name = names[-1] if len(names) > 1 else None
-        
+
         # Construit la requête pour rechercher par prénom et nom de famille
         query = {'first_name': first_name}
         if last_name:

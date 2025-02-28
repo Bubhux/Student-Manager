@@ -382,6 +382,8 @@ class StudentView:
         new_last_name = new_last_name or student['last_name']
 
         new_classroom = click.prompt(f"Nouvelle classe (appuyez sur Entrée pour conserver la classe actuelle) ", type=str, show_default=False, default="").strip()
+
+        # Gestion de la vérification des classes
         if not new_classroom:
             new_classroom_display = student.get('classroom_name', "Non défini")
         else:
@@ -393,11 +395,19 @@ class StudentView:
                 self.console.print(f"La classe [bold]{new_classroom}[/bold] n'a plus de places disponibles.", style="bold red")
                 return
 
+            # Vérifie si l'étudiant est déjà dans une autre classe
+            student_current_class = self.classroom_controller.get_classroom_by_student_id(student['_id'])
+            if student_current_class and student_current_class != new_classroom:
+                self.console.print(
+                    f"L'étudiant {student['first_name']} {student['last_name']} appartient déjà à la classe {student_current_class}.",
+                    style="bold red"
+                )
+                return
+
             new_classroom_display = new_classroom
 
         # Liste pour stocker les nouvelles matières et notes de l'étudiant
         new_lessons = []
-
         for lesson in student.get('lessons', []):
             lesson_name = click.prompt(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['name']}] :", default=lesson['name'], type=str, show_default=False, prompt_suffix="")
             lesson_grade_input = input(f"Nouvelle note pour la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['grade']}] : ").strip()
