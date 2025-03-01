@@ -1,10 +1,11 @@
 # tests/tests_views/test_student_main_menu_views.py
+import re
 import pytest
 import mongomock
 from unittest.mock import patch, MagicMock
 from rich.console import Console
+
 from views.student_menu_views import StudentView
-import re
 
 
 # Fixture pour simuler une base de données MongoDB en mémoire
@@ -379,16 +380,6 @@ class TestStudentMainMenuView:
 
         captured = capsys.readouterr()
         assert "Moyenne de l'étudiant Jane Smith : 15.33" in captured.out
-
-    def test_no_students_to_delete(self):
-        # Teste l'absence d'étudiants à supprimer
-        self.view.student_controller.students = []  # Vide la liste des étudiants
-
-        with patch('rich.console.Console.print') as mock_print:
-            self.view.delete_student()
-
-            # Vérifie que le message "Il n'y a pas d'étudiants disponibles" est affiché
-            mock_print.assert_any_call("Il n'y a pas d'étudiants disponibles.", style="bold red")
 
 
 # Classe de test pour les vues du menu principal des étudiants

@@ -1,10 +1,13 @@
 # tests/tests_views/test_classroom_main_menu_views.py
+import re
+import sys
 import pytest
 import mongomock
+from io import StringIO
 from unittest.mock import patch, MagicMock
 from rich.console import Console
+
 from views.classroom_menu_views import ClassroomView
-import re
 
 
 # Fixture pour simuler une base de données MongoDB en mémoire
@@ -84,8 +87,11 @@ class MockClassroomDatabaseController:
     def get_students_in_classroom_database_controller(self, classroom_name):
         classroom = self.get_classroom_database_controller(classroom_name)
         if classroom:
-            # Retourne une liste d'ID fictifs pour les étudiants
-            return [1, 2] if classroom['number_of_students'] > 0 else []
+            # Vérifie si la clé 'number_of_students' existe et est supérieure à 0
+            if classroom.get('number_of_students', 0) > 0:
+                return [1, 2]  # IDs fictifs
+            else:
+                return []
         return []
 
     def get_all_students_database_controller(self):
@@ -275,6 +281,44 @@ class TestClassroomMainMenuView:
         # Vérifie que la sortie contient le message d'erreur
         captured = capsys.readouterr()
         assert "Il n'y a pas d'élèves à afficher." in captured.out
+
+    @patch.object(MockClassroomDatabaseController, 'add_students_to_classroom_database_controller')
+    def test_add_student_without_class(self, mock_add_students_to_classroom_database_controller):
+        # Étudiant sans classe
+        student_to_add = {'_id': '4', 'first_name': 'David', 'last_name': 'Green'}
+
+        # Simule une classe vide
+        self.classroom_view.classroom_controller.get_classroom_database_controller = MagicMock(
+            return_value={'name': 'Chimie', 'students': [], 'number_of_students': 0}
+        )
+
+        # Simule les étudiants dans la base
+        self.classroom_view.student_controller.get_all_students_database_controller = MagicMock(
+            return_value=[student_to_add]
+        )
+
+        # Simule l'effet de l'ajout d'étudiants
+        mock_add_students_to_classroom_database_controller.side_effect = (
+            lambda class_name, students: self.classroom_view.classroom_controller
+            .get_classroom_database_controller(class_name)['students']
+            .extend(students)
+        )
+
+        # Simule les entrées utilisateur
+        # 1 -> nombre d'étudiants, "1" -> sélection étudiant, "r" -> retour
+        with patch('click.prompt', side_effect=[1, "1", "r"]):
+            self.classroom_view.add_students_to_selected_class('Chimie')
+
+        # Vérifie que la fonction mockée a été appelée
+        mock_add_students_to_classroom_database_controller.assert_called_once_with(
+            'Chimie', [student_to_add]
+        )
+
+        # Vérifie si l'étudiant a bien été ajouté à la classe
+        classroom = self.classroom_view.classroom_controller.get_classroom_database_controller('Chimie')
+        assert len(classroom['students']) == 1
+        assert classroom['students'][0]['_id'] == student_to_add['_id']
+
 """
     @patch('click.prompt', side_effect=[0, 1, 1])
     def test_add_zero_students(self, mock_prompt, capsys):
