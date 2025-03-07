@@ -318,3 +318,20 @@ class TestClassroomMainMenuView:
         classroom = self.classroom_view.classroom_controller.get_classroom_database_controller('Chimie')
         assert len(classroom['students']) == 1
         assert classroom['students'][0]['_id'] == student_to_add['_id']
+
+    @patch("builtins.input", side_effect=["1", "r"])
+    @patch("views.classroom_menu_views.ClassroomView.display_available_classes_for_deletion")
+    def test_delete_students_from_classroom(self, mock_display_classes, mock_input, capsys):
+        # Appelle la méthode
+        self.classroom_view.delete_students_from_classroom()
+
+        # Vérifie que la méthode display_available_classes_for_deletion a été appelée
+        mock_display_classes.assert_called_once()
+
+        # Capture la sortie console
+        captured = capsys.readouterr()
+
+        # Vérifie que le menu est affiché correctement
+        assert "Menu gestion de suppression d'étudiants" in captured.out
+        assert "1. Afficher les classes disponibles" in captured.out
+        assert "r. Retour au menu précédent" in captured.out
