@@ -104,6 +104,15 @@ class MockClassroomDatabaseController:
             classroom['students'].extend(selected_students)  # Ajouter les étudiants à la classe
             classroom['number_of_students'] += len(selected_students)  # Mettre à jour le nombre d'étudiants
 
+    def remove_student_from_classroom_database_controller(self, classroom_name, student_to_remove):
+        classroom = self.get_classroom_database_controller(classroom_name)
+        if classroom:
+            classroom['students'] = [s for s in classroom['students'] if s['_id'] != student_to_remove['_id']]
+            classroom['number_of_students'] = len(classroom['students'])
+
+    def remove_student_from_classroom(self, student_id, classroom_name):
+        self.remove_student_from_classroom_database_controller(classroom_name, {'_id': student_id})
+
 
 # Classe de test pour les vues du menu principal des classes
 class TestClassroomMainMenuView:
@@ -335,3 +344,20 @@ class TestClassroomMainMenuView:
         assert "Menu gestion de suppression d'étudiants" in captured.out
         assert "1. Afficher les classes disponibles" in captured.out
         assert "r. Retour au menu précédent" in captured.out
+
+    @patch('builtins.input', side_effect=['1', 'r'])  # Patch input()
+    def test_display_available_classes_for_deletion(self, mock_input, capsys):
+        self.classroom_view.display_available_classes_for_deletion()
+
+        # Vérifie que input() a bien été appelé
+        mock_input.assert_called()
+
+        # Capture la sortie console
+        captured = capsys.readouterr()
+
+        # Vérifie que les classes sont bien affichées
+        assert "Classes disponibles triées par ordre alphabétique" in captured.out
+        assert 'Mathématiques' in captured.out
+        assert 'Physique' in captured.out
+        assert 'Chimie' in captured.out
+        assert "Il n'y a pas d'étudiants dans cette classe à supprimer." in captured.out
