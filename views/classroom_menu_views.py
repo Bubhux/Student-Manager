@@ -255,7 +255,7 @@ class ClassroomView:
                     table.add_row(str(index), classroom['classroom_name'])
 
                 self.console.print()
-                self.console.print("Classes disponibles triés par ordre alphabétique", style="bold magenta")
+                self.console.print("Classes disponibles triées par ordre alphabétique", style="bold magenta")
                 self.console.print(table)
 
                 class_choice = input("Choisissez la classe dont vous souhaitez supprimer des étudiants (ou 'r' pour revenir) :\n> ")
