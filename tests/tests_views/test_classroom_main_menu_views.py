@@ -77,13 +77,6 @@ class MockClassroomDatabaseController:
                 classroom.update(new_classroom_data)
                 return
 
-    def get_classroom_database_controller(self, classroom_name):
-        # Recherche et retour d'une classe spécifique
-        for classroom in self.classrooms:
-            if classroom['classroom_name'] == classroom_name:
-                return classroom
-        return None
-
     def get_students_in_classroom_database_controller(self, classroom_name):
         classroom = self.get_classroom_database_controller(classroom_name)
         if classroom:
@@ -104,14 +97,27 @@ class MockClassroomDatabaseController:
             classroom['students'].extend(selected_students)  # Ajouter les étudiants à la classe
             classroom['number_of_students'] += len(selected_students)  # Mettre à jour le nombre d'étudiants
 
+    def get_classroom_database_controller(self, classroom_name):
+        for classroom in self.classrooms:
+            if classroom['classroom_name'] == classroom_name:
+                return classroom
+        return None
+
     def remove_student_from_classroom_database_controller(self, classroom_name, student_to_remove):
         classroom = self.get_classroom_database_controller(classroom_name)
         if classroom:
-            classroom['students'] = [s for s in classroom['students'] if s['_id'] != student_to_remove['_id']]
-            classroom['number_of_students'] = len(classroom['students'])
+            classroom['number_of_students'] = [
+                s for s in classroom['number_of_students'] if s['_id'] != student_to_remove['_id']
+            ]
+            classroom['students'] = [
+                s for s in classroom['students'] if s['_id'] != student_to_remove['_id']
+            ]
 
     def remove_student_from_classroom(self, student_id, classroom_name):
-        self.remove_student_from_classroom_database_controller(classroom_name, {'_id': student_id})
+        classroom = self.get_classroom_database_controller(classroom_name)
+        if classroom:
+            classroom['students'] = [student for student in classroom['students'] if student['_id'] != student_id]
+            classroom['number_of_students'] -= 1
 
 
 # Classe de test pour les vues du menu principal des classes
@@ -361,3 +367,42 @@ class TestClassroomMainMenuView:
         assert 'Physique' in captured.out
         assert 'Chimie' in captured.out
         assert "Il n'y a pas d'étudiants dans cette classe à supprimer." in captured.out
+
+    @patch("builtins.input", side_effect=["1", "1"])  # Simule l'entrée utilisateur
+    @patch('click.confirm', return_value=True)  # Simule la confirmation de suppression
+    def test_remove_students_from_selected_class(self, mock_confirm, mock_input, capsys):
+
+        classroom_data = {
+            'classroom_name': 'Test Class',
+            'number_of_students': [
+                {'_id': '1', 'first_name': 'Alice', 'last_name': 'Brown'},
+                {'_id': '2', 'first_name': 'Bob', 'last_name': 'Smith'}
+            ],
+            'students': [
+                {'_id': '1', 'first_name': 'Alice', 'last_name': 'Brown'},
+                {'_id': '2', 'first_name': 'Bob', 'last_name': 'Smith'}
+            ]
+        }
+
+        # Injection du contrôleur factice MockClassroomDatabaseController
+        self.classroom_view.classroom_controller = MockClassroomDatabaseController()
+
+        # Ajout de la classe factice pour "Test Class"
+        self.classroom_view.classroom_controller.add_classroom_database_controller(classroom_data)
+
+        # Appel de la méthode à tester
+        self.classroom_view.remove_students_from_selected_class("Test Class")
+
+        # Vérifie que l'étudiant "Alice Brown" a été supprimé
+        classroom = self.classroom_view.classroom_controller.get_classroom_database_controller("Test Class")
+        
+        # Vérifie que la classe a bien été trouvée et que l'étudiant a été supprimé
+        assert classroom is not None
+        assert len(classroom['number_of_students']) == 1  # On s'assure qu'il reste un seul étudiant
+        remaining_student = classroom['number_of_students'][0]
+        assert remaining_student['_id'] == '2'
+        assert remaining_student['first_name'] == 'Bob'
+
+        # On peut aussi vérifier que le message de mise à jour a été affiché
+        captured = capsys.readouterr().out
+        assert "Liste mise à jour des étudiants" in captured
