@@ -45,9 +45,3 @@ class StudentModel:
 
         # Si toutes les notes sont valides ou aucune note n'a été fournie, retourne True
         return True
-
-    #def get_value_classroom(self):
-    #    return self.classroom_name
-
-    #def set_student_classroom(self, classroom):
-    #    self.classroom_name = classroom_name
