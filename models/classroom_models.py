@@ -43,6 +43,3 @@ class ClassroomModel:
             return False
 
         return True
-
-    #def count_students_classroom(self):
-    #    return len(self.number_of_students)
