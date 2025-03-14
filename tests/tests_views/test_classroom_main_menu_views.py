@@ -28,8 +28,8 @@ class MockClassroomDatabaseController:
                 'number_of_places_available': 30,
                 "number_of_students": 2,
                 "students": [
-                    {'_id': '1', 'first_name': 'Alice', 'last_name': 'Brown'},
-                    {'_id': '2', 'first_name': 'Bob', 'last_name': 'Yellow'}
+                    {'_id': '1', 'first_name': 'Alice', 'last_name': 'Brown', 'grades': [15, 18]},
+                    {'_id': '2', 'first_name': 'Bob', 'last_name': 'Yellow', 'grades': [12, 14]}
                 ]
             },
             {
@@ -118,6 +118,19 @@ class MockClassroomDatabaseController:
         if classroom:
             classroom['students'] = [student for student in classroom['students'] if student['_id'] != student_id]
             classroom['number_of_students'] -= 1
+
+    def calculate_classroom_average_database_controller(self, classroom_name):
+        for classroom in self.classrooms:
+            if classroom['classroom_name'] == classroom_name:
+                if classroom['number_of_students'] == 0:
+                    return None
+
+                all_grades = [grade for student in classroom['students'] for grade in student.get('grades', [])]
+                if not all_grades:
+                    return None
+
+                return sum(all_grades) / len(all_grades)
+        return None
 
 
 # Classe de test pour les vues du menu principal des classes
@@ -406,3 +419,11 @@ class TestClassroomMainMenuView:
         # On peut aussi vérifier que le message de mise à jour a été affiché
         captured = capsys.readouterr().out
         assert "Liste mise à jour des étudiants" in captured
+
+    @patch("click.prompt", side_effect=["2"])
+    def test_calculate_classroom_average(self, mock_input, capsys):
+        self.classroom_view.classroom_controller = MockClassroomDatabaseController()
+        self.classroom_view.calculate_classroom_average()
+
+        captured = self.remove_ansi_sequences(capsys.readouterr().out).strip()
+        assert "Moyenne de la classe de Mathématiques : 14.75" in captured
