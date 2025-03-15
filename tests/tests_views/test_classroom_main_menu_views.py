@@ -427,3 +427,12 @@ class TestClassroomMainMenuView:
 
         captured = self.remove_ansi_sequences(capsys.readouterr().out).strip()
         assert "Moyenne de la classe de Mathématiques : 14.75" in captured
+
+    @patch("click.prompt", side_effect=["1"])
+    def test_calculate_classroom_average_class_with_no_students(self, mock_input, capsys):
+        self.classroom_view.classroom_controller.classrooms = [
+            {"classroom_name": "Chimie", "number_of_students": 0, "students": []}
+        ]
+        self.classroom_view.calculate_classroom_average()
+        captured = self.remove_ansi_sequences(capsys.readouterr().out).strip()
+        assert "Aucune donnée trouvée pour la classe Chimie" in captured
