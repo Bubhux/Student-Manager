@@ -436,3 +436,9 @@ class TestClassroomMainMenuView:
         self.classroom_view.calculate_classroom_average()
         captured = self.remove_ansi_sequences(capsys.readouterr().out).strip()
         assert "Aucune donnée trouvée pour la classe Chimie" in captured
+
+    @patch("click.prompt", side_effect=["invalid", "r"])
+    def test_calculate_classroom_average_invalid_choice(self, mock_input, capsys):
+        self.classroom_view.calculate_classroom_average()
+        captured = self.remove_ansi_sequences(capsys.readouterr().out).strip()
+        assert "Choix invalide, veuillez saisir un nombre ou 'r' pour revenir." in captured
