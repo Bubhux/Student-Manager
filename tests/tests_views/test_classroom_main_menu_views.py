@@ -26,7 +26,6 @@ class MockClassroomDatabaseController:
             {
                 'classroom_name': 'Mathématiques',
                 'number_of_places_available': 30,
-                "number_of_students": 2,
                 "students": [
                     {'_id': '1', 'first_name': 'Alice', 'last_name': 'Brown', 'grades': [15, 18]},
                     {'_id': '2', 'first_name': 'Bob', 'last_name': 'Yellow', 'grades': [12, 14]}
@@ -35,7 +34,6 @@ class MockClassroomDatabaseController:
             {
                 'classroom_name': 'Physique',
                 'number_of_places_available': 25,
-                "number_of_students": 1,
                 "students": [
                     {'_id': '3', 'first_name': 'Charlie', 'last_name': 'Pink'}
                 ]
@@ -43,10 +41,13 @@ class MockClassroomDatabaseController:
             {
                 'classroom_name': 'Chimie',
                 'number_of_places_available': 20,
-                'number_of_students': 0,
                 "students": []
             }
         ]
+
+        # Mise à jour du nombre d'étudiants après la définition des étudiants
+        for classroom in self.classrooms:
+            classroom["number_of_students"] = len(classroom["students"])
 
     def __getitem__(self, item):
         if item == 'classrooms':
