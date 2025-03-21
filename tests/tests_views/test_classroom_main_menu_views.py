@@ -133,6 +133,10 @@ class MockClassroomDatabaseController:
                 return sum(all_grades) / len(all_grades)
         return None
 
+    def delete_classroom_database_controller(self, classroom_name):
+        # Supprime la classe avec le nom donné
+        self.classrooms = [classroom for classroom in self.classrooms if classroom['classroom_name'] != classroom_name]
+
 
 # Classe de test pour les vues du menu principal des classes
 class TestClassroomMainMenuView:
