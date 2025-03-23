@@ -447,3 +447,23 @@ class TestClassroomMainMenuView:
         self.classroom_view.calculate_classroom_average()
         captured = self.remove_ansi_sequences(capsys.readouterr().out).strip()
         assert "Choix invalide, veuillez saisir un nombre ou 'r' pour revenir." in captured
+
+    @patch('click.prompt', side_effect=['1'])  # Suppression de la première classe
+    @patch('click.confirm', return_value=True)  # Confirme la suppression
+    def test_delete_classroom(self, mock_prompt, mock_confirm, capsys):
+        # Vérification que la classe 'Mathématiques' est présente avant suppression
+        assert any(classroom['classroom_name'] == 'Chimie' for classroom in self.classroom_view.classroom_controller.get_all_classrooms_database_controller())
+
+        # Exécution de la méthode delete_classroom
+        self.classroom_view.delete_classroom()
+
+        # Vérification que la classe a bien été supprimée
+        assert not any(classroom['classroom_name'] == 'Chimie' for classroom in self.classroom_view.classroom_controller.get_all_classrooms_database_controller())
+
+        # Vérification des appels aux mocks
+        mock_prompt.assert_called()
+        mock_confirm.assert_called()
+
+        # Capture et vérification de la sortie
+        captured = capsys.readouterr()
+        assert "La classe 'Chimie' a été supprimée avec succès." in self.remove_ansi_sequences(captured.out)
