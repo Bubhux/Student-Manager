@@ -16,7 +16,10 @@ class ClassroomDatabaseController:
         try:
             # Vérifie la connexion à la base de données
             self.db.command("ping")
-            print(f"Connexion de ClassroomDatabaseController à la base de données MongoDB '{self.db.name}' établie avec succès.")
+            print(
+                f"Connexion de ClassroomDatabaseController à la base de données MongoDB "
+                f"'{self.db.name}' établie avec succès."
+            )
         except Exception as e:
             print("ClassroomDatabaseController erreur de connexion à la base de données MongoDB :", str(e))
             raise
@@ -24,7 +27,10 @@ class ClassroomDatabaseController:
     def add_classroom_database_controller(self, classroom_data):
         existing_classroom = self.classroom_collection.find_one({'classroom_name': classroom_data['classroom_name']})
         if existing_classroom:
-            print(f"Une classe avec le nom {classroom_data['classroom_name']} existe déjà. Impossible d'ajouter la classe.")
+            print(
+                f"Une classe avec le nom {classroom_data['classroom_name']} existe déjà. "
+                "Impossible d'ajouter la classe."
+            )
         else:
             try:
                 self.classroom_collection.insert_one(classroom_data)
@@ -112,8 +118,12 @@ class ClassroomDatabaseController:
         if classroom:
             try:
                 # Assure que number_of_students est une liste
-                number_of_students = classroom['number_of_students'] if isinstance(classroom['number_of_students'], list) else []
-                
+                number_of_students = (
+                    classroom["number_of_students"]
+                    if isinstance(classroom["number_of_students"], list)
+                    else []
+                )
+
                 # Nombre de places disponibles
                 available_places = classroom['number_of_places_available']
 
@@ -133,7 +143,10 @@ class ClassroomDatabaseController:
                             student_classroom.append(classroom_name)
 
                         # Met à jour la classe de l'étudiant dans la base de données
-                        self.student_collection.update_one({'_id': student_id}, {'$set': {'classroom_name': student_classroom}})
+                        self.student_collection.update_one(
+                            {'_id': student_id},
+                            {'$set': {'classroom_name': student_classroom}}
+                        )
 
                         # Ajouter les informations complètes de l'étudiant à la liste
                         student_info['classroom_name'] = student_classroom
@@ -152,7 +165,10 @@ class ClassroomDatabaseController:
                 student_names = ', '.join([f"{student['first_name']} {student['last_name']}" for student in students])
                 print(f"Étudiant(e) {student_names} ajouté(e) à la classe {classroom_name} avec succès !")
             except Exception as e:
-                print(f"Une erreur s'est produite lors de l'ajout de l'étudiant à la classe {classroom_name} : {str(e)}")
+                print(
+                    f"Une erreur s'est produite lors de l'ajout de l'étudiant à la classe {classroom_name} : "
+                    f"{str(e)}"
+                )
         else:
             print(f"Aucune classe trouvée avec le nom {classroom_name}.")
 
@@ -161,8 +177,12 @@ class ClassroomDatabaseController:
         if classroom:
             try:
                 # Assure que number_of_students est une liste
-                number_of_students = classroom['number_of_students'] if isinstance(classroom['number_of_students'], list) else []
-                
+                number_of_students = (
+                    classroom['number_of_students']
+                    if isinstance(classroom['number_of_students'], list)
+                    else []
+                )
+
                 # Nombre de places disponibles
                 available_places = classroom['number_of_places_available']
 
@@ -171,22 +191,34 @@ class ClassroomDatabaseController:
                     if student['_id'] == student_info['_id']:
                         # Récupération du nom de l'étudiant
                         student_name = f"{student['first_name']} {student['last_name']}"
-                        
+
                         # Suppression de l'étudiant de la liste
                         number_of_students.remove(student)
 
                         # Incrémenter le nombre de places disponibles
                         available_places += 1
 
-                        # Mettre à jour le champ number_of_students et number_of_places_available dans la base de données
-                        self.classroom_collection.update_one({'classroom_name': classroom_name}, {'$set': {'number_of_students': number_of_students, 'number_of_places_available': available_places}})
+                        # Mettre à jour le champ number_of_students
+                        # et number_of_places_available dans la base de données
+                        self.classroom_collection.update_one(
+                            {'classroom_name': classroom_name},
+                            {
+                                '$set': {
+                                    'number_of_students': number_of_students,
+                                    'number_of_places_available': available_places
+                                }
+                            }
+                        )
 
                         print(f"L'étudiant {student_name} a été supprimé de la classe {classroom_name} avec succès !")
                         return
 
                 print(f"Aucun étudiant trouvé avec l'ID {student_info['_id']} dans la classe {classroom_name}.")
             except Exception as e:
-                print(f"Une erreur s'est produite lors de la suppression de l'étudiant de la classe {classroom_name} : {str(e)}")
+                print(
+                    f"Une erreur s'est produite lors de la suppression de l'étudiant de la classe "
+                    f"{classroom_name} : {str(e)}"
+                )
         else:
             print(f"Aucune classe trouvée avec le nom {classroom_name}.")
 
