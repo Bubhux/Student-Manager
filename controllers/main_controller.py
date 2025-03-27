@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class MainController:
 
     def __init__(self):
@@ -56,6 +57,7 @@ class MainController:
         self.classroom_database_controller.connect_to_database()
         self.main_menu.display_main_menu()
         print("Fermeture de l'application Student Manager.")
+
 
 """
     def add_student(self, name, french, math, geography, history):
