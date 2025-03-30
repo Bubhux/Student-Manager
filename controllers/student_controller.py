@@ -16,7 +16,10 @@ class StudentDatabaseController:
         try:
             # Vérifie la connexion à la base de données
             self.db.command("ping")
-            print(f"Connexion de StudentDatabaseController à la base de données MongoDB '{self.db.name}' établie avec succès.")
+            print(
+                f"Connexion de StudentDatabaseController à la base de données MongoDB "
+                f"'{self.db.name}' établie avec succès."
+            )
         except Exception as e:
             print("StudentDatabaseController erreur de connexion à la base de données MongoDB :", str(e))
             raise
@@ -33,7 +36,7 @@ class StudentDatabaseController:
         names = student_name.split(' ')
         first_name = names[0]
         last_name = names[-1] if len(names) > 1 else None
-        
+
         # Construit la requête de recherche en utilisant à la fois le prénom et le nom
         query = {'first_name': first_name}
         if last_name:
@@ -96,7 +99,7 @@ class StudentDatabaseController:
                 # Mettre à jour les notes globales de l'étudiant dans la liste 'grades'
                 if 'lessons' in new_student_data:
                     student['grades'] = [lesson['grade'] for lesson in new_student_data['lessons']]
-                
+
                 # Vérifie si 'classroom_name' est présent dans les nouvelles données
                 if 'classroom_name' in new_student_data:
                     student['classroom_name'] = new_student_data['classroom_name']
@@ -120,10 +123,14 @@ class StudentDatabaseController:
             student = self.student_collection.find_one({'_id': student_id})
             if student:
                 student_name = f"{student['first_name']} {student['last_name']}"
-                # Supprime l'étudiant de sa classe actuelle en mettant à jour son champ 'classroom_name' avec une liste vide
+                # Supprime l'étudiant de sa classe actuelle
+                # en mettant à jour son champ 'classroom_name' avec une liste vide
                 self.student_collection.update_one({'_id': student_id}, {'$set': {'classroom_name': []}})
-                print(f"La classe {classroom_name} a été retirée des informations de l'étudiant {student_name} avec succès !")
-                #print(f"L'indice de la liste classroom_name pour l'étudiant {student_name} a été réinitialisé à 0.")
+                print(
+                    f"La classe {classroom_name} a été retirée des informations de l'étudiant "
+                    f"{student_name} avec succès !"
+                )
+                # print(f"L'indice de la liste classroom_name pour l'étudiant {student_name} a été réinitialisé à 0.")
                 print(f"Les informations de l'étudiant {student_name} ont été mises à jour avec succès !")
             else:
                 print(f"Aucun étudiant trouvé avec l'ID {student_id}.")
@@ -132,15 +139,27 @@ class StudentDatabaseController:
 
     def delete_student_database_controller(self, student_name):
         # Recherche de l'étudiant par son prénom seul ou prénom et nom
-        student = self.student_collection.find_one({'$or': [{'first_name': student_name}, {'first_name': student_name.split()[0], 'last_name': student_name.split()[1]}]})
-        
+        student = self.student_collection.find_one({
+            '$or': [
+                {'first_name': student_name},
+                {
+                    'first_name': student_name.split()[0],
+                    'last_name': student_name.split()[1]
+                }
+            ]
+        })
+
         if student:
             try:
                 # Suppression de l'étudiant
                 self.student_collection.delete_one({'_id': student['_id']})
                 click.secho(f"L'étudiant {student_name} a été supprimé avec succès !", fg="green", bold=True)
             except Exception as e:
-                click.secho(f"Une erreur s'est produite lors de la suppression de l'étudiant : {str(e)}", fg="red", bold=True)
+                click.secho(
+                    f"Une erreur s'est produite lors de la suppression de l'étudiant : {str(e)}",
+                    fg="red",
+                    bold=True
+                )
         else:
             click.secho(f"Aucun étudiant trouvé avec le nom {student_name}.", fg="yellow", bold=True)
 
