@@ -136,7 +136,11 @@ class ClassroomView:
                 self.console.print("Classes disponibles triées par ordre alphabétique", style="bold magenta")
                 self.console.print(table)
 
-                class_choice = click.prompt("Choisissez la classe à laquelle vous souhaitez ajouter des étudiants (ou 'r' pour revenir)", type=str)
+                class_choice = click.prompt(
+                    "Choisissez la classe à laquelle vous souhaitez ajouter des étudiants "
+                    "(ou 'r' pour revenir)",
+                    type=str
+                )
                 if class_choice.lower() == "r":
                     return
                 elif class_choice.isdigit():
@@ -185,7 +189,11 @@ class ClassroomView:
         selected_students = []
         for i in range(num_students_to_add):
             while True:
-                student_choice = click.prompt(f"Saisissez le numéro de l'étudiant {i+1} (Ou 'r' pour revenir au menu précédent) \n> ", type=str, prompt_suffix="")
+                student_choice = click.prompt(
+                    f"Saisissez le numéro de l'étudiant {i + 1} (Ou 'r' pour revenir au menu précédent) \n> ",
+                    type=str,
+                    prompt_suffix=""
+                )
 
                 if student_choice.lower() == 'r':
                     return
@@ -196,15 +204,22 @@ class ClassroomView:
                     selected_student = sorted_students[student_choice - 1]
 
                     # Vérifie si l'étudiant est déjà dans une autre classe
-                    student_current_class = self.classroom_controller.get_classroom_by_student_id(selected_student['_id'])
+                    student_current_class = self.classroom_controller.get_classroom_by_student_id(
+                        selected_student['_id']
+                    )
                     if student_current_class:
                         self.console.print(
-                            f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} appartient déjà à la classe {student_current_class}.",
+                            f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} "
+                            f"appartient déjà à la classe {student_current_class}.",
                             style="bold red"
                         )
-                    elif any(ObjectId(student['_id']) == ObjectId(selected_student['_id']) for student in current_students):
+                    elif any(
+                        ObjectId(student['_id']) == ObjectId(selected_student['_id'])
+                        for student in current_students
+                    ):
                         self.console.print(
-                            f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} est déjà dans la classe sélectionnée.",
+                            f"L'étudiant {selected_student['first_name']} {selected_student['last_name']} "
+                            "est déjà dans la classe sélectionnée.",
                             style="bold red"
                         )
                     else:
@@ -258,7 +273,10 @@ class ClassroomView:
                 self.console.print("Classes disponibles triées par ordre alphabétique", style="bold magenta")
                 self.console.print(table)
 
-                class_choice = input("Choisissez la classe dont vous souhaitez supprimer des étudiants (ou 'r' pour revenir) :\n> ")
+                class_choice = input(
+                    "Choisissez la classe dont vous souhaitez supprimer des étudiants "
+                    "(ou 'r' pour revenir) :\n> "
+                )
                 if class_choice == "r":
                     return
                 elif class_choice.isdigit():
@@ -307,13 +325,15 @@ class ClassroomView:
                 if num_students_to_remove != 0:
                     break
                 else:
-                    self.console.print("[bold yellow]Le nombre d'étudiants à supprimer ne peut pas être 0.[/bold yellow]")
+                    self.console.print(
+                        "[bold yellow]Le nombre d'étudiants à supprimer ne peut pas être 0.[/bold yellow]"
+                    )
             else:
                 self.console.print("[bold yellow]Veuillez entrer un nombre valide.[/bold yellow]")
 
         for i in range(num_students_to_remove):
             while True:
-                student_choice = input(f"Saisissez le numéro de l'étudiant {i+1} à supprimer :\n> ")
+                student_choice = input(f"Saisissez le numéro de l'étudiant {i + 1} à supprimer :\n> ")
                 if student_choice.isdigit():
                     student_index = int(student_choice) - 1
                     if 0 <= student_index < len(sorted_students):
@@ -321,14 +341,26 @@ class ClassroomView:
 
                         # Vérifie si '_id' existe
                         if '_id' not in student_to_remove:
-                            self.console.print("[bold red]Erreur : Cet étudiant n'a pas d'ID valide. Suppression annulée.[/bold red]")
+                            self.console.print(
+                                "[bold red]Erreur : "
+                                "Cet étudiant n'a pas d'ID valide. Suppression annulée.[/bold red]"
+                            )
                             break
 
                         # Demande de confirmation avant suppression
-                        if click.confirm(f"Êtes-vous sûr de vouloir supprimer l'étudiant(e) {student_to_remove['first_name']} {student_to_remove['last_name']} de la classe {classroom_name} ?", default=False):
+                        if click.confirm(
+                            f"Êtes-vous sûr de vouloir supprimer l'étudiant(e) "
+                            f"{student_to_remove['first_name']} {student_to_remove['last_name']} "
+                            f"de la classe {classroom_name} ?",
+                            default=False
+                        ):
                             # Supprime l'étudiant
-                            self.classroom_controller.remove_student_from_classroom_database_controller(classroom_name, student_to_remove)
-                            self.student_controller.remove_student_from_classroom(student_to_remove['_id'], classroom_name)
+                            self.classroom_controller.remove_student_from_classroom_database_controller(
+                                classroom_name, student_to_remove
+                            )
+                            self.student_controller.remove_student_from_classroom(
+                                student_to_remove['_id'], classroom_name
+                            )
                             sorted_students.pop(student_index)
 
                             # Mise à jour de la table
@@ -352,9 +384,23 @@ class ClassroomView:
                     self.console.print("[bold red]Veuillez entrer un numéro valide.[/bold red]")
 
     def add_classroom(self):
-        classroom_name = click.prompt(click.style("Choisissez le nom de la classe de votre choix \n>", fg="white"), type=str, prompt_suffix="")
-        number_of_places_available_input = click.prompt("Nombre de places disponibles (appuyez sur Entrée pour laisser vide) ", default="", show_default=False, type=str)
-        number_of_students_input = click.prompt("Nombre d'étudiants (appuyez sur Entrée pour laisser vide) ", default="", show_default=False, type=str)
+        classroom_name = click.prompt(
+            click.style("Choisissez le nom de la classe de votre choix \n>", fg="white"),
+            type=str,
+            prompt_suffix=""
+        )
+        number_of_places_available_input = click.prompt(
+            "Nombre de places disponibles (appuyez sur Entrée pour laisser vide) ",
+            default="",
+            show_default=False,
+            type=str
+        )
+        number_of_students_input = click.prompt(
+            "Nombre d'étudiants (appuyez sur Entrée pour laisser vide) ",
+            default="",
+            show_default=False,
+            type=str
+        )
 
         # Vérifie si rien n'est saisi pour le nombre de places disponibles, puis définit 0 comme valeur par défaut
         if number_of_places_available_input.strip():
@@ -429,7 +475,13 @@ class ClassroomView:
         self.console.print(table)
 
         while True:
-            choice = click.prompt(click.style("Choisissez le numéro de la classe à modifier (ou 'r' pour revenir) :", fg="white"), type=str, prompt_suffix="")
+            choice = click.prompt(
+                click.style(
+                    "Choisissez le numéro de la classe à modifier (ou 'r' pour revenir) :", fg="white"
+                ),
+                type=str,
+                prompt_suffix="",
+            )
 
             if choice.lower() == "r":
                 return
@@ -437,7 +489,13 @@ class ClassroomView:
                 choice = int(choice)
                 if 1 <= choice <= len(sorted_classrooms):
                     selected_class = sorted_classrooms[choice - 1]
-                    confirm = click.confirm(click.style(f"Êtes-vous sûr de vouloir modifier la classe '{selected_class['classroom_name']}' ?", fg="yellow"), default=False)
+                    confirm = click.confirm(
+                        click.style(
+                            f"Êtes-vous sûr de vouloir modifier la classe '{selected_class['classroom_name']}' ?",
+                            fg="yellow"
+                        ),
+                        default=False
+                    )
                     if confirm:
                         classroom = selected_class
                         break
@@ -449,16 +507,38 @@ class ClassroomView:
                 self.console.print("Choix invalide, veuillez saisir un nombre ou 'r' pour revenir.", style="bold red")
 
         # Détermine le nombre d'étudiants actuel
-        current_number_of_students = len(classroom['number_of_students']) if isinstance(classroom['number_of_students'], list) else 0
+        current_number_of_students = (
+            len(classroom['number_of_students'])
+            if isinstance(classroom['number_of_students'], list)
+            else 0
+        )
 
         # Demande les nouvelles informations
-        new_classroom_name = click.prompt("Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) ->", default=classroom['classroom_name'], type=str).strip()
-        new_number_of_places_available = click.prompt("Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) ->", default=str(classroom['number_of_places_available']), type=int)
-        new_number_of_students = click.prompt("Nouveau nombre d'étudiants (appuyez sur Entrée pour laisser vide) ->", default=str(current_number_of_students), type=int)
+        new_classroom_name = click.prompt(
+            "Nouveau nom de la classe (appuyez sur Entrée pour conserver le nom actuel) ->",
+            default=classroom['classroom_name'],
+            type=str
+        ).strip()
+
+        new_number_of_places_available = click.prompt(
+            "Nouveau nombre de places disponibles (appuyez sur Entrée pour conserver le nombre actuel) ->",
+            default=str(classroom['number_of_places_available']),
+            type=int
+        )
+
+        new_number_of_students = click.prompt(
+            "Nouveau nombre d'étudiants (appuyez sur Entrée pour laisser vide) ->",
+            default=str(current_number_of_students),
+            type=int
+        )
 
         # Vérifie si les nouvelles informations sont fournies, sinon conserve les informations actuelles
         new_classroom_name = new_classroom_name if new_classroom_name else classroom['classroom_name']
-        new_number_of_places_available = new_number_of_places_available if new_number_of_places_available else classroom['number_of_places_available']
+        new_number_of_places_available = (
+            new_number_of_places_available
+            if new_number_of_places_available
+            else classroom['number_of_places_available']
+        )
         new_number_of_students = new_number_of_students if new_number_of_students else current_number_of_students
 
         # Crée un dictionnaire avec les nouvelles informations de la classe
@@ -482,10 +562,16 @@ class ClassroomView:
         self.console.print(table)
 
         # Confirmation pour la mise à jour des informations
-        confirmation_message = click.style("Confirmez-vous la mise à jour des informations de cette classe ?", fg="yellow")
+        confirmation_message = click.style(
+            "Confirmez-vous la mise à jour des informations de cette classe ?", fg="yellow"
+        )
         if click.confirm(confirmation_message, default=True):
-            self.classroom_controller.update_classroom_info_database_controller(classroom['classroom_name'], new_classroom_data)
-            self.console.print("[bold green]Les informations de la classe ont été mises à jour avec succès ![/bold green]")
+            self.classroom_controller.update_classroom_info_database_controller(
+                classroom['classroom_name'], new_classroom_data
+            )
+            self.console.print(
+                "[bold green]Les informations de la classe ont été mises à jour avec succès ![/bold green]"
+            )
         else:
             self.console.print("[bold cyan]La mise à jour des informations de la classe a été annulée.[/bold cyan]")
 
@@ -512,7 +598,14 @@ class ClassroomView:
         self.console.print(table)
 
         while True:
-            choice = click.prompt(click.style("Choisissez le numéro de la classe à supprimer (ou 'r' pour revenir) :", fg="white"), type=str, prompt_suffix="")
+            choice = click.prompt(
+                click.style(
+                    "Choisissez le numéro de la classe à supprimer (ou 'r' pour revenir) :",
+                    fg="white"
+                ),
+                type=str,
+                prompt_suffix=""
+            )
 
             if choice.lower() == "r":
                 return
@@ -520,10 +613,20 @@ class ClassroomView:
                 choice = int(choice)
                 if 1 <= choice <= len(sorted_classrooms):
                     selected_class = sorted_classrooms[choice - 1]
-                    confirm = click.confirm(click.style(f"Êtes-vous sûr de vouloir supprimer la classe '{selected_class['classroom_name']}' ?", fg="yellow"), default=False)
+                    confirm = click.confirm(
+                        click.style(
+                            f"Êtes-vous sûr de vouloir supprimer la classe '{selected_class['classroom_name']}' ?",
+                            fg="yellow"
+                        ),
+                        default=False
+                    )
                     if confirm:
-                        self.classroom_controller.delete_classroom_database_controller(selected_class['classroom_name'])
-                        self.console.print(f"La classe '{selected_class['classroom_name']}' a été supprimée avec succès.", style="bold green")
+                        classroom_name = selected_class['classroom_name']
+                        self.classroom_controller.delete_classroom_database_controller(classroom_name)
+                        self.console.print(
+                            f"La classe '{classroom_name}' a été supprimée avec succès.",
+                            style="bold green"
+                        )
                     else:
                         self.console.print("Suppression annulée.", style="bold red")
                     break
@@ -555,7 +658,14 @@ class ClassroomView:
         self.console.print(table)
 
         while True:
-            choice = click.prompt(click.style("Choisissez le numéro de la classe pour calculer la moyenne (ou 'r' pour revenir) :", fg="white"), type=str, prompt_suffix="")
+            choice = click.prompt(
+                click.style(
+                    "Choisissez le numéro de la classe pour calculer la moyenne (ou 'r' pour revenir) :",
+                    fg="white"
+                ),
+                type=str,
+                prompt_suffix=""
+            )
 
             if choice == "r":
                 return
@@ -563,11 +673,21 @@ class ClassroomView:
                 choice = int(choice)
                 if 1 <= choice <= len(sorted_classrooms):
                     selected_class = sorted_classrooms[choice - 1]
-                    average = self.classroom_controller.calculate_classroom_average_database_controller(selected_class['classroom_name'])
+                    average = self.classroom_controller.calculate_classroom_average_database_controller(
+                        selected_class['classroom_name']
+                    )
                     if average is not None:
-                        self.console.print(f"Moyenne de la classe de {selected_class['classroom_name']} : {average:.2f}", style="bold green")
+                        self.console.print(
+                            f"Moyenne de la classe de {selected_class['classroom_name']} : "
+                            f"{average:.2f}",
+                            style="bold green"
+                        )
                     else:
-                        self.console.print(f"Aucune donnée trouvée pour la classe {selected_class['classroom_name']}. Vérifiez le nom de la classe.", style="bold red")
+                        self.console.print(
+                            f"Aucune donnée trouvée pour la classe {selected_class['classroom_name']}. "
+                            "Vérifiez le nom de la classe.",
+                            style="bold red"
+                        )
                     break
                 else:
                     self.console.print("Choix invalide. Veuillez saisir un numéro valide.", style="bold red")
