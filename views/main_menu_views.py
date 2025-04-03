@@ -34,7 +34,13 @@ class MainMenuView:
 
             self.console.print(table)
 
-            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix \n>", fg="white"), type=str, prompt_suffix="")
+            choice_menu = click.prompt(
+                click.style(
+                    "Choisissez le numéro de votre choix \n>", fg="white"
+                ),
+                type=str,
+                prompt_suffix=""
+            )
 
             if choice_menu == "1":
                 self.student_view.display_main_menu()
@@ -44,4 +50,7 @@ class MainMenuView:
                 self.console.print("Merci d'avoir utilisé Student Manager !")
                 break
             else:
-                self.console.print("Choix invalide, saisissez un nombre entre 1 et 2 ou q pour quitter l'application.", style="bold red")
+                self.console.print(
+                    "Choix invalide, saisissez un nombre entre 1 et 2 ou q pour quitter l'application.",
+                    style="bold red"
+                )
