@@ -38,7 +38,11 @@ class StudentView:
 
             self.console.print(table)
 
-            choice_menu = click.prompt(click.style("Choisissez le numéro de votre choix \n> ", fg="white"), type=str, prompt_suffix="")
+            choice_menu = click.prompt(
+                click.style("Choisissez le numéro de votre choix \n> ", fg="white"),
+                type=str,
+                prompt_suffix=""
+            )
 
             if choice_menu == "1":
                 self.display_students()
@@ -88,7 +92,12 @@ class StudentView:
         self.display_student_informations(sorted_students) if students else None
 
     def display_student_informations(self, students):
-        student_input = click.prompt("\nEntrez le prénomn, nom ou le numéro de l'étudiant pour voir ses informations (Ou 'r' pour revenir au menu précédent) \n> ", type=str, prompt_suffix="")
+        student_input = click.prompt(
+            "\nEntrez le prénomn, nom ou le numéro de l'étudiant pour voir ses informations "
+            "(Ou 'r' pour revenir au menu précédent) \n> ",
+            type=str,
+            prompt_suffix=""
+        )
 
         if student_input == 'r':
             return
@@ -107,14 +116,18 @@ class StudentView:
             if len(student_input_parts) == 1:
                 # Recherche par prénom ou nom si une seule partie est fournie
                 for student in students:
-                    if student_input_parts[0].lower() in student['first_name'].lower() or student_input_parts[0].lower() in student['last_name'].lower():
+                    if (
+                        student_input_parts[0].lower() in student['first_name'].lower()
+                        or student_input_parts[0].lower() in student['last_name'].lower()
+                    ):
                         selected_student = student
                         break
             elif len(student_input_parts) == 2:
                 # Recherche par combinaison prénom + nom
                 first_name_input, last_name_input = student_input_parts
                 for student in students:
-                    if (first_name_input.lower() == student['first_name'].lower() and last_name_input.lower() == student['last_name'].lower()):
+                    if (first_name_input.lower() == student['first_name'].lower() and
+                            last_name_input.lower() == student['last_name'].lower()):
                         selected_student = student
                         break
 
@@ -130,7 +143,12 @@ class StudentView:
             table.add_row("", "")  # Ligne vide
 
             # Construit une chaîne de caractères pour les matières et notes
-            subjects_grades = "\n".join([f"- {lesson['name']} : {lesson['grade']}" for lesson in selected_student['lessons']])
+            subjects_grades = "\n".join(
+                [
+                    f"- {lesson['name']} : {lesson['grade']}"
+                    for lesson in selected_student['lessons']
+                ]
+            )
             table.add_row("Matières et notes", subjects_grades)
 
             # Ajoute une ligne vide pour créer un espace
@@ -183,7 +201,9 @@ class StudentView:
             num_subjects_valid = False
             while not num_subjects_valid:
                 num_subjects = input(
-                    "Combien de matières cet étudiant suit-il ? (Appuyez sur Entrée pour ne choisir aucune matière) \n> ")
+                    "Combien de matières cet étudiant suit-il ? "
+                    "(Appuyez sur Entrée pour ne choisir aucune matière) \n> "
+                )
                 if num_subjects.strip() == "":
                     num_subjects = 0
                     num_subjects_valid = True
@@ -204,9 +224,14 @@ class StudentView:
         # Saisie des matières et notes
         subjects = []
         for i in range(num_subjects):
-            subject_name = click.prompt(f"Nom de la matière {i+1} \n> ", type=str, prompt_suffix="")
+            subject_name = click.prompt(f"Nom de la matière {i + 1} \n> ", type=str, prompt_suffix="")
             subject_grade = click.prompt(
-                f"Note pour la matière {subject_name} (appuyez sur Entrée pour laisser la note à 0) \n> ", type=float, default=0, show_default=False, prompt_suffix="")
+                f"Note pour la matière {subject_name} (appuyez sur Entrée pour laisser la note à 0) \n> ",
+                type=float,
+                default=0,
+                show_default=False,
+                prompt_suffix=""
+            )
             if not (0 <= subject_grade <= 20):
                 self.console.print("La note doit être comprise entre 0 et 20.", style="bold red")
                 return
@@ -256,7 +281,9 @@ class StudentView:
                     )
                 except Exception as e:
                     print(
-                        f"Une erreur s'est produite lors de l'ajout de l'étudiant à la classe {classroom_name} : {str(e)}")
+                        f"Une erreur s'est produite lors de l'ajout de l'étudiant à la classe "
+                        f"{classroom_name} : {str(e)}"
+                    )
 
             # Ajoute l'étudiant à la base de données des étudiants
             self.student_controller.add_student_database_controller(student_data)
@@ -265,18 +292,31 @@ class StudentView:
             self.console.print("[bold red]L'ajout de l'étudiant a été annulé.[/bold red]")
 
     def add_subject_to_student(self):
-        student_name = click.prompt("Nom de l'étudiant auquel vous souhaitez ajouter une matière (Prénom et Nom ou Prénom seul)", type=str)
+        student_name = click.prompt(
+            "Nom de l'étudiant auquel vous souhaitez ajouter une matière "
+            "(Prénom et Nom ou Prénom seul)",
+            type=str
+        )
 
         # Vérifie si l'étudiant existe
         student = self.student_controller.get_student_database_controller(student_name)
         if not student:
-            self.console.print(f"Aucun étudiant trouvé avec le nom [bold]{student_name}[/bold]. Vérifiez le nom de l'étudiant.", style="bold red")
+            self.console.print(
+                f"Aucun étudiant trouvé avec le nom [bold]{student_name}[/bold]. "
+                "Vérifiez le nom de l'étudiant.",
+                style="bold red"
+            )
             return
 
         # Demande le nom de la nouvelle matière et la note
         subject_name = click.prompt("Nom de la nouvelle matière", type=str)
         while True:
-            subject_grade_input = click.prompt("Note pour cette matière (appuyez sur Entrée pour laisser la note à 0)", default="", type=str, show_default=False)
+            subject_grade_input = click.prompt(
+                "Note pour cette matière (appuyez sur Entrée pour laisser la note à 0)",
+                default="",
+                type=str,
+                show_default=False
+            )
             if subject_grade_input.strip():
                 try:
                     subject_grade = float(subject_grade_input)
@@ -309,7 +349,12 @@ class StudentView:
 
             # Met à jour les informations de l'étudiant dans la base de données
             self.student_controller.update_student_info_database_controller(student_name, student)
-            self.console.print(f"Matière [bold]{subject_name}[/bold] ajoutée à l'étudiant [bold]{student_name}[/bold] avec la note [bold]{subject_grade}[/bold].", style="bold green")
+            self.console.print(
+                f"Matière [bold]{subject_name}[/bold] ajoutée à l'étudiant "
+                f"[bold]{student_name}[/bold] avec la note "
+                f"[bold]{subject_grade}[/bold].",
+                style="bold green"
+            )
         else:
             self.console.print("[bold cyan]L'ajout de la matière a été annulé.[/bold cyan]")
 
@@ -319,13 +364,24 @@ class StudentView:
         # Vérifie si l'étudiant existe
         student = self.student_controller.get_student_database_controller(student_name)
         if not student:
-            self.console.print(f"Aucun étudiant trouvé avec le nom [bold]{student_name}[/bold]. Vérifiez le nom de l'étudiant.", style="bold red")
+            self.console.print(
+                f"Aucun étudiant trouvé avec le nom [bold]{student_name}[/bold]. "
+                "Vérifiez le nom de l'étudiant.",
+                style="bold red"
+            )
             return
 
         # Demande les nouvelles notes
         new_grades = []
         for subject in student['lessons']:
-            new_grade_input = click.prompt(f"Nouvelle note pour {subject['name']} (appuyez sur Entrée pour conserver la note actuelle)", default=str(subject['grade']), type=str, prompt_suffix=" : ").strip()
+            new_grade_input = click.prompt(
+                f"Nouvelle note pour {subject['name']} "
+                "(appuyez sur Entrée pour conserver la note actuelle)",
+                default=str(subject['grade']),
+                type=str,
+                prompt_suffix=" : "
+            ).strip()
+
             if new_grade_input:
                 try:
                     new_grade = float(new_grade_input)
@@ -342,15 +398,25 @@ class StudentView:
         # Valide les nouvelles notes
         updated_student = StudentModel(student['first_name'], student['last_name'], lessons=new_grades)
         if not updated_student.validate_input_data_student():
-            self.console.print("Les nouvelles notes sont invalides. Assurez-vous que toutes les notes sont comprises entre 0 et 20.", style="bold red")
+            self.console.print(
+                "Les nouvelles notes sont invalides. Assurez-vous que toutes les notes sont comprises "
+                "entre 0 et 20.",
+                style="bold red"
+            )
             return
 
         # Vérifie si les notes ont été modifiées
-        unchanged = all(old_grade['grade'] == new_grade['grade'] for old_grade, new_grade in zip(student['lessons'], new_grades))
+        unchanged = all(
+            old_grade['grade'] == new_grade['grade']
+            for old_grade, new_grade in zip(student['lessons'], new_grades)
+        )
 
         # Affiche les notes modifiées ou un message si elles n'ont pas été modifiées
         if unchanged:
-            self.console.print("Aucune nouvelle note n'a été saisie. Les notes de l'étudiant restent inchangées :", style="bold blue")
+            self.console.print(
+                "Aucune nouvelle note n'a été saisie. Les notes de l'étudiant restent inchangées :",
+                style="bold blue"
+            )
             for subject in student['lessons']:
                 self.console.print(f"- Note de {subject['name']} : {subject['grade']}")
         else:
@@ -371,17 +437,40 @@ class StudentView:
         # Vérifie si l'étudiant existe
         student = self.student_controller.get_student_database_controller(student_name)
         if not student:
-            self.console.print(f"Aucun étudiant trouvé avec le nom [bold]{student_name}[/bold]. Vérifiez le nom de l'étudiant.", style="bold red")
+            self.console.print(
+                f"Aucun étudiant trouvé avec le nom [bold]{student_name}[/bold]. "
+                "Vérifiez le nom de l'étudiant.",
+                style="bold red"
+            )
             return
 
         # Demande les nouvelles informations
-        new_first_name = click.prompt(f"Nouveau prénom (appuyez sur Entrée pour conserver le prénom actuel) [{student['first_name']}] : ", default="", type=str, show_default=False, prompt_suffix="")
+        new_first_name = click.prompt(
+            f"Nouveau prénom (appuyez sur Entrée pour conserver le prénom actuel) "
+            f"[{student['first_name']}] : ",
+            default="",
+            type=str,
+            show_default=False,
+            prompt_suffix=""
+        )
         new_first_name = new_first_name or student['first_name']
 
-        new_last_name = click.prompt(f"Nouveau nom (appuyez sur Entrée pour conserver le nom actuel) [{student['last_name']}] : ", default="", type=str, show_default=False, prompt_suffix="")
+        new_last_name = click.prompt(
+            f"Nouveau nom (appuyez sur Entrée pour conserver le nom actuel) "
+            f"[{student['last_name']}] : ",
+            default="",
+            type=str,
+            show_default=False,
+            prompt_suffix=""
+        )
         new_last_name = new_last_name or student['last_name']
 
-        new_classroom = click.prompt(f"Nouvelle classe (appuyez sur Entrée pour conserver la classe actuelle) ", type=str, show_default=False, default="").strip()
+        new_classroom = click.prompt(
+            "Nouvelle classe (appuyez sur Entrée pour conserver la classe actuelle)",
+            type=str,
+            show_default=False,
+            default="",
+        ).strip()
 
         # Gestion de la vérification des classes
         if not new_classroom:
@@ -389,17 +478,24 @@ class StudentView:
         else:
             classroom = self.classroom_controller.get_classroom_database_controller(new_classroom)
             if not classroom:
-                self.console.print(f"La classe [bold]{new_classroom}[/bold] n'existe pas. Vérifiez le nom de la classe.", style="bold red")
+                self.console.print(
+                    f"La classe [bold]{new_classroom}[/bold] n'existe pas. Vérifiez le nom de la classe.",
+                    style="bold red"
+                )
                 return
             if classroom.get('number_of_places_available', 0) <= 0:
-                self.console.print(f"La classe [bold]{new_classroom}[/bold] n'a plus de places disponibles.", style="bold red")
+                self.console.print(
+                    f"La classe [bold]{new_classroom}[/bold] n'a plus de places disponibles.",
+                    style="bold red"
+                )
                 return
 
             # Vérifie si l'étudiant est déjà dans une autre classe
             student_current_class = self.classroom_controller.get_classroom_by_student_id(student['_id'])
             if student_current_class and student_current_class != new_classroom:
                 self.console.print(
-                    f"L'étudiant {student['first_name']} {student['last_name']} appartient déjà à la classe {student_current_class}.",
+                    f"L'étudiant {student['first_name']} {student['last_name']} appartient déjà à la "
+                    f"classe {student_current_class}.",
                     style="bold red"
                 )
                 return
@@ -409,8 +505,20 @@ class StudentView:
         # Liste pour stocker les nouvelles matières et notes de l'étudiant
         new_lessons = []
         for lesson in student.get('lessons', []):
-            lesson_name = click.prompt(f"Nouveau nom de la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['name']}] :", default=lesson['name'], type=str, show_default=False, prompt_suffix="")
-            lesson_grade_input = input(f"Nouvelle note pour la matière {lesson['name']} (appuyez sur Entrée pour conserver) [{lesson['grade']}] : ").strip()
+            lesson_name = click.prompt(
+                f"Nouveau nom de la matière {lesson['name']} "
+                "(appuyez sur Entrée pour conserver) "
+                f"[{lesson['name']}] :",
+                default=lesson['name'],
+                type=str,
+                show_default=False,
+                prompt_suffix=""
+            )
+            lesson_grade_input = input(
+                f"Nouvelle note pour la matière {lesson['name']} "
+                "(appuyez sur Entrée pour conserver) "
+                f"[{lesson['grade']}] : "
+            ).strip()
 
             if not lesson_grade_input:
                 lesson_grade = lesson['grade']
@@ -456,7 +564,10 @@ class StudentView:
             if student.get('classroom_name') != new_classroom_display:
                 self.classroom_controller.add_students_to_classroom_database_controller(new_classroom, [student])
 
-            self.console.print("[bold green]Les informations de l'étudiant ont été mises à jour avec succès ![/bold green]")
+            self.console.print(
+                "[bold green]Les informations de l'étudiant ont été mises à jour "
+                "avec succès ![/bold green]"
+            )
         else:
             self.console.print("[bold red]La mise à jour des informations de l'étudiant a été annulée.[/bold red]")
 
@@ -493,7 +604,14 @@ class StudentView:
 
         while True:
             # Demande à l'utilisateur de choisir un numéro d'étudiant ou de revenir
-            choice = click.prompt(click.style("Choisissez le numéro de l'étudiant à supprimer (ou 'r' pour revenir) :", fg="white"), type=str, prompt_suffix="")
+            choice = click.prompt(
+                click.style(
+                    "Choisissez le numéro de l'étudiant à supprimer (ou 'r' pour revenir) :",
+                    fg="white"
+                ),
+                type=str,
+                prompt_suffix=""
+            )
 
             if choice.lower() == "r":
                 return
@@ -505,7 +623,13 @@ class StudentView:
                     # Crée le nom complet de l'étudiant
                     student_name = f"{selected_student['first_name']} {selected_student['last_name']}"
                     # Demande confirmation avant la suppression
-                    confirm = click.confirm(click.style(f"Êtes-vous sûr de vouloir supprimer l'étudiant '{student_name}' ?", fg="yellow"), default=False)
+                    confirm = click.confirm(
+                        click.style(
+                            f"Êtes-vous sûr de vouloir supprimer l'étudiant '{student_name}' ?",
+                            fg="yellow"
+                        ),
+                        default=False
+                    )
                     if confirm:
                         self.student_controller.delete_student_database_controller(student_name)
                     else:
@@ -549,7 +673,14 @@ class StudentView:
 
         while True:
             # Demande à l'utilisateur de choisir un numéro d'étudiant ou de revenir
-            choice = click.prompt(click.style("Choisissez le numéro de l'étudiant pour calculer la moyenne (ou 'r' pour revenir) :", fg="white"), type=str, prompt_suffix="")
+            choice = click.prompt(
+                click.style(
+                    "Choisissez le numéro de l'étudiant pour calculer la moyenne "
+                    "(ou 'r' pour revenir) :", fg="white"
+                ),
+                type=str,
+                prompt_suffix=""
+            )
 
             if choice == "r":
                 return
@@ -563,9 +694,16 @@ class StudentView:
                     # Calcul la moyenne de l'étudiant
                     average = self.student_controller.calculate_student_average_database_controller(student_full_name)
                     if average is not None:
-                        self.console.print(f"Moyenne de l'étudiant {student_full_name} : {average:.2f}", style="bold green")
+                        self.console.print(
+                            f"Moyenne de l'étudiant {student_full_name} : {average:.2f}",
+                            style="bold green"
+                        )
                     else:
-                        self.console.print(f"Aucune donnée trouvée pour l'étudiant {student_full_name}. Vérifiez le nom de l'étudiant.", style="bold red")
+                        self.console.print(
+                            f"Aucune donnée trouvée pour l'étudiant {student_full_name}. "
+                            "Vérifiez le nom de l'étudiant.",
+                            style="bold red"
+                        )
                     break
                 else:
                     self.console.print("Choix invalide. Veuillez saisir un numéro valide.", style="bold red")
