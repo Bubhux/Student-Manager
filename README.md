@@ -1,5 +1,10 @@
+![Static Badge](static/badges/Python.svg)   
+![Static Badge](static/badges/MongoDB.svg)   
+![Static Badge](static/badges/Docker.svg)   
 
-# En cours de développement
+![Static Badge](static/badges/tests-badge.svg)   
+![Static Badge](static/badges/flake8-badge.svg)   
+![Static Badge](static/badges/coverage-badge.svg)   
 
 <div id="top"></div>
 
@@ -7,13 +12,16 @@
 
 1. **[Informations générales](#informations-générales)**   
 2. **[Liste pré-requis](#liste-pre-requis)**   
-3. **[Lancement du programme](#lancement-du-programme)**   
-4. **[Interface de l'application](#interface-application)**   
-5. **[Auteur et contact](#auteur-contact)**   
+3. **[Création environnement](#creation-environnement)**   
+4. **[Installation des librairies](#installation-librairies)**   
+5. **[Lancement du programme](#lancement-du-programme)**   
+6. **[Interface de l'application](#interface-application)**   
+7. **[Image avec Docker](#docker-image)**   
+8. **[Auteur et contact](#auteur-contact)**   
 
 ### Projet Student Manager
 
-- Développez une interface utilisateur pour une application de management.  
+- Développez une interface utilisateur pour une application de management d'étudiants et de classes.  
 - Utilisation de **Python** associé à une base de données **MongoDB**.   
       &nbsp;   
 
@@ -44,10 +52,50 @@
   - **Windows 10** Professionnel   
     &nbsp;   
 
-- Les scripts **Python** s'exécutent depuis un terminal.   
-  - Pour ouvrir un terminal sur **Windows**, pressez la touche ``windows + r`` et entrez ``cmd``.   
-  - Sur **Mac**, pressez la touche ``command + espace`` et entrez ``terminal``.   
-  - Sur **Linux**, vous pouvez ouvrir un terminal en pressant les touches ``Ctrl + Alt + T``.   
+| - Les scripts **Python** s'exécutent depuis un terminal.                                            |
+------------------------------------------------------------------------------------------------------|
+| - Pour ouvrir un terminal sur **Windows**, pressez la touche ```windows + r``` et entrez ```cmd```. |
+| - Sur **Mac**, pressez la touche ```command + espace``` et entrez ```terminal```.                   |
+| - Sur **Linux**, vous pouvez ouvrir un terminal en pressant les touches ```Ctrl + Alt + T```.       |
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+<div id="creation-environnement"></div>
+<a href="#top" style="float: right;">Retour en haut 🡅</a>
+
+### Création de l'environnement virtuel   
+
+- Installer une version de **Python** compatible pour votre ordinateur.   
+- Une fois installer ouvrer le cmd (terminal) placer vous dans le dossier principal (dossier racine).   
+- Une fois installer ouvrer **le cmd (terminal)** placer vous dans le dossier principal **(dossier racine)**.   
+
+Taper dans votre terminal :   
+
+```bash
+$ python -m venv env
+```
+Un répertoire appelé ``env`` doit être créé.   
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+<div id="installation-librairies"></div>
+<a href="#top" style="float: right;">Retour en haut 🡅</a>
+
+### Installation des librairies   
+
+##### Installer les librairies   
+
+- Le programme utilise plusieurs librairies externes et modules de **Python**, qui sont répertoriés dans le fichier ``requirements.txt``.   
+- Placez-vous dans le dossier où se trouve le fichier requirements.txt avec le terminal, l'environnement virtuel doit être activé.   
+- Placez-vous dans le dossier où se trouve le fichier ``requirements.txt`` avec le terminal, l'environnement virtuel doit être activé.   
+- Pour faire fonctionner le programme, il vous faudra installer les librairies requises.   
+- À l'aide du fichiers ``requirements.txt`` mis à disposition.   
+
+Taper dans votre terminal la commande :   
+
+```bash
+$ pip install -r requirements.txt
+```
 
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -57,8 +105,7 @@
 ### Lancement du programme   
 
 - Pour lancer le programme.   
-
-Taper dans votre terminal la commande:   
+- Taper dans votre terminal la commande :   
 
 ```bash
 $ python main.py
@@ -96,6 +143,61 @@ $ python main.py
         <img src="/static/img/classroom_menu.png" alt="Menu classe" style="width: 300px; height: auto;">
     </div>
 </div>
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+<div id="docker-image"></div>
+<a href="#top" style="float: right;">Retour en haut 🡅</a>
+
+### Image Docker   
+
+- Une image **Docker** est disponible pour ce projet.   
+
+- Vous pouvez récupérez l'image sur **Docker Hub** ➔ [Image Docker](https://hub.docker.com/repository/docker/bubhux/repository-student-manager/tags)   
+
+```bash   
+$ docker pull bubhux/repository-student-manager:latest
+$ docker pull bubhux/repository-student-manager:mongo-3.6
+``` 
+
+- Ou vous pouvez contruire l'image localement.   
+
+```bash   
+$ docker-compose build
+``` 
+
+- Lancez l'image en local une fois le conteneur **Docker** démarré, vous pourrez accéder à l'application.   
+
+```bash   
+$ docker-compose up --no-start
+$ docker-compose start
+```   
+
+- Accéder au dossier du conteneur **Docker** pour lancer l'application  manuellement.   
+
+```bash   
+$ docker exec -it studentmanager-studentmanager-app-1 bash
+```   
+
+- Une fois l'accès au conteneur effectué lancer l'application avec la commande suivante :   
+
+```bash   
+$ root@5acb437d420f:/app# python main.py
+```  
+
+- Pour quitter l'application tapez :   
+
+```bash   
+$ root@5acb437d420f:/app# exit
+```  
+
+- Pour arrêter les conteneurs **Docker**.   
+
+```bash   
+$ docker-compose stop
+```  
+ 
+>_**Note navigateur :** Les tests ont était fait sur **Firefox** et **Google Chrome**._   
 
 --------------------------------------------------------------------------------------------------------------------------------
 
